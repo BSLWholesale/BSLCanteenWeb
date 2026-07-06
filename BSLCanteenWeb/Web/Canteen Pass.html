@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CanteenPass — Industrial Meal Management</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --bg:#F4F3EF;
+  --surface:#FFFFFF;
+  --border:#E2E0D8;
+  --text:#18180F;
+  --muted:#6C6C62;
+  --accent:#1C3D2E;
+  --accent2:#2E6B4A;
+  --accent-lt:#E4EFE8;
+  --warn:#B85C00;
+  --warn-lt:#FDF3E7;
+  --danger:#B01C1C;
+  --danger-lt:#FBEAEA;
+  --success:#1A7A3A;
+  --success-lt:#E6F4EB;
+  --r:10px;
+  --rs:6px;
+  --shadow:0 1px 4px rgba(0,0,0,0.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── LOGIN ── */
+#login-screen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);
+  padding:1rem;
+}
+.login-card{
+  background:var(--surface);border-radius:16px;padding:2.5rem;
+  width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.25);
+}
+.login-logo{text-align:center;margin-bottom:2rem;}
+.login-logo-icon{font-size:40px;margin-bottom:8px;}
+.login-logo h1{font-size:22px;font-weight:800;color:var(--accent);letter-spacing:-0.5px;}
+.login-logo p{font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.role-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1.5rem;}
+.role-btn{
+  padding:10px 6px;border-radius:var(--rs);border:2px solid var(--border);
+  background:var(--bg);cursor:pointer;text-align:center;transition:all 0.15s;
+}
+.role-btn.active{border-color:var(--accent);background:var(--accent-lt);}
+.role-btn-icon{font-size:20px;margin-bottom:4px;}
+.role-btn-label{font-size:11px;font-weight:600;color:var(--muted);}
+.role-btn.active .role-btn-label{color:var(--accent);}
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;}
+.form-group input,.form-group select{
+  width:100%;padding:11px 14px;border-radius:var(--rs);border:1.5px solid var(--border);
+  font-size:14px;background:var(--bg);color:var(--text);outline:none;transition:border 0.15s;
+}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent);background:#fff;}
+.btn-login{
+  width:100%;padding:13px;border-radius:var(--rs);border:none;
+  background:var(--accent);color:#fff;font-size:15px;font-weight:700;cursor:pointer;
+  transition:opacity 0.15s;letter-spacing:0.3px;
+}
+.btn-login:hover{opacity:0.9;}
+.login-hint{font-size:11px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.6;}
+
+/* ── APP SHELL ── */
+#app{display:none;}
+nav{
+  background:var(--accent);height:54px;display:flex;align-items:center;
+  padding:0 1.5rem;gap:16px;position:sticky;top:0;z-index:200;
+}
+.nav-brand{color:#fff;font-size:16px;font-weight:800;letter-spacing:-0.3px;display:flex;align-items:center;gap:8px;}
+.nav-brand span{background:rgba(255,255,255,0.2);font-size:9px;padding:2px 7px;border-radius:4px;letter-spacing:1px;font-weight:700;}
+.nav-tabs{display:flex;gap:2px;flex:1;overflow-x:auto;}
+.nav-tab{
+  color:rgba(255,255,255,0.65);padding:6px 14px;border-radius:6px;
+  font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all 0.15s;border:none;background:none;
+}
+.nav-tab:hover,.nav-tab.active{background:rgba(255,255,255,0.18);color:#fff;}
+.nav-user{color:rgba(255,255,255,0.75);font-size:12px;margin-left:auto;display:flex;align-items:center;gap:8px;white-space:nowrap;}
+.nav-logout{background:rgba(255,255,255,0.15);border:none;color:#fff;padding:5px 12px;border-radius:5px;font-size:12px;cursor:pointer;transition:all 0.15s;}
+.nav-logout:hover{background:rgba(255,255,255,0.28);}
+
+/* ── PAGES ── */
+.page{display:none;padding:1.5rem;max-width:1280px;margin:0 auto;}
+.page.active{display:block;}
+.ph{margin-bottom:1.5rem;}
+.ph h2{font-size:20px;font-weight:800;margin-bottom:3px;letter-spacing:-0.3px;}
+.ph p{font-size:13px;color:var(--muted);}
+
+/* ── URL BAR ── */
+.url-bar{
+  background:#111;border-radius:6px;padding:7px 12px;font-family:monospace;
+  font-size:12px;color:#7DD3A8;margin-bottom:1.25rem;display:flex;align-items:center;gap:6px;
+}
+.url-seg{color:#fff;}.url-active{color:#A8E6C0;font-weight:700;}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);}
+.card-pad{padding:1.25rem;}
+
+/* ── STAT GRID ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:1.5rem;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;box-shadow:var(--shadow);}
+.stat-ic{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:10px;}
+.stat-num{font-size:26px;font-weight:800;line-height:1;margin-bottom:3px;}
+.stat-lbl{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;}
+
+/* ── TABLE ── */
+.tbl-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);}
+table{width:100%;border-collapse:collapse;}
+th{background:var(--bg);padding:9px 14px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);}
+td{padding:11px 14px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg);}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;}
+.badge-active{background:var(--success-lt);color:var(--success);}
+.badge-low{background:var(--warn-lt);color:var(--warn);}
+.badge-zero{background:var(--danger-lt);color:var(--danger);}
+.badge-info{background:var(--accent-lt);color:var(--accent);}
+
+/* ── CANTEEN MENU CARDS ── */
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:1.5rem;}
+.menu-item{
+  background:var(--surface);border:2px solid var(--border);border-radius:var(--r);
+  padding:1.25rem;text-align:center;cursor:pointer;transition:all 0.15s;box-shadow:var(--shadow);
+}
+.menu-item:hover{border-color:var(--accent2);transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,0.1);}
+.menu-item.selected{border-color:var(--accent);background:var(--accent-lt);}
+.menu-icon{font-size:36px;margin-bottom:8px;}
+.menu-name{font-size:15px;font-weight:700;margin-bottom:4px;}
+.menu-price{font-size:20px;font-weight:800;color:var(--accent);}
+
+/* ── SCAN AREA ── */
+.scan-area{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:2rem;text-align:center;box-shadow:var(--shadow);max-width:460px;
+}
+.scan-big-icon{font-size:52px;margin-bottom:1rem;}
+.scan-input{
+  width:100%;padding:14px;border-radius:var(--rs);border:2px solid var(--border);
+  font-size:19px;text-align:center;font-weight:700;font-family:monospace;
+  letter-spacing:3px;color:var(--text);background:var(--bg);outline:none;transition:border 0.15s;
+}
+.scan-input:focus{border-color:var(--accent);background:#fff;}
+.btn{
+  padding:10px 20px;border-radius:var(--rs);border:1px solid var(--border);
+  background:var(--surface);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;
+}
+.btn:hover{background:var(--bg);}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn-primary:hover{opacity:0.88;}
+.btn-danger{background:var(--danger);color:#fff;border-color:var(--danger);}
+.btn-full{width:100%;padding:13px;font-size:15px;}
+.btn-warn{background:var(--warn);color:#fff;border-color:var(--warn);}
+
+/* ── RESULT BOXES ── */
+.result-ok{background:var(--success-lt);border:1px solid #B2DFC0;border-radius:var(--r);padding:1.5rem;text-align:center;}
+.result-fail{background:var(--danger-lt);border:1px solid #F0BEBE;border-radius:var(--r);padding:1.5rem;text-align:center;}
+.result-icon{font-size:38px;margin-bottom:8px;}
+.result-title{font-size:17px;font-weight:800;margin-bottom:4px;}
+.result-sub{font-size:13px;color:var(--muted);}
+
+/* ── BALANCE BAR ── */
+.balance-bar-wrap{margin:8px 0;}
+.balance-bar-track{height:8px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--border);}
+.balance-bar-fill{height:100%;border-radius:99px;transition:width 0.4s;}
+
+/* ── QR CARD (employee view) ── */
+.qr-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.5rem;text-align:center;max-width:280px;box-shadow:var(--shadow);
+}
+.qr-card-name{font-size:18px;font-weight:800;margin:10px 0 2px;}
+.qr-card-id{font-size:11px;color:var(--muted);font-family:monospace;margin-bottom:10px;}
+.qr-canteen-band{padding:8px 14px;border-radius:6px;font-size:13px;font-weight:700;margin:10px 0;}
+.qr-balance{font-size:28px;font-weight:800;margin:8px 0 2px;}
+.qr-balance-lbl{font-size:11px;color:var(--muted);}
+
+/* ── ADMIN FORMS ── */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+@media(max-width:540px){.form-row{grid-template-columns:1fr;}}
+
+/* ── CANTEEN CHIPS ── */
+.canteen-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
+.canteen-chip{
+  padding:6px 14px;border-radius:99px;font-size:12px;font-weight:600;
+  border:1.5px solid var(--border);cursor:pointer;background:var(--surface);color:var(--muted);transition:all 0.15s;
+}
+.canteen-chip.active{color:#fff;}
+
+/* ── TRANSACTION ITEM ── */
+.txn-item{
+  display:flex;align-items:center;gap:12px;padding:12px 0;
+  border-bottom:1px solid var(--border);
+}
+.txn-item:last-child{border-bottom:none;}
+.txn-ic{width:38px;height:38px;border-radius:50%;background:var(--accent-lt);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.txn-info{flex:1;}
+.txn-item-name{font-size:14px;font-weight:600;}
+.txn-meta{font-size:11px;color:var(--muted);margin-top:1px;}
+.txn-amt{font-size:16px;font-weight:800;color:var(--danger);}
+
+/* ── MODAL OVERLAY ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;
+  display:flex;align-items:center;justify-content:center;padding:1rem;
+}
+.modal-box{
+  background:var(--surface);border-radius:14px;padding:2rem;
+  width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,0.25);
+  position:relative;
+}
+.modal-title{font-size:18px;font-weight:800;margin-bottom:4px;}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);}
+
+/* ── REPORT CHART ── */
+.bar-chart{display:flex;align-items:flex-end;gap:10px;height:120px;padding:0 0 8px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.bar-fill-v{border-radius:4px 4px 0 0;width:100%;transition:height 0.4s;min-height:4px;}
+.bar-lbl{font-size:10px;color:var(--muted);font-weight:600;}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:1.5rem;right:1.5rem;
+  background:var(--accent);color:#fff;
+  padding:11px 18px;border-radius:8px;font-size:13px;font-weight:600;
+  box-shadow:0 4px 20px rgba(0,0,0,0.2);
+  transform:translateY(80px);opacity:0;transition:all 0.3s;z-index:999;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+
+.sep{height:1px;background:var(--border);margin:1.25rem 0;}
+.sec-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;}
+.flex-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;}
+.chip-canteen{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">🏭</div>
+      <h1>CanteenPass</h1>
+      <p>Industrial Meal Management System</p>
+    </div>
+    <div class="role-btns">
+      <div class="role-btn active" onclick="selectRole('admin')"><div class="role-btn-icon">🛡️</div><div class="role-btn-label">Admin</div></div>
+      <div class="role-btn" onclick="selectRole('staff')"><div class="role-btn-icon">🧑‍🍳</div><div class="role-btn-label">Canteen Staff</div></div>
+      <div class="role-btn" onclick="selectRole('employee')"><div class="role-btn-icon">👷</div><div class="role-btn-label">Employee</div></div>
+    </div>
+    <div class="form-group">
+      <label>Login ID</label>
+      <input id="login-id" placeholder="Enter ID..." onkeydown="if(event.key==='Enter') doLogin()" />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input id="login-pass" type="password" placeholder="Enter password..." onkeydown="if(event.key==='Enter') doLogin()" />
+    </div>
+    <button class="btn-login" onclick="doLogin()">Sign In →</button>
+    <div class="login-hint" id="login-hint">
+      Admin: admin / admin123 &nbsp;|&nbsp; Staff: staff1 / 1234 (Canteen A)<br/>
+      Employee: 43556 / 1234 (SUNIL)
+    </div>
+    <div id="login-err" style="color:var(--danger);font-size:12px;text-align:center;margin-top:8px;"></div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+  <nav>
+    <div class="nav-brand">🏭 <span>PASS</span> CanteenPass</div>
+    <div class="nav-tabs" id="nav-tabs"></div>
+    <div class="nav-user" id="nav-user"></div>
+  </nav>
+
+  <!-- ADMIN PAGES -->
+  <div class="page" id="pg-admin-dashboard">
+    <div class="url-bar">🔒 <span class="url-seg">canteenpass.local / </span><span class="url-active">admin / dashboard</span></div>
+    <div class="ph"><h2>Admin Dashboard</h2><p>System overview across all 7 canteens</p></div>
+    <div class="stat-grid" id="admin-stats"></div>
+    <div class="flex-row">
+      <div style="flex:2;min-width:280px;">
+        <div class="sec-label">Canteen Summary</div>
+        <div class="tbl-wrap"><table><thead><tr><th>Canteen</th><th>Active</th><th>Total Balance</th><th>Meals Today</th><th>Status</th></tr></thead><tbody id="admin-canteen-tbl"></tbody></table></div>
+      </div>
+      <div style="flex:1;min-width:220px;">
+        <div class="sec-label">Today's Sales (₹)</div>
+        <div class="card card-pad"><div class="bar-chart" id="admin-bar-chart"></div></div>
+      </div>
+    </div>
+    <div class="sep"></div>
+    <div class="sec-label">Recent Transactions</div>
+    <div class="tbl-wrap"><table><thead><tr><th>Time</th><th>Employee</th><th>Canteen</th><th>Item</th><th>Amount</th><th>Balance After</th></tr></thead><tbody id="admin-txn-tbl"></tbody></table></div>
+  </div>
+
+  <div class="page" id="pg-admin-employees">
+    <div class="url-bar">🔒 <span class="url-seg">canteenpass.local / </span><span class="url-active">admin / employees</span></div>
+    <div class="ph"><h2>Employees</h2><p>Manage all registered employees and their coupons</p></div>
+    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;">
+      <input id="emp-search" placeholder="Search by name or Emp.No..." style="flex:1;min-width:200px;padding:9px 12px;border-radius:var(--rs);border:1px solid var(--border);font-size:13px;background:var(--surface);color:var(--text);outline:none;" oninput="renderEmployeeTable()" />
+      <select id="emp-filter-c" style="padding:9px 12px;border-radius:var(--rs);border:1px solid var(--border);font-size:13px;background:var(--surface);color:var(--text);outline:none;" onchange="renderEmployeeTable()">
+        <option value="">All Canteens</option>
+      </select>
+    </div>
+    <div class="tbl-wrap"><table><thead><tr><th>Emp No</th><th>Name</th><th>Dept</th><th>Cadre</th><th>Canteen</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead><tbody id="emp-tbl"></tbody></table></div>
+  </div>
+
+  <div class="page" id="pg-admin-issue">
+    <div class="url-bar">🔒 <span class="url-seg">canteenpass.local / </span><span class="url-active">admin / issue-coupon</span></div>
+    <div class="ph"><h2>Issue / Recharge Coupon</h2><p>Generate or top-up prepaid balance for an employee</p></div>
+    <div class="flex-row">
+      <div class="card card-pad" style="flex:1;min-width:280px;max-width:480px;">
+        <div class="form-row">
+          <div class="form-group"><label>Employee No.</label><select id="i-emp" onchange="onIssueEmpChange()"><option value="">Select employee...</option></select></div>
+          <div class="form-group"><label>Assign Canteen</label><select id="i-canteen"><option value="">Select canteen...</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Load Balance (₹)</label><input id="i-bal" type="number" value="500" min="50" max="5000" step="50"/></div>
+          <div class="form-group"><label>Valid (days)</label><input id="i-days" type="number" value="30" min="1" max="90"/></div>
+        </div>
+        <div id="i-emp-preview" style="display:none;" class="card" style="background:var(--bg);">
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;" id="i-emp-info"></div>
+        </div>
+        <div class="sep"></div>
+        <button class="btn btn-primary btn-full" onclick="issueCoupon()">Generate Coupon & QR Code</button>
+      </div>
+      <div style="flex:1;min-width:240px;">
+        <div class="sec-label">Generated Card</div>
+        <div id="issue-preview-box">
+          <div class="card card-pad" style="text-align:center;color:var(--muted);max-width:280px;">
+            <div style="font-size:36px;margin-bottom:8px;">🪪</div>
+            <div style="font-size:13px;">Fill the form and click generate</div>
+          </div>
+        </div>
+        <div id="issue-print-btn" style="margin-top:10px;display:none;">
+          <button class="btn btn-primary" onclick="window.print()">🖨 Print Card</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="pg-admin-reports">
+    <div class="url-bar">🔒 <span class="url-seg">canteenpass.local / </span><span class="url-active">admin / reports</span></div>
+    <div class="ph"><h2>Reports</h2><p>Transaction and usage analytics</p></div>
+    <div class="stat-grid" id="report-stats"></div>
+    <div class="flex-row" style="margin-bottom:1.5rem;">
+      <div style="flex:1;min-width:220px;">
+        <div class="sec-label">Sales by Menu Item</div>
+        <div class="card card-pad" id="item-breakdown"></div>
+      </div>
+      <div style="flex:2;min-width:280px;">
+        <div class="sec-label">Sales by Canteen (₹)</div>
+        <div class="card card-pad"><div class="bar-chart" id="canteen-bar"></div></div>
+      </div>
+    </div>
+    <div class="sec-label">All Transactions</div>
+    <div class="tbl-wrap"><table><thead><tr><th>Txn ID</th><th>Date & Time</th><th>Emp No</th><th>Name</th><th>Canteen</th><th>Item</th><th>Amt (₹)</th><th>Bal After</th></tr></thead><tbody id="all-txn-tbl"></tbody></table></div>
+  </div>
+
+  <!-- STAFF PAGES -->
+  <div class="page" id="pg-staff-pos">
+    <div class="url-bar">🔒 <span class="url-seg">canteenpass.local / </span><span class="url-active">staff / point-of-sale</span></div>
+    <div class="ph"><h2 id="staff-canteen-title">Point of Sale</h2><p>Select item, then scan worker QR code</p></div>
+    <div class="sec-label">Step 1 — Select Menu Item</div>
+    <div class="menu-grid" id="menu-grid"></div>
+    <div class="sep"></div>
+    <div class="sec-label">Step 2 — Scan Worker QR / Enter ID</div>
+    <div class="flex-row">
+      <div class="scan-area">
+        <div class="scan-big-icon">📲</div>
+        <div style="font-size:15px;font-weight:700;margin-bottom:4px;">Enter Employee No.</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:1rem;">or scan QR code on worker card</div>
+        <input class="scan-input" id="pos-scan-input" placeholder="e.g. 43556" onkeydown="if(event.key==='Enter') processTransaction()" oninput="clearPosResult()" />
+        <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="processTransaction()">✓ Process Transaction</button>
+      </div>
+      <div id="pos-result" style="flex:1;min-width:220px;"></div>
+    </div>
+  </div>
+
+  <div class="page" id="pg-staff-history">
+    <div class="url-bar">🔒 <span class="url-seg">canteenpass.local / </span><span class="url-active">staff / history</span></div>
+    <div class="ph"><h2>Today's Transactions</h2><p id="staff-hist-sub"></p></div>
+    <div class="stat-grid" id="staff-stats"></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Time</th><th>Emp No</th><th>Name</th><th>Item</th><th>Amount</th><th>Bal After</th></tr></thead><tbody id="staff-txn-tbl"></tbody></table></div>
+  </div>
+
+  <!-- EMPLOYEE PAGES -->
+  <div class="page" id="pg-emp-wallet">
+    <div class="url-bar">🔒 <span class="url-seg">canteenpass.local / </span><span class="url-active">employee / wallet</span></div>
+    <div class="ph"><h2 id="emp-greeting">My Wallet</h2><p>Your prepaid meal balance and QR card</p></div>
+    <div class="flex-row">
+      <div>
+        <div class="sec-label">Your Canteen Card</div>
+        <div class="qr-card" id="emp-qr-card">
+          <div id="emp-qr-code"></div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:240px;">
+        <div class="sec-label">Balance Overview</div>
+        <div class="stat-grid" id="emp-stats" style="margin-bottom:1rem;"></div>
+        <div class="card card-pad">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">Balance remaining</div>
+          <div class="balance-bar-wrap" id="emp-bal-bar"></div>
+          <div id="emp-can-afford" style="margin-top:12px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="pg-emp-history">
+    <div class="url-bar">🔒 <span class="url-seg">canteenpass.local / </span><span class="url-active">employee / transactions</span></div>
+    <div class="ph"><h2>Transaction History</h2><p id="emp-hist-sub"></p></div>
+    <div id="emp-txn-list" class="card card-pad"></div>
+  </div>
+</div>
+
+<!-- MODAL for employee detail -->
+<div class="modal-overlay" id="modal" style="display:none;" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  DATA LAYER
+// ══════════════════════════════════════════════════════════════
+const CANTEENS = [
+  {id:'A',name:'Canteen A',loc:'Gate 1 – North Block',color:'#1B4FCC',lt:'#E8EEFB',emoji:'🔵'},
+  {id:'B',name:'Canteen B',loc:'Gate 2 – South Block',color:'#1A7A3A',lt:'#E6F4EB',emoji:'🟢'},
+  {id:'C',name:'Canteen C',loc:'Block 3 – East Wing', color:'#C45C0A',lt:'#FDF0E6',emoji:'🟠'},
+  {id:'D',name:'Canteen D',loc:'Block 4 – West Wing', color:'#B01C1C',lt:'#FBEAEA',emoji:'🔴'},
+  {id:'E',name:'Canteen E',loc:'Unit 5 – Production', color:'#5B3DBF',lt:'#EEE9FB',emoji:'🟣'},
+  {id:'F',name:'Canteen F',loc:'Unit 6 – Warehouse',  color:'#A0267A',lt:'#F9E8F4',emoji:'🩷'},
+  {id:'G',name:'Canteen G',loc:'Admin Block – Central',color:'#0E6B6B',lt:'#E3F4F4',emoji:'🩵'},
+];
+
+const MENU = [
+  {id:'tea',     name:'Tea',       price:5,  icon:'☕',  desc:'Hot masala tea'},
+  {id:'bfast',   name:'Breakfast', price:6,  icon:'🍽️', desc:'Poha / Upma / Idli'},
+  {id:'thali',   name:'Thali',     price:28, icon:'🍛',  desc:'Full meal – Dal, Roti, Rice, Sabzi'},
+];
+
+let EMPLOYEES = [
+  {empNo:'43556',name:'SUNIL',        dept:'GUEST HOUSE',loc:'BANSWARA',cadre:'CIVIL WORKER'},
+  {empNo:'43557',name:'LAXMAN LABANA',dept:'GUEST HOUSE',loc:'BANSWARA',cadre:'CIVIL WORKER'},
+  {empNo:'43558',name:'DINESH',       dept:'GUEST HOUSE',loc:'BANSWARA',cadre:'CIVIL WORKER'},
+  {empNo:'43559',name:'ARVIND MERAVAT',dept:'GUEST HOUSE',loc:'BANSWARA',cadre:'CIVIL WORKER'},
+  {empNo:'43560',name:'KANTILAL',     dept:'GUEST HOUSE',loc:'BANSWARA',cadre:'CIVIL WORKER'},
+  {empNo:'43561',name:'RAMESH PATEL', dept:'PRODUCTION', loc:'BANSWARA',cadre:'SKILLED WORKER'},
+  {empNo:'43562',name:'GOVIND SHARMA',dept:'PRODUCTION', loc:'BANSWARA',cadre:'SKILLED WORKER'},
+  {empNo:'43563',name:'PRIYA DEVI',   dept:'ADMIN',      loc:'BANSWARA',cadre:'CLERK'},
+  {empNo:'43564',name:'MOHAN LAL',    dept:'WAREHOUSE',  loc:'BANSWARA',cadre:'CIVIL WORKER'},
+  {empNo:'43565',name:'SUNITA BAI',   dept:'CANTEEN',    loc:'BANSWARA',cadre:'HELPER'},
+];
+
+// Coupons: empNo → {canteenId, balance, initialBalance, expiry, couponId}
+let COUPONS = {
+  '43556': {canteenId:'A', balance:472, initialBalance:500, expiry:'2026-07-23', couponId:'CP-A-43556'},
+  '43557': {canteenId:'A', balance:350, initialBalance:500, expiry:'2026-07-23', couponId:'CP-A-43557'},
+  '43558': {canteenId:'B', balance:220, initialBalance:300, expiry:'2026-07-10', couponId:'CP-B-43558'},
+  '43559': {canteenId:'C', balance:0,   initialBalance:200, expiry:'2026-06-30', couponId:'CP-C-43559'},
+  '43560': {canteenId:'D', balance:148, initialBalance:500, expiry:'2026-07-23', couponId:'CP-D-43560'},
+  '43561': {canteenId:'E', balance:400, initialBalance:500, expiry:'2026-07-23', couponId:'CP-E-43561'},
+  '43562': {canteenId:'F', balance:75,  initialBalance:500, expiry:'2026-07-23', couponId:'CP-F-43562'},
+  '43563': {canteenId:'G', balance:320, initialBalance:500, expiry:'2026-07-23', couponId:'CP-G-43563'},
+  '43564': {canteenId:'A', balance:500, initialBalance:500, expiry:'2026-07-23', couponId:'CP-A-43564'},
+};
+
+let TRANSACTIONS = [
+  {txnId:'TXN001',empNo:'43556',canteenId:'A',item:'Thali',    amount:28, balAfter:472, dt:'2026-06-23T10:15:00'},
+  {txnId:'TXN002',empNo:'43557',canteenId:'A',item:'Breakfast',amount:6,  balAfter:494, dt:'2026-06-23T09:45:00'},
+  {txnId:'TXN003',empNo:'43558',canteenId:'B',item:'Tea',      amount:5,  balAfter:295, dt:'2026-06-23T08:30:00'},
+  {txnId:'TXN004',empNo:'43560',canteenId:'D',item:'Thali',    amount:28, balAfter:148, dt:'2026-06-23T12:05:00'},
+  {txnId:'TXN005',empNo:'43562',canteenId:'F',item:'Tea',      amount:5,  balAfter:75,  dt:'2026-06-23T07:55:00'},
+  {txnId:'TXN006',empNo:'43563',canteenId:'G',item:'Thali',    amount:28, balAfter:320, dt:'2026-06-23T13:00:00'},
+];
+
+// Auth users
+const USERS = {
+  admin:  [{id:'admin',  pass:'admin123', role:'admin',    name:'Admin'}],
+  staff:  [
+    {id:'staff1',pass:'1234',role:'staff',name:'Ramesh (Canteen A)',canteenId:'A'},
+    {id:'staff2',pass:'1234',role:'staff',name:'Meena (Canteen B)', canteenId:'B'},
+    {id:'staff3',pass:'1234',role:'staff',name:'Gopal (Canteen C)', canteenId:'C'},
+    {id:'staff4',pass:'1234',role:'staff',name:'Sunita (Canteen D)',canteenId:'D'},
+    {id:'staff5',pass:'1234',role:'staff',name:'Ajay (Canteen E)',  canteenId:'E'},
+    {id:'staff6',pass:'1234',role:'staff',name:'Priya (Canteen F)', canteenId:'F'},
+    {id:'staff7',pass:'1234',role:'staff',name:'Balu (Canteen G)',  canteenId:'G'},
+  ],
+};
+
+// ══════════════════════════════════════════════════════════════
+//  SESSION
+// ══════════════════════════════════════════════════════════════
+let SESSION = null;
+let selectedRole = 'admin';
+let selectedMenuItem = null;
+let txnCounter = 7;
+
+function getC(id){ return CANTEENS.find(c=>c.id===id); }
+function getEmp(empNo){ return EMPLOYEES.find(e=>e.empNo===empNo); }
+function getCoupon(empNo){ return COUPONS[empNo]; }
+
+// ══════════════════════════════════════════════════════════════
+//  LOGIN
+// ══════════════════════════════════════════════════════════════
+function selectRole(r){
+  selectedRole = r;
+  document.querySelectorAll('.role-btn').forEach((el,i)=>el.classList.toggle('active',['admin','staff','employee'][i]===r));
+  const hints = {
+    admin:'Admin: admin / admin123',
+    staff:'Staff: staff1–staff7 / 1234 (Canteen A–G)',
+    employee:'Employee: 43556–43565 / 1234'
+  };
+  document.getElementById('login-hint').textContent = hints[r];
+  document.getElementById('login-id').value='';
+  document.getElementById('login-pass').value='';
+}
+
+function doLogin(){
+  const id = document.getElementById('login-id').value.trim();
+  const pass = document.getElementById('login-pass').value.trim();
+  const err = document.getElementById('login-err');
+  err.textContent='';
+
+  if(selectedRole==='admin'){
+    const u = USERS.admin.find(u=>u.id===id&&u.pass===pass);
+    if(!u){err.textContent='Invalid admin credentials';return;}
+    SESSION={...u};
+    launchApp();
+  } else if(selectedRole==='staff'){
+    const u = USERS.staff.find(u=>u.id===id&&u.pass===pass);
+    if(!u){err.textContent='Invalid staff credentials';return;}
+    SESSION={...u};
+    launchApp();
+  } else {
+    // employee: empNo + pass 1234
+    const emp = EMPLOYEES.find(e=>e.empNo===id);
+    if(!emp||pass!=='1234'){err.textContent='Invalid employee credentials';return;}
+    const cpn = getCoupon(id);
+    if(!cpn){err.textContent='No coupon assigned. Contact Admin.';return;}
+    SESSION={role:'employee', empNo:id, name:emp.name, canteenId:cpn.canteenId};
+    launchApp();
+  }
+}
+
+function doLogout(){
+  SESSION=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  selectedMenuItem=null;
+  document.getElementById('login-id').value='';
+  document.getElementById('login-pass').value='';
+}
+
+// ══════════════════════════════════════════════════════════════
+//  APP LAUNCH
+// ══════════════════════════════════════════════════════════════
+function launchApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  buildNav();
+  if(SESSION.role==='admin') showPage('admin-dashboard');
+  else if(SESSION.role==='staff') showPage('staff-pos');
+  else showPage('emp-wallet');
+}
+
+function buildNav(){
+  const tabs = {
+    admin:[
+      {id:'admin-dashboard',label:'Dashboard'},
+      {id:'admin-employees',label:'Employees'},
+      {id:'admin-issue',    label:'Issue Coupon'},
+      {id:'admin-reports',  label:'Reports'},
+    ],
+    staff:[
+      {id:'staff-pos',     label:'Point of Sale'},
+      {id:'staff-history', label:'Today\'s History'},
+    ],
+    employee:[
+      {id:'emp-wallet',  label:'My Wallet & QR'},
+      {id:'emp-history', label:'My Transactions'},
+    ],
+  }[SESSION.role]||[];
+
+  document.getElementById('nav-tabs').innerHTML = tabs.map(t=>
+    `<button class="nav-tab" id="tab-${t.id}" onclick="showPage('${t.id}')">${t.label}</button>`
+  ).join('');
+  document.getElementById('nav-user').innerHTML =
+    `<span>${SESSION.name||SESSION.empNo}</span><button class="nav-logout" onclick="doLogout()">Sign out</button>`;
+}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pg-'+id)?.classList.add('active');
+  document.getElementById('tab-'+id)?.classList.add('active');
+  window.location.hash = id;
+  renders[id]?.();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  RENDER FUNCTIONS
+// ══════════════════════════════════════════════════════════════
+const renders = {
+  'admin-dashboard': renderAdminDashboard,
+  'admin-employees': renderAdminEmployees,
+  'admin-issue':     renderAdminIssue,
+  'admin-reports':   renderReports,
+  'staff-pos':       renderStaffPOS,
+  'staff-history':   renderStaffHistory,
+  'emp-wallet':      renderEmpWallet,
+  'emp-history':     renderEmpHistory,
+};
+
+// ── ADMIN DASHBOARD ──
+function renderAdminDashboard(){
+  const totalBal = Object.values(COUPONS).reduce((a,c)=>a+c.balance,0);
+  const active = Object.values(COUPONS).filter(c=>c.balance>0).length;
+  const todayTxn = TRANSACTIONS.filter(t=>t.dt.startsWith('2026-06-23'));
+  const todaySales = todayTxn.reduce((a,t)=>a+t.amount,0);
+
+  document.getElementById('admin-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-ic" style="background:#E8EEFB;">🏭</div><div class="stat-num">${EMPLOYEES.length}</div><div class="stat-lbl">Employees</div></div>
+    <div class="stat-card"><div class="stat-ic" style="background:var(--accent-lt);">🎫</div><div class="stat-num">${Object.keys(COUPONS).length}</div><div class="stat-lbl">Active Coupons</div></div>
+    <div class="stat-card"><div class="stat-ic" style="background:var(--success-lt);">💰</div><div class="stat-num">₹${totalBal}</div><div class="stat-lbl">Total Balance</div></div>
+    <div class="stat-card"><div class="stat-ic" style="background:var(--warn-lt);">🍽️</div><div class="stat-num">₹${todaySales}</div><div class="stat-lbl">Today's Sales</div></div>
+  `;
+
+  document.getElementById('admin-canteen-tbl').innerHTML = CANTEENS.map(c=>{
+    const coupons = Object.entries(COUPONS).filter(([,v])=>v.canteenId===c.id);
+    const totalBal = coupons.reduce((a,[,v])=>a+v.balance,0);
+    const todayC = TRANSACTIONS.filter(t=>t.canteenId===c.id&&t.dt.startsWith('2026-06-23'));
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:8px;"><span style="width:10px;height:10px;border-radius:50%;background:${c.color};display:inline-block;"></span><strong>${c.name}</strong><span style="font-size:11px;color:var(--muted);">${c.loc}</span></div></td>
+      <td>${coupons.filter(([,v])=>v.balance>0).length}</td>
+      <td><strong>₹${totalBal}</strong></td>
+      <td>${todayC.length} meals</td>
+      <td><span class="badge badge-active">Active</span></td>
+    </tr>`;
+  }).join('');
+
+  // Bar chart
+  const canteenSales = CANTEENS.map(c=>({
+    c, val: TRANSACTIONS.filter(t=>t.canteenId===c.id&&t.dt.startsWith('2026-06-23')).reduce((a,t)=>a+t.amount,0)
+  }));
+  const maxV = Math.max(...canteenSales.map(x=>x.val),1);
+  document.getElementById('admin-bar-chart').innerHTML = canteenSales.map(({c,val})=>
+    `<div class="bar-col">
+      <div style="font-size:10px;color:var(--muted);font-weight:700;">₹${val}</div>
+      <div class="bar-fill-v" style="height:${Math.round(val/maxV*90)}px;background:${c.color};"></div>
+      <div class="bar-lbl">${c.id}</div>
+    </div>`).join('');
+
+  document.getElementById('admin-txn-tbl').innerHTML = [...TRANSACTIONS].reverse().slice(0,8).map(t=>{
+    const emp=getEmp(t.empNo)||{name:t.empNo}; const c=getC(t.canteenId);
+    const mi=MENU.find(m=>m.name===t.item);
+    return `<tr>
+      <td style="color:var(--muted);font-size:12px;">${fmtTime(t.dt)}</td>
+      <td><strong>${emp.name}</strong><br/><span style="font-size:11px;color:var(--muted);">${t.empNo}</span></td>
+      <td><div class="chip-canteen" style="background:${c.lt};color:${c.color};">${c.emoji} ${c.name}</div></td>
+      <td>${mi?.icon||'🍽️'} ${t.item}</td>
+      <td><strong style="color:var(--danger);">₹${t.amount}</strong></td>
+      <td>₹${t.balAfter}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── ADMIN EMPLOYEES ──
+function renderAdminEmployees(){
+  const sel = document.getElementById('emp-filter-c');
+  if(sel.options.length<=1) CANTEENS.forEach(c=>sel.add(new Option(`${c.emoji} ${c.name}`,c.id)));
+  renderEmployeeTable();
+}
+function renderEmployeeTable(){
+  const q=(document.getElementById('emp-search')?.value||'').toLowerCase();
+  const cf=document.getElementById('emp-filter-c')?.value||'';
+  const rows = EMPLOYEES.filter(e=>{
+    const cpn=COUPONS[e.empNo];
+    const matchQ=!q||e.name.toLowerCase().includes(q)||e.empNo.includes(q);
+    const matchC=!cf||cpn?.canteenId===cf;
+    return matchQ&&matchC;
+  });
+  document.getElementById('emp-tbl').innerHTML = rows.map(e=>{
+    const cpn=COUPONS[e.empNo];
+    const c=cpn?getC(cpn.canteenId):null;
+    const pct=cpn?Math.round(cpn.balance/cpn.initialBalance*100):0;
+    const badgeCls=!cpn?'badge-info':cpn.balance===0?'badge-zero':cpn.balance<50?'badge-low':'badge-active';
+    const badgeTxt=!cpn?'No Coupon':cpn.balance===0?'Exhausted':cpn.balance<50?'Low Balance':'Active';
+    return `<tr>
+      <td><code style="font-size:12px;">${e.empNo}</code></td>
+      <td><strong>${e.name}</strong></td>
+      <td>${e.dept}</td>
+      <td><span style="font-size:11px;color:var(--muted);">${e.cadre}</span></td>
+      <td>${c?`<div class="chip-canteen" style="background:${c.lt};color:${c.color};">${c.emoji} ${c.name}</div>`:'—'}</td>
+      <td>${cpn?`<strong>₹${cpn.balance}</strong> <span style="font-size:11px;color:var(--muted);">/ ₹${cpn.initialBalance}</span>`:'—'}</td>
+      <td><span class="badge ${badgeCls}">${badgeTxt}</span></td>
+      <td style="display:flex;gap:6px;">
+        <button class="btn" style="font-size:11px;padding:5px 10px;" onclick="viewEmpModal('${e.empNo}')">View</button>
+        <button class="btn btn-primary" style="font-size:11px;padding:5px 10px;" onclick="presetIssue('${e.empNo}')">Recharge</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function viewEmpModal(empNo){
+  const e=getEmp(empNo); const cpn=COUPONS[empNo]; const c=cpn?getC(cpn.canteenId):null;
+  const txns=TRANSACTIONS.filter(t=>t.empNo===empNo);
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-title">${e.name}</div>
+    <div class="modal-sub">Employee No. ${empNo} · ${e.dept} · ${e.cadre}</div>
+    ${cpn&&c?`
+      <div style="background:${c.lt};border-radius:8px;padding:12px;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;">
+        <div><div style="font-size:12px;color:${c.color};font-weight:700;">${c.emoji} ${c.name}</div><div style="font-size:22px;font-weight:800;margin-top:2px;">₹${cpn.balance}</div><div style="font-size:11px;color:var(--muted);">Balance remaining</div></div>
+        <div style="text-align:right;font-size:11px;color:var(--muted);">Expires:<br/>${cpn.expiry}</div>
+      </div>`:
+      `<div class="badge badge-info" style="margin-bottom:1rem;">No coupon assigned</div>`}
+    <div class="sec-label">Transaction History (${txns.length})</div>
+    ${txns.length?`<div style="max-height:200px;overflow-y:auto;">`+txns.map(t=>{
+      const mi=MENU.find(m=>m.name===t.item);
+      return `<div class="txn-item"><div class="txn-ic">${mi?.icon||'🍽️'}</div><div class="txn-info"><div class="txn-item-name">${t.item}</div><div class="txn-meta">${fmtTime(t.dt)} · ${getC(t.canteenId)?.name}</div></div><div class="txn-amt">₹${t.amount}</div></div>`;
+    }).join('')+'</div>':`<div style="color:var(--muted);font-size:13px;">No transactions yet</div>`}`;
+  document.getElementById('modal').style.display='flex';
+}
+function closeModal(){ document.getElementById('modal').style.display='none'; }
+
+function presetIssue(empNo){
+  closeModal();
+  showPage('admin-issue');
+  setTimeout(()=>{
+    const sel=document.getElementById('i-emp');
+    if(sel) sel.value=empNo;
+    onIssueEmpChange();
+  },100);
+}
+
+// ── ADMIN ISSUE ──
+function renderAdminIssue(){
+  const esel=document.getElementById('i-emp');
+  if(!esel) return;
+  esel.innerHTML='<option value="">Select employee...</option>'+
+    EMPLOYEES.map(e=>`<option value="${e.empNo}">${e.empNo} – ${e.name}</option>`).join('');
+  const csel=document.getElementById('i-canteen');
+  csel.innerHTML='<option value="">Select canteen...</option>'+
+    CANTEENS.map(c=>`<option value="${c.id}">${c.emoji} ${c.name} (${c.loc})</option>`).join('');
+  document.getElementById('issue-preview-box').innerHTML=`<div class="card card-pad" style="text-align:center;color:var(--muted);max-width:280px;"><div style="font-size:36px;margin-bottom:8px;">🪪</div><div style="font-size:13px;">Fill the form and click generate</div></div>`;
+  document.getElementById('issue-print-btn').style.display='none';
+}
+function onIssueEmpChange(){
+  const empNo=document.getElementById('i-emp').value;
+  const prev=document.getElementById('i-emp-preview');
+  const info=document.getElementById('i-emp-info');
+  if(!empNo){prev.style.display='none';return;}
+  const e=getEmp(empNo); const cpn=COUPONS[empNo];
+  prev.style.display='block';
+  if(cpn){
+    const c=getC(cpn.canteenId);
+    document.getElementById('i-canteen').value=cpn.canteenId;
+    info.innerHTML=`<strong>${e.name}</strong> · ${e.dept}<br/><span style="font-size:12px;color:var(--muted);">Existing coupon: ${c?.name} · Balance ₹${cpn.balance}</span>`;
+  } else {
+    info.innerHTML=`<strong>${e.name}</strong> · ${e.dept}<br/><span style="font-size:12px;color:var(--success);">No coupon yet — new coupon will be created</span>`;
+  }
+}
+function issueCoupon(){
+  const empNo=document.getElementById('i-emp').value;
+  const cid=document.getElementById('i-canteen').value;
+  const bal=parseInt(document.getElementById('i-bal').value)||500;
+  const days=parseInt(document.getElementById('i-days').value)||30;
+  if(!empNo||!cid){toast('⚠️ Select employee and canteen');return;}
+  const e=getEmp(empNo); const c=getC(cid);
+  const expiry=new Date(); expiry.setDate(expiry.getDate()+days);
+  const expiryStr=expiry.toISOString().split('T')[0];
+  const cpnId=`CP-${cid}-${empNo}`;
+  COUPONS[empNo]={canteenId:cid, balance:bal, initialBalance:bal, expiry:expiryStr, couponId:cpnId};
+  const box=document.getElementById('issue-preview-box');
+  box.innerHTML=`<div class="qr-card" id="gen-qr-card">
+    <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;margin-bottom:6px;">CANTEENPASS · ABC INDUSTRIES</div>
+    <div id="gen-qr-wrap"></div>
+    <div class="qr-card-name">${e.name}</div>
+    <div class="qr-card-id">Emp No: ${empNo} · ${cpnId}</div>
+    <div class="qr-canteen-band" style="background:${c.color};color:#fff;">${c.emoji} ${c.name}<br/><span style="font-size:11px;opacity:0.8;">${c.loc}</span></div>
+    <div class="qr-balance">₹${bal}</div>
+    <div class="qr-balance-lbl">Prepaid Balance</div>
+    <div style="margin-top:8px;font-size:11px;color:var(--muted);">Valid until ${expiryStr}</div>
+    <div style="margin-top:6px;font-size:10px;color:var(--muted);border-top:1px dashed var(--border);padding-top:6px;">Valid at ${c.name} only</div>
+  </div>`;
+  document.getElementById('issue-print-btn').style.display='block';
+  setTimeout(()=>{
+    const el=document.getElementById('gen-qr-wrap');
+    if(el) new QRCode(el,{text:`canteenpass/emp/${empNo}/canteen/${cid}`,width:100,height:100,correctLevel:QRCode.CorrectLevel.M});
+  },80);
+  toast(`✅ Coupon issued to ${e.name} — ₹${bal} at ${c.name}`);
+}
+
+// ── REPORTS ──
+function renderReports(){
+  const totalSales=TRANSACTIONS.reduce((a,t)=>a+t.amount,0);
+  const totalTxn=TRANSACTIONS.length;
+  const itemCounts={};
+  TRANSACTIONS.forEach(t=>{itemCounts[t.item]=(itemCounts[t.item]||0)+t.amount;});
+  document.getElementById('report-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-ic" style="background:var(--warn-lt);">💳</div><div class="stat-num">₹${totalSales}</div><div class="stat-lbl">Total Revenue</div></div>
+    <div class="stat-card"><div class="stat-ic" style="background:var(--accent-lt);">🔢</div><div class="stat-num">${totalTxn}</div><div class="stat-lbl">Transactions</div></div>
+    <div class="stat-card"><div class="stat-ic" style="background:var(--success-lt);">📅</div><div class="stat-num">₹${Math.round(totalSales/7)}</div><div class="stat-lbl">Avg per Canteen</div></div>
+    <div class="stat-card"><div class="stat-ic" style="background:#EEE9FB;">🍽️</div><div class="stat-num">${Math.round(totalSales/Math.max(totalTxn,1))}</div><div class="stat-lbl">Avg Txn (₹)</div></div>
+  `;
+  document.getElementById('item-breakdown').innerHTML=MENU.map(m=>{
+    const sales=itemCounts[m.name]||0;
+    const count=TRANSACTIONS.filter(t=>t.item===m.name).length;
+    const pct=Math.round(sales/(totalSales||1)*100);
+    return `<div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+        <span>${m.icon} <strong>${m.name}</strong> (${count} orders)</span><span style="color:var(--accent);font-weight:700;">₹${sales}</span>
+      </div>
+      <div class="balance-bar-track"><div class="balance-bar-fill" style="width:${pct}%;background:var(--accent2);"></div></div>
+    </div>`;
+  }).join('');
+
+  const canteenSales=CANTEENS.map(c=>({c,val:TRANSACTIONS.filter(t=>t.canteenId===c.id).reduce((a,t)=>a+t.amount,0)}));
+  const maxV=Math.max(...canteenSales.map(x=>x.val),1);
+  document.getElementById('canteen-bar').innerHTML=`<div class="bar-chart">`+canteenSales.map(({c,val})=>
+    `<div class="bar-col"><div style="font-size:10px;color:var(--muted);font-weight:700;">₹${val}</div><div class="bar-fill-v" style="height:${Math.round(val/maxV*90)}px;background:${c.color};"></div><div class="bar-lbl">${c.id}</div></div>`
+  ).join('')+'</div>';
+
+  document.getElementById('all-txn-tbl').innerHTML=[...TRANSACTIONS].reverse().map(t=>{
+    const e=getEmp(t.empNo)||{name:t.empNo}; const c=getC(t.canteenId); const mi=MENU.find(m=>m.name===t.item);
+    return `<tr>
+      <td><code style="font-size:11px;">${t.txnId}</code></td>
+      <td style="font-size:12px;">${t.dt.replace('T',' ').slice(0,16)}</td>
+      <td><code style="font-size:12px;">${t.empNo}</code></td>
+      <td>${e.name}</td>
+      <td><span class="chip-canteen" style="background:${c.lt};color:${c.color};">${c.emoji} ${c.name}</span></td>
+      <td>${mi?.icon} ${t.item}</td>
+      <td><strong>₹${t.amount}</strong></td>
+      <td>₹${t.balAfter}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── STAFF POS ──
+function renderStaffPOS(){
+  const c=getC(SESSION.canteenId);
+  document.getElementById('staff-canteen-title').textContent=`Point of Sale — ${c?.name||''}`;
+  document.getElementById('menu-grid').innerHTML=MENU.map(m=>`
+    <div class="menu-item" id="mi-${m.id}" onclick="selectMenuItem('${m.id}')">
+      <div class="menu-icon">${m.icon}</div>
+      <div class="menu-name">${m.name}</div>
+      <div class="menu-price">₹${m.price}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px;">${m.desc}</div>
+    </div>`).join('');
+  if(selectedMenuItem) document.getElementById('mi-'+selectedMenuItem)?.classList.add('selected');
+}
+function selectMenuItem(id){
+  selectedMenuItem=id;
+  document.querySelectorAll('.menu-item').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('mi-'+id)?.classList.add('selected');
+  clearPosResult();
+}
+function clearPosResult(){ document.getElementById('pos-result').innerHTML=''; }
+
+function processTransaction(){
+  const input=document.getElementById('pos-scan-input').value.trim();
+  const res=document.getElementById('pos-result');
+  if(!selectedMenuItem){res.innerHTML=`<div class="result-fail"><div class="result-icon">⚠️</div><div class="result-title">Select a menu item first</div></div>`;return;}
+  const menuItem=MENU.find(m=>m.id===selectedMenuItem);
+  const empNo=input;
+  const emp=getEmp(empNo);
+  if(!emp){res.innerHTML=`<div class="result-fail"><div class="result-icon">❌</div><div class="result-title">Employee not found</div><div class="result-sub">No employee with ID "${input}"</div></div>`;return;}
+  const cpn=getCoupon(empNo);
+  if(!cpn){res.innerHTML=`<div class="result-fail"><div class="result-icon">🚫</div><div class="result-title">No coupon assigned</div><div class="result-sub">${emp.name} has no prepaid coupon. Contact admin.</div></div>`;return;}
+  if(cpn.canteenId!==SESSION.canteenId){
+    const empC=getC(cpn.canteenId); const myC=getC(SESSION.canteenId);
+    res.innerHTML=`<div class="result-fail"><div class="result-icon">🚫</div><div class="result-title">Wrong canteen</div><div class="result-sub">${emp.name}'s coupon is for <strong>${empC?.name}</strong>.<br/>Please go to ${empC?.name}.</div></div>`;return;
+  }
+  if(cpn.balance<=0){res.innerHTML=`<div class="result-fail"><div class="result-icon">💸</div><div class="result-title">Balance exhausted</div><div class="result-sub">${emp.name} has ₹0 balance. Please recharge.</div></div>`;return;}
+  if(cpn.balance<menuItem.price){res.innerHTML=`<div class="result-fail"><div class="result-icon">💸</div><div class="result-title">Insufficient balance</div><div class="result-sub">Balance ₹${cpn.balance} is less than ₹${menuItem.price} for ${menuItem.name}</div></div>`;return;}
+
+  // Deduct
+  cpn.balance -= menuItem.price;
+  const txnId=`TXN${String(txnCounter++).padStart(3,'0')}`;
+  const now=new Date().toISOString();
+  TRANSACTIONS.push({txnId,empNo,canteenId:SESSION.canteenId,item:menuItem.name,amount:menuItem.price,balAfter:cpn.balance,dt:now});
+
+  const c=getC(SESSION.canteenId);
+  const pct=Math.round(cpn.balance/cpn.initialBalance*100);
+  const barColor=pct>30?'var(--success)':pct>10?'var(--warn)':'var(--danger)';
+
+  res.innerHTML=`
+    <div class="result-ok" style="margin-bottom:12px;">
+      <div class="result-icon">✅</div>
+      <div class="result-title">Transaction Successful!</div>
+      <div style="font-size:16px;font-weight:800;margin:6px 0;">${emp.name}</div>
+      <div style="font-size:13px;color:var(--muted);">${menuItem.icon} ${menuItem.name} · <strong style="color:var(--danger);">₹${menuItem.price} deducted</strong></div>
+    </div>
+    <div class="card card-pad">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:13px;color:var(--muted);">Balance after deduction</span>
+        <strong style="color:${barColor};">₹${cpn.balance}</strong>
+      </div>
+      <div class="balance-bar-track"><div class="balance-bar-fill" style="width:${pct}%;background:${barColor};"></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">₹${cpn.balance} of ₹${cpn.initialBalance} remaining</div>
+      ${cpn.balance<50?`<div style="margin-top:8px;font-size:12px;color:var(--warn);font-weight:600;">⚠️ Low balance — please recharge soon</div>`:''}
+    </div>`;
+
+  document.getElementById('pos-scan-input').value='';
+  toast(`✅ ₹${menuItem.price} deducted — ${emp.name}`);
+}
+
+// ── STAFF HISTORY ──
+function renderStaffHistory(){
+  const c=getC(SESSION.canteenId);
+  document.getElementById('staff-hist-sub').textContent=`${c?.name} — Today's records`;
+  const myTxn=TRANSACTIONS.filter(t=>t.canteenId===SESSION.canteenId);
+  const revenue=myTxn.reduce((a,t)=>a+t.amount,0);
+  document.getElementById('staff-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-ic" style="background:var(--accent-lt);">🔢</div><div class="stat-num">${myTxn.length}</div><div class="stat-lbl">Transactions</div></div>
+    <div class="stat-card"><div class="stat-ic" style="background:var(--warn-lt);">💰</div><div class="stat-num">₹${revenue}</div><div class="stat-lbl">Revenue</div></div>
+    ${MENU.map(m=>{const cnt=myTxn.filter(t=>t.item===m.name).length;return`<div class="stat-card"><div class="stat-ic" style="background:var(--bg);">${m.icon}</div><div class="stat-num">${cnt}</div><div class="stat-lbl">${m.name}</div></div>`;}).join('')}
+  `;
+  document.getElementById('staff-txn-tbl').innerHTML=myTxn.length?[...myTxn].reverse().map(t=>{
+    const e=getEmp(t.empNo)||{name:t.empNo}; const mi=MENU.find(m=>m.name===t.item);
+    return `<tr><td style="font-size:12px;color:var(--muted);">${fmtTime(t.dt)}</td><td><code style="font-size:12px;">${t.empNo}</code></td><td><strong>${e.name}</strong></td><td>${mi?.icon} ${t.item}</td><td><strong style="color:var(--danger);">₹${t.amount}</strong></td><td>₹${t.balAfter}</td></tr>`;
+  }).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">No transactions yet today</td></tr>`;
+}
+
+// ── EMPLOYEE WALLET ──
+function renderEmpWallet(){
+  const empNo=SESSION.empNo;
+  const emp=getEmp(empNo); const cpn=getCoupon(empNo); const c=getC(cpn.canteenId);
+  document.getElementById('emp-greeting').textContent=`Welcome, ${emp.name}`;
+  const pct=Math.round(cpn.balance/cpn.initialBalance*100);
+  const barColor=pct>30?'#1A7A3A':pct>10?'#B85C00':'#B01C1C';
+
+  const qrCard=document.getElementById('emp-qr-card');
+  qrCard.innerHTML=`
+    <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;margin-bottom:6px;">CANTEENPASS · YOUR CARD</div>
+    <div id="emp-qr-render"></div>
+    <div class="qr-card-name">${emp.name}</div>
+    <div class="qr-card-id">Emp No: ${empNo}</div>
+    <div class="qr-canteen-band" style="background:${c.color};color:#fff;">${c.emoji} ${c.name}<br/><span style="font-size:11px;opacity:0.8;">${c.loc}</span></div>
+    <div class="qr-balance" style="color:${barColor};">₹${cpn.balance}</div>
+    <div class="qr-balance-lbl">Available Balance</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:6px;">Expires: ${cpn.expiry}</div>
+    <div style="margin-top:10px;border-top:1px dashed var(--border);padding-top:8px;font-size:10px;color:var(--muted);">Show QR at ${c.name} counter</div>`;
+
+  setTimeout(()=>{
+    const el=document.getElementById('emp-qr-render');
+    if(el) new QRCode(el,{text:`canteenpass/emp/${empNo}/canteen/${cpn.canteenId}`,width:110,height:110,correctLevel:QRCode.CorrectLevel.M});
+  },80);
+
+  document.getElementById('emp-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-ic" style="background:${barColor}20;">${pct>30?'💚':pct>10?'⚠️':'🔴'}</div><div class="stat-num" style="color:${barColor};">₹${cpn.balance}</div><div class="stat-lbl">Balance</div></div>
+    <div class="stat-card"><div class="stat-ic" style="background:var(--bg);">🍽️</div><div class="stat-num">${TRANSACTIONS.filter(t=>t.empNo===empNo).length}</div><div class="stat-lbl">Meals Used</div></div>
+  `;
+
+  document.getElementById('emp-bal-bar').innerHTML=`
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px;"><span>₹0</span><span>₹${cpn.initialBalance}</span></div>
+    <div class="balance-bar-track"><div class="balance-bar-fill" style="width:${pct}%;background:${barColor};"></div></div>
+    <div style="font-size:12px;margin-top:4px;color:${barColor};font-weight:600;">${pct}% remaining</div>`;
+
+  const canAfford=MENU.filter(m=>m.price<=cpn.balance);
+  document.getElementById('emp-can-afford').innerHTML=`
+    <div class="sec-label">What you can order today</div>
+    ${canAfford.length?canAfford.map(m=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;">${m.icon} <strong>${m.name}</strong> <span style="color:var(--muted);margin-left:auto;">₹${m.price}</span></div>`).join(''):`<div style="font-size:13px;color:var(--danger);">Insufficient balance for any item. Please contact admin.</div>`}`;
+}
+
+// ── EMPLOYEE HISTORY ──
+function renderEmpHistory(){
+  const empNo=SESSION.empNo; const emp=getEmp(empNo); const cpn=getCoupon(empNo); const c=getC(cpn.canteenId);
+  document.getElementById('emp-hist-sub').textContent=`${emp.name} · ${c.name} · Coupon ID: ${cpn.couponId}`;
+  const txns=TRANSACTIONS.filter(t=>t.empNo===empNo);
+  const list=document.getElementById('emp-txn-list');
+  if(!txns.length){list.innerHTML=`<div style="text-align:center;color:var(--muted);padding:2rem;font-size:14px;">No transactions yet</div>`;return;}
+  list.innerHTML=[...txns].reverse().map(t=>{
+    const mi=MENU.find(m=>m.name===t.item); const tc=getC(t.canteenId);
+    return `<div class="txn-item">
+      <div class="txn-ic" style="background:${tc.lt};">${mi?.icon||'🍽️'}</div>
+      <div class="txn-info">
+        <div class="txn-item-name">${t.item}</div>
+        <div class="txn-meta">${t.dt.replace('T',' ').slice(0,16)} &nbsp;·&nbsp; ${tc.name} &nbsp;·&nbsp; Txn: ${t.txnId}</div>
+      </div>
+      <div>
+        <div class="txn-amt">−₹${t.amount}</div>
+        <div style="font-size:11px;color:var(--muted);text-align:right;">Bal: ₹${t.balAfter}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════════════════════
+function fmtTime(dt){
+  const d=new Date(dt);
+  return d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+}
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// Start on login
+document.getElementById('login-id').focus();
+</script>
+</body>
+</html>

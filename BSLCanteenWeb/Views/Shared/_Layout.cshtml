@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CanteenPass — Industrial Meal Management</title>
+    <link href="~/Web/css/canteen.css" rel="stylesheet" />
+    <script src="~/Web/js/qrcode.min.js"></script>
+    <link href="~/Web/css/sweetalert2.css" rel="stylesheet" />
+</head>
+<body>    
+    <div id="app">
+        <nav>
+            <div class="nav-brand">🏭 <span>PASS</span> CanteenPass</div>
+            <div class="nav-tabs" id="nav-tabs"></div>
+            <div class="nav-user" id="nav-user"></div>
+        </nav>
+        @RenderBody()
+    </div>
+    <script src="~/Web/js/sweetalert2.js"></script>
+</body>
+</html>
