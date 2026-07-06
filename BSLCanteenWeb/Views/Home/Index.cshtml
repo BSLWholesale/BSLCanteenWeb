@@ -1,35 +1,258 @@
 ﻿@{
     ViewBag.Title = "Home Page";
+    Layout = null;
 }
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+@*<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>*@
+<script src="~/JS/jquery-3.7.1.min.js"></script>
+<script src="~/JS/sweetalert2.js"></script>
+<link href="~/Content/sweetalert2.css" rel="stylesheet" />
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
+<script type="text/javascript">
 
-    <div>
-        <h2>Testinggg</h2>
+    function Fn_Login_Employee() {
+
+        if ($("#txtEmployeeId").val() == "") {
+            Swal.fire({ title: "Login", text: "Please Enter the Employee ID", icon: "error" });
+        }
+        else if ($("#txtPassword").val() == "") {
+            Swal.fire({ title: "Login", text: "Please Enter the Password", icon: "error" });
+        }
+        else {
+            var clsEmployee = {};
+            clsEmployee.EmpId = $("#txtEmployeeId").val();
+            clsEmployee.EmpMobile = $("#txtEmployeeId").val();
+            clsEmployee.EmpPassword = $("#txtPassword").val();
+
+            $.ajax({
+                type: "POST",
+                url: "/Home/Fn_Login_Employee",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsEmployee),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj.vErrorMsg == "Success") {
+                        sessionStorage.setItem("EmpId", obj.EmpId);
+                        sessionStorage.setItem("EmpName", obj.EmpName);
+                        sessionStorage.setItem("EmpMobile", obj.EmpMobile);
+                        sessionStorage.setItem("EmpLocation", obj.EmpLocation);
+                        sessionStorage.setItem("EmpRole", obj.EmpRole);
+                        window.location.href = '/Home/Contact';
+                    }
+                    else {
+                        Swal.fire({ title: "Login", text: obj.vErrorMsg, icon: "error", });
+                    }
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
+        }
+    }
+
+</script>
+
+
+<style>
+    :root {
+        --bg: #F4F3EF;
+        --surface: #FFFFFF;
+        --border: #E2E0D8;
+        --text: #18180F;
+        --muted: #6C6C62;
+        --accent: #1C3D2E;
+        --accent2: #2E6B4A;
+        --accent-lt: #E4EFE8;
+        --warn: #B85C00;
+        --warn-lt: #FDF3E7;
+        --danger: #B01C1C;
+        --danger-lt: #FBEAEA;
+        --success: #1A7A3A;
+        --success-lt: #E6F4EB;
+        --r: 10px;
+        --rs: 6px;
+        --shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Segoe UI',system-ui,sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+    }
+
+    /* ── LOGIN ── */
+    #login-screen {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg,#fcf7e8 0%,#fcf7e8 100%);
+        padding: 1rem;
+    }
+
+    .login-card {
+        background: var(--surface);
+        border-radius: 16px;
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+
+    .login-logo {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .login-logo-icon {
+        margin-bottom: 8px;
+    }
+
+    .login-logo h1 {
+        font-size: 22px;
+        font-weight: 800;
+        color: #ff8702;
+        letter-spacing: -0.5px;
+    }
+
+    .login-logo p {
+        font-size: 12px;
+        color: var(--muted);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-top: 2px;
+    }
+
+
+    .form-group {
+        margin-bottom: 14px;
+    }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: var(--rs);
+            border: 1.5px solid var(--border);
+            font-size: 14px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border 0.15s;
+        }
+
+            .form-group input:focus, .form-group select:focus {
+                border-color: var(--accent);
+                background: #fff;
+            }
+
+    .btn-login {
+        width: 100%;
+        padding: 13px;
+        border-radius: var(--rs);
+        border: none;
+        background: #ff8702;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.15s;
+        letter-spacing: 0.3px;
+    }
+
+        .btn-login:hover {
+            opacity: 0.9;
+        }
+
+    .login-hint {
+        font-size: 11px;
+        color: var(--muted);
+        text-align: center;
+        margin-top: 12px;
+        line-height: 1.6;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: var(--rs);
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+        .btn:hover {
+            background: var(--bg);
+        }
+
+    .btn-primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+    }
+
+        .btn-primary:hover {
+            opacity: 0.88;
+        }
+
+    .btn-danger {
+        background: #ff8702;
+        color: #fff;
+        border-color: #ff8702;
+    }
+
+    .btn-full {
+        width: 100%;
+        padding: 13px;
+        font-size: 15px;
+    }
+
+    .btn-warn {
+        background: var(--warn);
+        color: #fff;
+        border-color: var(--warn);
+    }
+</style>
+
+<div id="login-screen">
+    <div class="login-card">
+        <div class="login-logo">
+            <div class="login-logo-icon"><img src="~/Images/BanswaraLogo.png" width="45%" height="10%" style="margin-right: 10%;" /></div>
+            @*<div class="login-logo-icon">🏭</div>*@
+            <h1>Canteen System</h1>
+            <p>Industrial Meal Management System</p>
+        </div>
+
+        <div class="form-group">
+            <label>Employee ID</label>
+            <input type="text" id="txtEmployeeId" placeholder="Enter Employee ID" />
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="txtPassword" placeholder="Enter Password" />
+        </div>
+        <button class="btn-login" onclick="Fn_Login_Employee();"><b>Log In</b></button>
     </div>
 </div>
