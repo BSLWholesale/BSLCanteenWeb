@@ -31,13 +31,10 @@ namespace BSLCanteenWeb.Controllers
             return View();
         }
 
-        public ActionResult Test()
+        public ActionResult LogOut()
         {
-            ViewBag.Message = "Your contact page.";
-
             return View();
         }
-
 
         [HttpPost]
         public JsonResult Fn_Login_Employee(clsEmployee objReq)
