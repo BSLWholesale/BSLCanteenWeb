@@ -4,7 +4,8 @@
     --border: #E2E0D8;
     --text: #18180F;
     --muted: #6C6C62;
-    --accent: #1C3D2E;
+    /*--accent: #1C3D2E;*/
+    --accent: #ffffff;
     --accent2: #2E6B4A;
     --accent-lt: #E4EFE8;
     --warn: #B85C00;
@@ -175,8 +176,9 @@ body {
 }
 
 nav {
+    /*background: var(--accent);*/
     background: var(--accent);
-    height: 54px;
+    height: 75px;
     display: flex;
     align-items: center;
     padding: 0 1.5rem;
@@ -187,13 +189,14 @@ nav {
 }
 
 .nav-brand {
-    color: #fff;
+    color: navy;
     font-size: 16px;
     font-weight: 800;
     letter-spacing: -0.3px;
     display: flex;
     align-items: center;
     gap: 8px;
+    font-family: Roboto, sans-serif;
 }
 
     .nav-brand span {
@@ -231,13 +234,21 @@ nav {
     }
 
 .nav-user {
-    color: rgba(255,255,255,0.75);
+/*    color: rgba(255,255,255,0.75);
     font-size: 12px;
     margin-left: auto;
     display: flex;
     align-items: center;
     gap: 8px;
-    white-space: nowrap;
+    white-space: nowrap;*/
+    color: navy;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: Roboto, sans-serif;
 }
 
 .nav-logout {
