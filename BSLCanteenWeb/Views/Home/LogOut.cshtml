@@ -1,0 +1,16 @@
+﻿
+@{
+    ViewBag.Title = "LogOut";
+}
+
+@{
+    <script src="~/Web/js/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            sessionStorage.clear();
+            window.location.href = '/Home/Index';
+        });
+
+    </script>
+}
