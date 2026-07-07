@@ -3,20 +3,56 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CanteenPass — Industrial Meal Management</title>
+    <title>Canteen System</title>
     <link href="~/Web/css/canteen.css" rel="stylesheet" />
     <script src="~/Web/js/qrcode.min.js"></script>
     <link href="~/Web/css/sweetalert2.css" rel="stylesheet" />
+
+    <script src="~/Web/js/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var strLogInId = sessionStorage.getItem("EmpId");
+            var UserName = sessionStorage.getItem("EmpName");
+            var EmpMobile = sessionStorage.getItem("EmpMobile");
+            var EmpLocation = sessionStorage.getItem("EmpLocation");
+            var EmpRole = sessionStorage.getItem("EmpRole");
+
+            $("#dvRoleType").html(EmpRole);
+            $("#dvUserName").html(UserName);
+
+        });
+
+    </script>
+
 </head>
-<body>    
-    <div id="app">
+<body>
+    <div id="app" style="display: block;">
         <nav>
-            <div class="nav-brand">🏭 <span>PASS</span> CanteenPass</div>
-            <div class="nav-tabs" id="nav-tabs"></div>
-            <div class="nav-user" id="nav-user"></div>
+            <div class="nav-brand">
+                <img src="~/Web/img/logo.png" width="60%" height="10%" />            
+            </div>
+            <div class="nav-brand" id="nav-tabs">
+                🏭 <a href="@Url.Action("AdminDashboard", "Admin")">Admin</a>
+            </div>
+            <div class="nav-brand" id="nav-tabs">
+                <a href="@Url.Action("StaffDashboard", "Staff")">Staff</a>
+            </div>
+            <div class="nav-brand" id="nav-tabs">
+                <a href="@Url.Action("About", "Home")">About Us</a>
+            </div>
+            <div class="nav-brand" id="nav-tabs">
+                <a href="@Url.Action("Contact", "Home")">Contact Us</a>
+            </div>
+            <div class="nav-user" id="nav-user" style="margin-left: 35%; color: navy;">
+                <span id="dvUserName" style="color:navy;"></span>
+                <a href="@Url.Action("LogOut", "Home")">LogOut</a>
+            </div>
         </nav>
         @RenderBody()
     </div>
     <script src="~/Web/js/sweetalert2.js"></script>
+    <script src="~/Web/js/jquery-3.7.1.min.js"></script>
 </body>
 </html>
