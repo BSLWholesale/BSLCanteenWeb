@@ -10,11 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="~/NewTemp/css/font.css" rel="stylesheet" />
     <link href="~/NewTemp/css/allmin.css" rel="stylesheet" />
-    <link href="~/NewTemp/css/bootstrapicons.css" rel="stylesheet" />
-    
-    @*<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">*@
+    <link href="~/NewTemp/css/bootstrapicons.css" rel="stylesheet" />    
 
     <link href="~/NewTemp/lib/animate/animate.min.css" rel="stylesheet" />
     <link href="~/NewTemp/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet" />
@@ -34,7 +30,34 @@
             var EmpLocation = sessionStorage.getItem("EmpLocation");
             var EmpRole = sessionStorage.getItem("EmpRole");
 
-            $("#dvRoleType").html(EmpRole);
+            if (EmpRole == "Admin") {
+                $("#AdminPage").show();
+                $("#StaffPage").hide();
+                $("#EmployeePage").hide();
+                $("#AboutPage").show();
+                $("#ContactPage").show();
+                $("#LogoutPage").show();
+            }
+
+            if (EmpRole == "Staff") {
+                $("#AdminPage").hide();
+                $("#StaffPage").show();
+                $("#EmployeePage").hide();
+                $("#AboutPage").show();
+                $("#ContactPage").show();
+                $("#LogoutPage").show();
+            }
+
+            if (EmpRole == "Employee") {
+                $("#AdminPage").hide();
+                $("#StaffPage").hide();
+                $("#EmployeePage").show();
+                $("#AboutPage").show();
+                $("#ContactPage").show();
+                $("#LogoutPage").show();
+            }
+
+            //$("#dvRoleType").html(EmpRole);
             $("#dvUserName").html(UserName);
 
         });
@@ -44,49 +67,6 @@
 
 <body>
     <div id="main-wrapper">
-        @*<nav>
-                <div class="nav-brand">
-                    <img src="~/Web/img/logo.png" width="60%" height="10%" />
-                </div>
-                <div class="nav-brand" id="nav-tabs">
-                    🏭 <a href="@Url.Action("AdminDashboard", "Admin")">Admin</a>
-                </div>
-                <div class="nav-brand" id="nav-tabs">
-                    <a href="@Url.Action("StaffDashboard", "Staff")">Staff</a>
-                </div>
-                <div class="nav-brand" id="nav-tabs">
-                    <a href="@Url.Action("About", "Home")">About Us</a>
-                </div>
-                <div class="nav-brand" id="nav-tabs">
-                    <a href="@Url.Action("Contact", "Home")">Contact Us</a>
-                </div>
-                <div class="nav-user" id="nav-user" style="margin-left: 35%; color: navy;">
-                    <span id="dvUserName" style="color:navy;"></span>
-                    <a href="@Url.Action("LogOut", "Home")">LogOut</a>
-                </div>
-            </nav>*@
-
-        <!-- Navbar Start -->
-        @*<nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-            <img src="~/Web/img/logo.png" class="navbar-brand d-flex align-items-center px-4 px-lg-5" width="20%" height="8%" />
-
-            <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav ms-auto p-4 p-lg-0">
-                    <a href="@Url.Action("AdminDashboard", "Admin")" class="nav-item nav-link active">Admin</a>
-                    <a href="@Url.Action("StaffDashboard", "Staff")" class="nav-item nav-link">Staff</a>
-                    <a href="@Url.Action("About", "Home")" class="nav-item nav-link">About Us</a>
-                    <a href="@Url.Action("Contact", "Home")" class="nav-item nav-link">Contact Us</a>
-
-                    <span id="dvUserName" class="nav-item nav-link"></span>
-                    <a href="@Url.Action("LogOut", "Home")" class="nav-item nav-link">LogOut</a>
-
-                </div>
-            </div>
-        </nav>*@
-        <!-- Navbar End -->
 
         @Html.Partial("_Header")
 
