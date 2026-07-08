@@ -39,9 +39,8 @@
                         sessionStorage.setItem("EmpMobile", obj.EmpMobile);
                         sessionStorage.setItem("EmpLocation", obj.EmpLocation);
                         sessionStorage.setItem("EmpRole", obj.EmpRole);
-                        if (obj.EmpRole == "Admin") {
-                            window.location.href = '/Home/Contact';
-                            //window.location.href = '/Admin/AdminDashboard';
+                        if (obj.EmpRole == "Admin") {                            
+                            window.location.href = '/Admin/AdminDashboard';
                         }
                         if (obj.EmpRole == "Staff") {
                             window.location.href = '/Staff/StaffDashboard';
