@@ -15,13 +15,21 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="@Url.Action("AdminDashboard", "Admin")" class="nav-item nav-link active">Admin</a>
-                <a href="@Url.Action("StaffDashboard", "Staff")" class="nav-item nav-link">Staff</a>
-                <a href="@Url.Action("About", "Home")" class="nav-item nav-link">About Us</a>
-                <a href="@Url.Action("Contact", "Home")" class="nav-item nav-link">Contact Us</a>
+                <a href="@Url.Action("AdminDashboard", "Admin")" class="nav-item nav-link" id="AdminPage">Admin</a>
+                <a href="@Url.Action("StaffDashboard", "Staff")" class="nav-item nav-link" id="StaffPage">Staff</a>
+                <a href="#" class="nav-item nav-link" id="EmployeePage">Employee</a>
+                <a href="@Url.Action("About", "Home")" class="nav-item nav-link" id="AboutPage">About Us</a>
+                <a href="@Url.Action("Contact", "Home")" class="nav-item nav-link" id="ContactPage">Contact Us</a>
+
+                @*<div class="nav-item dropdown">
+                    <a href="#" class="nav-link" data-bs-toggle="dropdown" id="dvUserName"></a>
+                    <div class="dropdown-menu fade-down m-0">
+                        <a href="@Url.Action("LogOut", "Home")" class="dropdown-item" id="LogoutPage"><b>LogOut</b></a>
+                    </div>
+                </div>*@
 
                 <span id="dvUserName" class="nav-item nav-link"></span>
-                <a href="@Url.Action("LogOut", "Home")" class="nav-item nav-link">LogOut</a>
+                <a href="@Url.Action("LogOut", "Home")" class="nav-item nav-link" id="LogoutPage">LogOut</a>
 
             </div>
             @*<a href="#" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Join Now<i class="fa fa-arrow-right ms-3"></i></a>*@
