@@ -4,31 +4,40 @@
 }
 
 @{
-    
+
     <script src="~/Web/js/jquery-3.7.1.min.js"></script>
     <link href="~/Web/css/select2.min.css" rel="stylesheet" />
     <script>
 
         $(document).ready(function () {
 
-            var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
-            Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", "");
+            //var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
+            //Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", "");
+
+            var strCriteria = "";
+            strFieldName = "";
+            strFieldName = " Count(EmployeeId) AS RC ";
+            Fn_Get_Count_Record("spnTotalEmp", "EmployeeMaster", strFieldName, "");
+            strFieldName = "";
+            strFieldName = " Count(CouponId) As RC ";
+            strCriteria = " AND OrdStatus = 'Generated' ";
+            Fn_Get_Count_Record("spnActiveCoupon", "CouponOrder2026", strFieldName, strCriteria);
 
 
-            // doLogin();
+            //$("#emp-search").on("keyup", function () {
+            //    var value = $(this).val().toLowerCase();
 
-            $("#emp-search").on("keyup", function () {
-                var value = $(this).val().toLowerCase();
+            //    $("#emp-tbl tr").each(function () {
+            //        var col1 = $(this).find("td:eq(0)").text().toLowerCase(); // First column
+            //        var col2 = $(this).find("td:eq(1)").text().toLowerCase(); // Second column
 
-                $("#emp-tbl tr").each(function () {
-                    var col1 = $(this).find("td:eq(0)").text().toLowerCase(); // First column
-                    var col2 = $(this).find("td:eq(1)").text().toLowerCase(); // Second column
+            //        $(this).toggle(
+            //            col1.indexOf(value) > -1 || col2.indexOf(value) > -1
+            //        );
+            //    });
+            //});
 
-                    $(this).toggle(
-                        col1.indexOf(value) > -1 || col2.indexOf(value) > -1
-                    );
-                });
-            });
+            Fn_Get_Recent_Coupon_Transactions();
 
         });
 
@@ -67,218 +76,63 @@
             });
         }
 
-        function Fn_Fetch_EmployeeList() {
+        function Fn_Get_Recent_Coupon_Transactions() {
 
-            var clsEmployee = {};
-            clsEmployee.CreatedBy = sessionStorage.getItem("LogInID");
-            $("#emp-tbl").html('');
-            var html = '';
-            $.ajax({
-                type: "POST",
-                url: "/Admin/Fn_Fetch_EmployeeDetails",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify(clsEmployee),
-                success: function (data) {
-                    var obj = JSON.parse(data.message);
-                    if (obj[0].vErrorMsg == "Success") {
-                        for (var i = 0; i < obj.length; i++) {
+            var today = new Date();
 
-                            html += "<tr>";
-                            html += "<td>" + obj[i].EmpId + "</td>";
-                            html += "<td>" + obj[i].EmpName + "</td>";
-                            html += "<td>" + obj[i].Department + "</td>";
-                            html += "<td>" + obj[i].Location + "</td>";
-                            html += "<td><div class='chip-canteen' style='background:#E8EEFB; color:#1B4FCC;'>🔵 " + obj[i].CanteenName + "</div></td>";
-                            html += "<td></td>";
-                            html += "<td><span class='badge badge-active'>Active</span></td>";
+            var day = String(today.getDate()).padStart(2, '0');
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = months[today.getMonth()];
+            var year = today.getFullYear();
 
-                            //html += "<td></td>";
-                            html += "<td style='display: flex; gap: 6px;'>";
-                            html += "<button class='btn' style='font-size:11px;padding:5px 10px;' onclick=viewEmpModal(" + obj[i].EmpId + ")>View</button>";
-                            html += "<button class='btn btn-primary' style='font-size: 11px; padding: 5px 10px;' onclick=presetIssue('${e.empNo}')>Recharge</button>";
-                            html += "</td>";
-                            html += "</tr>";
-
-                        }
-                    }
-                    else {
-                        html += "<tr><td colspan='8' class='text-center'>" + obj[0].vErrorMsg + "</td></tr>";
-                    }
-                    $("#emp-tbl").append(html);
-                },
-                error: function (err) {
-                    alert(err);
-
-                }
-            });
-        }
-
-        function Fn_Fetch_EmployeeDetailsByID(empId) {
-
-            var clsEmployee = {};
-            clsEmployee.CreatedBy = sessionStorage.getItem("LogInID");
-            clsEmployee.EmpId = empId;
-            $.ajax({
-                type: "POST",
-                url: "/Admin/Fn_Fetch_EmployeeDetails",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify(clsEmployee),
-                success: function (data) {
-                    var obj = JSON.parse(data.message);
-                    if (obj[0].vErrorMsg == "Success") {
-                        for (var i = 0; i < obj.length; i++) {
-
-                            html += "<tr>";
-                            html += "<td>" + obj[i].EmpId + "</td>";
-                            html += "<td>" + obj[i].EmpName + "</td>";
-                            html += "<td>" + obj[i].Department + "</td>";
-                            html += "<td>" + obj[i].Location + "</td>";
-                            html += "<td><div class='chip-canteen' style='background:#E8EEFB; color:#1B4FCC;'>🔵 " + obj[i].CanteenName + "</div></td>";
-                            html += "<td></td>";
-                            html += "<td><span class='badge badge-active'>Active</span></td>";
-
-                            //html += "<td></td>";
-                            html += "<td style='display: flex; gap: 6px;'>";
-                            html += "<button class='btn' style='font-size:11px;padding:5px 10px;' onclick=viewEmpModal(" + obj[i].EmpId + ")>View</button>";
-                            html += "<button class='btn btn-primary' style='font-size: 11px; padding: 5px 10px;' onclick=presetIssue('${e.empNo}')>Recharge</button>";
-                            html += "</td>";
-                            html += "</tr>";
-
-                        }
-                    }
-                    else {
-                        html += "<tr><td colspan='8' class='text-center'>" + obj[0].vErrorMsg + "</td></tr>";
-                    }
-                    $("#emp-tbl").append(html);
-                },
-                error: function (err) {
-                    alert(err);
-
-                }
-            });
-        }
-
-        function Fn_OnChange_ddlEmpName() {
-            var strCriteria = "";
-            var ddlEmpName = $("#ddlEmpName").val();
-            strCriteria = " AND EmployeeId=" + ddlEmpName + "";
-            Fn_Fill_DropdownList("ddlCanteen", "vGetEmpDetail", "CanteenName", "CanteenId", strCriteria);
-        }
-
-        function Fn_Emp_CouponGeneration() {
-            var clsCouponOrder = {};
-            clsCouponOrder.CreatedBy = 2000300; // sessionStorage.getItem("LogInID");
-            clsCouponOrder.EmpId = $("#ddlEmpName").val();
-            clsCouponOrder.CanteenId = $("#ddlCanteen").val();
-            var clsCouponItem = [];
-
-            if ($('#txtTeaQty').val() != "0" && $('#txtTeaQty').val() != null) {
-                clsCouponItem.push({
-                    ItemCategory: 'Tea',
-                    Quantity: $('#txtTeaQty').val()
-                });
-            }
-
-            if ($('#txtBreakfast').val() != "0" && $('#txtBreakfast').val() != null) {
-                clsCouponItem.push({
-                    ItemCategory: 'Breakfast',
-                    Quantity: $('#txtBreakfast').val()
-                });
-            }
-            if ($('#txtThali').val() != "0" && $('#txtThali').val() != null) {
-                clsCouponItem.push({
-                    ItemCategory: 'Tea',
-                    Quantity: $('#txtThali').val()
-                });
-            }
-            clsCouponOrder.Items = clsCouponItem;
+            var formattedDate = day + "-" + month + "-" + year;
 
 
-            if ($("#ddlEmpName").val() == "0") {
-                Swal.fire({ title: "", text: "Please Select Employee", icon: "error" });
-            }
-            else if ($("#ddlCanteen").val() == "0") {
-                Swal.fire({ title: "", text: "Please Select Canteen", icon: "error" });
-            }
-            else if (clsCouponOrder.Items.length == 0 || clsCouponOrder.Items.length == null) {
-                Swal.fire({ title: "", text: "Please Select Item Menu", icon: "error" });
-            }
-            else {
-                $.ajax({
-                    type: "POST",
-                    url: "/Admin/Fn_Emp_CouponGeneration",
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify(clsCouponOrder),
-                    success: function (data) {
-                        var obj = JSON.parse(data.message);
-                        if (obj.vErrorMsg == "Success") {
-                            Swal.fire({ title: "", text: "Order Placed Successfully.", icon: "success" });
-                        }
-                        else {
-                            Swal.fire({ title: "", text: obj.vErrorMsg, icon: "error" });
-                        }
-                    },
-                    error: function (err) {
-                        alert(err);
 
-                    }
-                });
-            }
-
-        }
-
-        function Fn_Get_Coupon_Order() {
-
-            var clsCouponOrder = {};
-            clsCouponOrder.CreatedBy = sessionStorage.getItem("LogInID");
-            clsCouponOrder.EmpId = $("#ddlEmpName").val();
-            $("#issue-preview-box").html('');
+            var clsCouponReport = {};
+            // clsCouponReport.CreatedBy = 2000300; // sessionStorage.getItem("LogInID");
+            clsCouponReport.OrderStatus = "Scanned";
+            // clsCouponReport.OrderTakenDate = formattedDate;
+            $("#tbodyRecent_TNX").html('');
             var html = '';
             $.ajax({
                 type: "POST",
                 url: "/Admin/Fn_Get_Coupon_Order",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                data: JSON.stringify(clsCouponOrder),
+                data: JSON.stringify(clsCouponReport),
                 success: function (data) {
                     var obj = JSON.parse(data.message);
                     if (obj[0].vErrorMsg == "Success") {
                         for (var i = 0; i < obj.length; i++) {
-                            html += "<div class='qr-card' id='gen-qr-card_" + i + "'>";
-                            html += "<div style='display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;'>";
-                            html += "<img src='/Web/img/banswara_logo.png' style='width:80px; height:auto;' />";
-                            html += "<div id='gen-qr-wrap_" + i + "' style='width:100px; height:100px; display:flex; align-items:center; justify-content:center;'></div>";
-                            html += "</div>";
-                            html += "<div class='qr-canteen-band'>CouponId: " + obj[i].CouponId + "</div>";
-                            html += "<div class='qr-canteen-band'>Name: " + obj[i].EmpName + " (" + obj[i].EmpId + ")</div>";
-                            html += "<div class='qr-canteen-band'>Item: " + obj[i].ItemCategory + "</div>";
-                            html += "<div class='qr-canteen-band'>Canteen: " + obj[i].CanteenName + "</div>";
-                            html += "<div class='qr-canteen-band'>Date: " + obj[i].CouponIssueDate + "</div>";
-                            html += "</div>";
-
+                            html += "<tr>";
+                            html += "<td>" + obj[i].OrderTakenTime + "</td>";
+                            html += "<td>" + obj[i].CouponId + "</td>";
+                            html += "<td>" + obj[i].EmpId + "</td>";
+                            html += "<td>" + obj[i].EmpName + "</td>";
+                            if (obj[i].ItemCategory == "Tea") {
+                                html += "<td>☕ Tea</td>";
+                            }
+                            else if (obj[i].ItemCategory == "Thali") {
+                                html += "<td>🍛 Thali</td>";
+                            }
+                            else if (obj[i].ItemCategory == "Breakfast") {
+                                html += "<td>🍽️ Breakfast</td>";
+                            }
+                            else {
+                                html += "<td>" + obj[i].ItemCategory + "</td>";
+                            }
+                            html += "<td>" + obj[i].CanteenName + "</td>";
+                            html += "</tr>";
                         }
-
-                        $("#issue-preview-box").append(html);
-
-                        for (var i = 0; i < obj.length; i++) {
-
-                            var text = obj[i].CouponId;
-
-                            var qrcode = new QRCode(document.getElementById("gen-qr-wrap_" + i), {
-                                width: 70,
-                                height: 70
-                            });
-
-                            qrcode.makeCode(text);
-                        }
-                        $("#issue-print-btn").show();
                     }
                     else {
-                        $("#issue-print-btn").hide();
+                        html += "<tr>";
+                        html += "<td colspan='6'>" + obj[0].vErrorMsg + "</td>";
+                        html += "<tr>";
                     }
+                    $("#tbodyRecent_TNX").append(html);
                 },
                 error: function (err) {
                     alert(err);
@@ -287,72 +141,56 @@
             });
         }
 
-        function printQRCoupons() {
+        function Fn_Get_Count_Record(TagId, strTBLName, strFieldName, strCriteria) {
 
-            var printContents = document.getElementById("issue-preview-box").innerHTML;
+            var clsRequestDropdown = {};
+            clsRequestDropdown.vFieldName = strFieldName;
+            clsRequestDropdown.vTBLName = strTBLName;
+            clsRequestDropdown.vCriteria = strCriteria;
+            $("#" + TagId).html('');
+            $.ajax({
+                type: "POST",
+                url: '/Admin/Fn_Get_Count_Record',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsRequestDropdown),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj.vErrorMsg == "Success") {
+                        $("#" + TagId).html(obj.vFieldName);
+                    }
+                    else {
+                        $("#" + TagId).html('');
+                    }
 
-            var printWindow = window.open('', '', 'width=900,height=700');
-
-            printWindow.document.write(`
-                                    <html>
-                                    <head>
-                                        <title>Print QR Stickers</title>
-
-                                        <style>
-                                            body{
-                                                margin:0;
-                                                padding:10px;
-                                                font-family:Arial, sans-serif;
-                                            }
-
-                                            .qr-card{
-                                                width:3in;
-                                                border:1px solid #000;
-                                                padding:8px;
-                                                margin:10px auto;
-                                                box-sizing:border-box;
-                                                page-break-inside:avoid;
-                                            }
-
-                                            .qr-canteen-band{
-                                                font-size:12px;
-                                                font-weight:bold;
-                                                margin:3px 0;
-                                            }
-
-                                            .qr-card img{
-                                                width:80px;
-                                            }
-
-                                            @@page{
-                                                margin:0.2in;
-                                            }
-                                        </style>
-                                    </head>
-
-                                    <body>
-                                        ${printContents}
-                                    </body>
-                                    </html>
-                                `);
-
-            printWindow.document.close();
-
-            printWindow.onload = function () {
-                printWindow.focus();
-                printWindow.print();
-                printWindow.close();
-            };
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
         }
+
 
     </script>
 
 
+<style>
+    .stat-ic {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        margin-bottom: 10px;
+    }
 
+</style>
 
 }
 
-<div class="container mt-4">
+<div class="container">
     <div class="card">
         <nav aria-label="breadcrumb">
 
@@ -370,37 +208,22 @@
 
         </nav>
     </div>
-    @*<div class="card" style="width: 20rem;">
-            <div class="card-header">
-                Featured
-            </div>
 
-            <div class="card-body">
-                <h5 class="card-title">Welcome</h5>
-                <p class="card-text">
-                    Bootstrap cards are flexible and easy to customize.
-                </p>
-                <button class="btn btn-primary">Click Me</button>
-            </div>
-
-            <div class="card-footer text-muted">
-                2 days ago
-            </div>
-        </div>*@
 </div>
 
 <!-- Team Start -->
-<div class="container-xxl py-5">
+
     <div class="container">
         <div class="row">
             <div class="col-lg-3 col-md-6">
                 <div class="card">
                     <div class="team-item">
                         <div>
-                            <i class="fab fa-user"></i>
+                            <div class="stat-ic" style="background:#E8EEFB;">🏭</div>
                         </div>
                         <div class="text-left p-4">
-                            <small>Designation</small>
+                            <span id="spnTotalEmp"></span>
+                            <small>Employee</small>
                         </div>
                     </div>
                 </div>
@@ -409,10 +232,11 @@
                 <div class="card">
                     <div class="team-item">
                         <div>
-                            <i class="fab fa-user"></i>
+                            <div class="stat-ic" style="background: #E4EFE8;">🎫</div>
                         </div>
                         <div class="text-left p-4">
-                            <small>Designation</small>
+                            <span id="spnTotalEmp"></span>
+                            <small>Active Coupons</small>
                         </div>
                     </div>
                 </div>
@@ -421,16 +245,55 @@
                 <div class="card">
                     <div class="team-item">
                         <div>
-                            <i class="fab fa-user"></i>
+                            <div class="stat-ic" style="background: #E6F4EB;">💰</div>
                         </div>
                         <div class="text-left p-4">
-                            <small>Designation</small>
+                            <span id="spnTotalBalance"></span>
+                            <small>Total Balance</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card">
+                    <div class="team-item">
+                        <div>
+                            <div class="stat-ic" style="background:var(--warn-lt);">🍽️</div>
+                        </div>
+                        <div class="text-left p-4">
+                            <span id="spnTodaysSale"></span>
+                            <small>Today's Sales</small>
                         </div>
                     </div>
                 </div>
             </div>
 
         </div>
+
     </div>
-</div>
-<!-- Team End -->
+    <div class="container">
+        <div class="row">
+           
+            <div class="col-12 col-md-12 col-sm-12">
+                <div class="card">
+                    <div class="table-responsive mt-3">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Coupon</th>
+                                    <th>Emp No</th>
+                                    <th>Name</th>
+                                    <th>Item</th>
+                                    <th>Canteen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyRecent_TNX"></tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Team End -->
