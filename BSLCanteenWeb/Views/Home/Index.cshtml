@@ -34,7 +34,7 @@
                 success: function (data) {
                     var obj = JSON.parse(data.message);
                     if (obj.vErrorMsg == "Success") {
-                        sessionStorage.setItem("EmpId", obj.EmpId);
+                        sessionStorage.setItem("LogInID", obj.EmpId);
                         sessionStorage.setItem("EmpName", obj.EmpName);
                         sessionStorage.setItem("EmpMobile", obj.EmpMobile);
                         sessionStorage.setItem("EmpLocation", obj.EmpLocation);
