@@ -11,8 +11,6 @@
 
         $(document).ready(function () {
 
-            //var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
-            //Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", "");
 
             var strCriteria = "";
             strFieldName = "";
@@ -174,19 +172,18 @@
     </script>
 
 
-<style>
-    .stat-ic {
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 17px;
-        margin-bottom: 10px;
-    }
-
-</style>
+    <style>
+        .stat-ic {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            margin-bottom: 10px;
+        }
+    </style>
 
 }
 
@@ -213,87 +210,87 @@
 
 <!-- Team Start -->
 
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-3 col-md-6">
-                <div class="card">
-                    <div class="team-item">
-                        <div>
-                            <div class="stat-ic" style="background:#E8EEFB;">🏭</div>
-                        </div>
-                        <div class="text-left p-4">
-                            <span id="spnTotalEmp"></span>
-                            <small>Employee</small>
-                        </div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-3 col-md-6">
+            <div class="card">
+                <div class="team-item">
+                    <div>
+                        <div class="stat-ic" style="background:#E8EEFB;">🏭</div>
                     </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card">
-                    <div class="team-item">
-                        <div>
-                            <div class="stat-ic" style="background: #E4EFE8;">🎫</div>
-                        </div>
-                        <div class="text-left p-4">
-                            <span id="spnTotalEmp"></span>
-                            <small>Active Coupons</small>
-                        </div>
+                    <div class="text-left p-4">
+                        <span id="spnTotalEmp"></span>
+                        <small>Employee</small>
                     </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card">
-                    <div class="team-item">
-                        <div>
-                            <div class="stat-ic" style="background: #E6F4EB;">💰</div>
-                        </div>
-                        <div class="text-left p-4">
-                            <span id="spnTotalBalance"></span>
-                            <small>Total Balance</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="card">
-                    <div class="team-item">
-                        <div>
-                            <div class="stat-ic" style="background:var(--warn-lt);">🍽️</div>
-                        </div>
-                        <div class="text-left p-4">
-                            <span id="spnTodaysSale"></span>
-                            <small>Today's Sales</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-    <div class="container">
-        <div class="row">
-           
-            <div class="col-12 col-md-12 col-sm-12">
-                <div class="card">
-                    <div class="table-responsive mt-3">
-                        <table class="table table-bordered table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Coupon</th>
-                                    <th>Emp No</th>
-                                    <th>Name</th>
-                                    <th>Item</th>
-                                    <th>Canteen</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbodyRecent_TNX"></tbody>
-                        </table>
-                    </div>
-
                 </div>
             </div>
         </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card">
+                <div class="team-item">
+                    <div>
+                        <div class="stat-ic" style="background: #E4EFE8;">🎫</div>
+                    </div>
+                    <div class="text-left p-4">
+                        <span id="spnTotalEmp"></span>
+                        <small>Active Coupons</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card">
+                <div class="team-item">
+                    <div>
+                        <div class="stat-ic" style="background: #E6F4EB;">💰</div>
+                    </div>
+                    <div class="text-left p-4">
+                        <span id="spnTotalBalance"></span>
+                        <small>Total Balance</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card">
+                <div class="team-item">
+                    <div>
+                        <div class="stat-ic" style="background:var(--warn-lt);">🍽️</div>
+                    </div>
+                    <div class="text-left p-4">
+                        <span id="spnTodaysSale"></span>
+                        <small>Today's Sales</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
-    <!-- Team End -->
+
+</div>
+<div class="container">
+    <div class="row">
+
+        <div class="col-12 col-md-12 col-sm-12">
+            <div class="card">
+                <div class="table-responsive mt-3">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Coupon</th>
+                                <th>Emp No</th>
+                                <th>Name</th>
+                                <th>Item</th>
+                                <th>Canteen</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyRecent_TNX"></tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Team End -->
