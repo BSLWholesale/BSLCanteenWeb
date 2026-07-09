@@ -24,36 +24,34 @@
 
         $(document).ready(function () {
 
-            var strLogInId = sessionStorage.getItem("EmpId");
+            var strLogInId = sessionStorage.getItem("LogInID");
             var UserName = sessionStorage.getItem("EmpName");
             var EmpMobile = sessionStorage.getItem("EmpMobile");
             var EmpLocation = sessionStorage.getItem("EmpLocation");
             var EmpRole = sessionStorage.getItem("EmpRole");
+            var CanteenId = sessionStorage.getItem("CanteenId");
 
             if (EmpRole == "Admin") {
                 $("#AdminPage").show();
+                $("#IssueCouponPage").show();
                 $("#StaffPage").hide();
                 $("#EmployeePage").hide();
-                $("#AboutPage").show();
-                $("#ContactPage").show();
                 $("#LogoutPage").show();
             }
 
             if (EmpRole == "Staff") {
                 $("#AdminPage").hide();
+                $("#IssueCouponPage").hide();
                 $("#StaffPage").show();
                 $("#EmployeePage").hide();
-                $("#AboutPage").show();
-                $("#ContactPage").show();
                 $("#LogoutPage").show();
             }
 
             if (EmpRole == "Employee") {
                 $("#AdminPage").hide();
+                $("#IssueCouponPage").hide();
                 $("#StaffPage").hide();
                 $("#EmployeePage").show();
-                $("#AboutPage").show();
-                $("#ContactPage").show();
                 $("#LogoutPage").show();
             }
 
