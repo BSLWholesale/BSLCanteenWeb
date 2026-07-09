@@ -1,44 +1,34 @@
 ﻿
 @{
-    ViewBag.Title = "AdminDashboard";
+    ViewBag.Title = "Reports";
 }
 
 @{
-
     <script src="~/Web/js/jquery-3.7.1.min.js"></script>
     <link href="~/Web/css/select2.min.css" rel="stylesheet" />
-    <script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script type="text/javascript">
 
         $(document).ready(function () {
 
+            var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
+            Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", "");
 
-            var strCriteria = "";
-            strFieldName = "";
-            strFieldName = " Count(EmployeeId) AS RC ";
-            Fn_Get_Count_Record("spnTotalEmp", "EmployeeMaster", strFieldName, "");
-            strFieldName = "";
-            strFieldName = " Count(CouponId) As RC ";
-            strCriteria = " AND OrdStatus = 'Generated' ";
-            Fn_Get_Count_Record("spnActiveCoupon", "CouponOrder2026", strFieldName, strCriteria);
+            Fn_Fill_DropdownList("ddlCanteen", "CanteenMaster", "CanteenName", "CanteenId", "");
 
-
-            //$("#emp-search").on("keyup", function () {
-            //    var value = $(this).val().toLowerCase();
-
-            //    $("#emp-tbl tr").each(function () {
-            //        var col1 = $(this).find("td:eq(0)").text().toLowerCase(); // First column
-            //        var col2 = $(this).find("td:eq(1)").text().toLowerCase(); // Second column
-
-            //        $(this).toggle(
-            //            col1.indexOf(value) > -1 || col2.indexOf(value) > -1
-            //        );
-            //    });
+            $("#txtFromDate").datepicker({
+                dateFormat: "dd-MMM-yyyy",
+                defaultDate: new Date()
+            });
+            //$("#ToDate").datepicker({
+            //    dateFormat: "dd-MMM-yyyy",
+            //    defaultDate: new Date()
             //});
 
-            Fn_Get_Recent_Coupon_Transactions();
+            Fn_Get_Report();
 
         });
-
         function Fn_Fill_DropdownList(ddlName, strTBLName, strFieldName, strValueField, strCriteria) {
             var clsRequestDropdown = {};
             clsRequestDropdown.vFieldName = strFieldName;
@@ -74,25 +64,11 @@
             });
         }
 
-        function Fn_Get_Recent_Coupon_Transactions() {
-
-            var today = new Date();
-
-            var day = String(today.getDate()).padStart(2, '0');
-            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            var month = months[today.getMonth()];
-            var year = today.getFullYear();
-
-            var formattedDate = day + "-" + month + "-" + year;
-
-
+        function Fn_Get_Report() {
 
             var clsCouponReport = {};
-            // clsCouponReport.CreatedBy = 2000300; // sessionStorage.getItem("LogInID");
             clsCouponReport.OrderStatus = "Scanned";
-            // clsCouponReport.OrderTakenDate = formattedDate;
-            $("#tbodyRecent_TNX").html('');
+            $("#all-txn-tbl").html('');
             var html = '';
             $.ajax({
                 type: "POST",
@@ -105,86 +81,48 @@
                     if (obj[0].vErrorMsg == "Success") {
                         for (var i = 0; i < obj.length; i++) {
                             html += "<tr>";
-                            html += "<td>" + obj[i].OrderTakenTime + "</td>";
                             html += "<td>" + obj[i].CouponId + "</td>";
+                            html += "<td>" + obj[i].OrderTakenDate + " " + obj[i].OrderTakenTime + "</td>";
+
                             html += "<td>" + obj[i].EmpId + "</td>";
                             html += "<td>" + obj[i].EmpName + "</td>";
+                            html += "<td>" + obj[i].CanteenName + "</td>";
                             if (obj[i].ItemCategory == "Tea") {
                                 html += "<td>☕ Tea</td>";
+                                html += "<td><strong>₹" + obj[i].Price + "</strong></td>";
                             }
                             else if (obj[i].ItemCategory == "Thali") {
                                 html += "<td>🍛 Thali</td>";
+                                html += "<td><strong>₹" + obj[i].Price + "</strong></td>";
                             }
                             else if (obj[i].ItemCategory == "Breakfast") {
                                 html += "<td>🍽️ Breakfast</td>";
+                                html += "<td><strong>₹" + obj[i].Price + "</strong></td>";
                             }
                             else {
                                 html += "<td>" + obj[i].ItemCategory + "</td>";
+                                html += "<td><strong>₹" + obj[i].Price + "</strong></td>";
                             }
-                            html += "<td>" + obj[i].CanteenName + "</td>";
+
                             html += "</tr>";
                         }
                     }
                     else {
                         html += "<tr>";
-                        html += "<td colspan='6'>" + obj[0].vErrorMsg + "</td>";
+                        html += "<td colspan='8'>" + obj[0].vErrorMsg + "</td>";
                         html += "<tr>";
                     }
-                    $("#tbodyRecent_TNX").append(html);
+                    $("#all-txn-tbl").append(html);
                 },
                 error: function (err) {
                     alert(err);
 
-                }
-            });
-        }
-
-        function Fn_Get_Count_Record(TagId, strTBLName, strFieldName, strCriteria) {
-
-            var clsRequestDropdown = {};
-            clsRequestDropdown.vFieldName = strFieldName;
-            clsRequestDropdown.vTBLName = strTBLName;
-            clsRequestDropdown.vCriteria = strCriteria;
-            $("#" + TagId).html('');
-            $.ajax({
-                type: "POST",
-                url: '/Admin/Fn_Get_Count_Record',
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify(clsRequestDropdown),
-                success: function (data) {
-                    var obj = JSON.parse(data.message);
-                    if (obj.vErrorMsg == "Success") {
-                        $("#" + TagId).html(obj.vFieldName);
-                    }
-                    else {
-                        $("#" + TagId).html('');
-                    }
-
-                },
-                error: function (err) {
-                    alert(err);
                 }
             });
         }
 
 
     </script>
-
-
-    <style>
-        .stat-ic {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 17px;
-            margin-bottom: 10px;
-        }
-    </style>
-
 }
 
 <div class="container">
@@ -210,24 +148,48 @@
 
 <!-- Team Start -->
 
+
 <div class="container">
     <div class="row">
-
         <div class="col-12 col-md-12 col-sm-12">
             <div class="card">
+                <div class="row">
+
+                    <div class="col-sm-3">
+                        <label>Employe</label>
+                        <select id="ddlEmpName" class="form-control">
+                            <option value="0">--Select--</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2">
+                        <label>Canteen</label>
+                        <select id="ddlCanteen" class="form-control">
+                            <option value="0">--Select--</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2">
+                        <label>From Date</label>
+                        <input type="text" id="txtFromDate" class="form-control" />
+                    </div>
+                    <div class="col-sm-2">
+                        <label>To Date</label>
+                        <input type="text" id="txtToDate" class="form-control" />
+                    </div>
+                </div>
                 <div class="table-responsive mt-3">
                     <table class="table table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th>Time</th>
-                                <th>Coupon</th>
+                                <th>Txn ID</th>
+                                <th>Date & Time</th>
                                 <th>Emp No</th>
                                 <th>Name</th>
-                                <th>Item</th>
                                 <th>Canteen</th>
+                                <th>Item</th>
+                                <th>Amt (₹)</th>
                             </tr>
                         </thead>
-                        <tbody id="tbodyRecent_TNX"></tbody>
+                        <tbody id="all-txn-tbl"></tbody>
                     </table>
                 </div>
 
@@ -236,3 +198,17 @@
     </div>
 </div>
 <!-- Team End -->
+<script src="~/Web/js/select2.min.js"></script>
+<script>
+    $(function () {
+        $("#ddlEmpName").select2();
+        $("#ddlCanteen").select2();
+
+        //$("#txtFromDate").datepicker({
+        //    dateFormat: "dd/mm/yy",
+        //    changeMonth: true,
+        //    changeYear: true
+        //});
+    });
+
+</script>

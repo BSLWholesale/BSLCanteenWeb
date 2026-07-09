@@ -1,0 +1,155 @@
+﻿
+@{
+    ViewBag.Title = "DisplayEmployee";
+}
+
+@{
+    <script src="~/Web/js/jquery-3.7.1.min.js"></script>
+    <link href="~/Web/css/select2.min.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+
+            Fn_Fetch_EmployeeList();
+
+        });
+        function Fn_Fill_DropdownList(ddlName, strTBLName, strFieldName, strValueField, strCriteria) {
+            var clsRequestDropdown = {};
+            clsRequestDropdown.vFieldName = strFieldName;
+            clsRequestDropdown.vValueField = strValueField;
+            clsRequestDropdown.vTBLName = strTBLName;
+            clsRequestDropdown.vCriteria = strCriteria;
+            $("#" + ddlName).html('');
+            var dropdown = ''; var dropdown1 = "";
+            dropdown1 = "<option value='0'>--Select--</option>";
+            $("#" + ddlName).append(dropdown1);
+            $.ajax({
+                type: "POST",
+                url: '/Home/Fn_Fill_DropdownList',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsRequestDropdown),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    for (var i = 0; i < obj.length; i++) {
+                        if (strValueField == "") {
+                            dropdown += "<option value='" + obj[i].vFieldName + "'>" + obj[i].vFieldName + "</option>";
+                        }
+                        else {
+                            dropdown += "<option value='" + obj[i].vValueField + "'>" + obj[i].vFieldName + "</option>";
+                        }
+
+                    }
+                    $("#" + ddlName).append(dropdown);
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
+        }
+
+        function Fn_Fetch_EmployeeList() {
+
+            var clsEmployee = {};
+            clsEmployee.CreatedBy = sessionStorage.getItem("LogInID");
+            $("#emp-tbl").html('');
+            var html = '';
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Fn_Fetch_EmployeeDetails",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsEmployee),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj[0].vErrorMsg == "Success") {
+                        for (var i = 0; i < obj.length; i++) {
+
+                            html += "<tr>";
+                            html += "<td>" + obj[i].EmpId + "</td>";
+                            html += "<td>" + obj[i].EmpName + "</td>";
+                            html += "<td>" + obj[i].Department + "</td>";
+                            html += "<td>" + obj[i].Location + "</td>";
+                            html += "<td><div class='chip-canteen' style='background:#E8EEFB; color:#1B4FCC;'>🔵 " + obj[i].CanteenName + "</div></td>";
+                            html += "<td></td>";
+                            html += "<td><span class='badge badge-active'>Active</span></td>";
+
+                            //html += "<td></td>";
+                            html += "<td style='display: flex; gap: 6px;'>";
+                            html += "<button class='btn' style='font-size:11px;padding:5px 10px;' onclick=viewEmpModal(" + obj[i].EmpId + ")>View</button>";
+                            html += "<button class='btn btn-primary' style='font-size: 11px; padding: 5px 10px;' onclick=presetIssue('${e.empNo}')>Recharge</button>";
+                            html += "</td>";
+                            html += "</tr>";
+
+                        }
+                    }
+                    else {
+                        html += "<tr><td colspan='8' class='text-center'>" + obj[0].vErrorMsg + "</td></tr>";
+                    }
+                    $("#emp-tbl").append(html);
+                },
+                error: function (err) {
+                    alert(err);
+
+                }
+            });
+        }
+
+        
+    </script>
+}
+
+<div class="container">
+    <div class="card">
+        <nav aria-label="breadcrumb">
+
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="index.html">Home</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="products.html">Products</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    Mobile
+                </li>
+            </ol>
+
+        </nav>
+    </div>
+
+</div>
+
+<!-- Team Start -->
+
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-12 col-md-12 col-sm-12">
+            <div class="card">
+                <div class="table-responsive mt-3">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Emp No</th>
+                                <th>Name</th>
+                                <th>Dept</th>
+                                <th>Cadre</th>
+                                <th>Canteen</th>
+                                <th>Balance</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="emp-tbl"></tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Team End -->
