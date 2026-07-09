@@ -23,6 +23,15 @@ namespace BSLCanteenWeb.Controllers
             return View();
         }
 
+        public ActionResult DisplayEmployee()
+        {
+            return View();
+        }
+
+        public ActionResult Reports()
+        {
+            return View();
+        }
 
         [HttpPost]
         public JsonResult Fn_Fetch_EmployeeDetails(clsEmployee objReq)
