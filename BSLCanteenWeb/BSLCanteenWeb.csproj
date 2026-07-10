@@ -197,6 +197,7 @@
     <Content Include="Web\img\BanswaraLogo.png" />
     <Content Include="Web\img\banswara_logo.png" />
     <Content Include="Web\img\logo.png" />
+    <Content Include="Web\img\user.png" />
     <Content Include="Web\js\canteen.js" />
     <Content Include="Web\js\jquery-3.7.1.min.js" />
     <Content Include="Web\js\jquery-ui.min.js" />

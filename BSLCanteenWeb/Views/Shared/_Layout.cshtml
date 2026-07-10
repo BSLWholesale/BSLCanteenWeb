@@ -39,30 +39,32 @@
             }
 
             if (EmpRole == "Admin") {
-                $("#AdminPage").show();
-                $("#IssueCouponPage").show();
+                
                 $("#BulkUploadPage").show();
-                $("#StaffPage").hide();
-                $("#EmployeePage").hide();
+                $(".AdminPage").show();
+                $(".StaffPage").hide();
+                $(".EmployeePage").hide();
                 $("#LogoutPage").show();
             }
-
-            if (EmpRole == "Staff") {
-                $("#AdminPage").hide();
-                $("#IssueCouponPage").hide();
+            else if (EmpRole == "Staff") {
+                
                 $("#BulkUploadPage").hide();
-                $("#StaffPage").show();
-                $("#EmployeePage").hide();
+                $(".AdminPage").hide();
+                $(".StaffPage").show();
+                $(".EmployeePage").hide();
                 $("#LogoutPage").show();
+
+                
             }
-
-            if (EmpRole == "Employee") {
-                $("#AdminPage").hide();
-                $("#IssueCouponPage").hide();
+            else if (EmpRole == "Employee") {
+                
                 $("#BulkUploadPage").hide();
-                $("#StaffPage").hide();
-                $("#EmployeePage").show();
+                $(".AdminPage").hide();
+                $(".StaffPage").hide();
+                $(".EmployeePage").show();
                 $("#LogoutPage").show();
+
+                
             }
 
             //$("#dvRoleType").html(EmpRole);
