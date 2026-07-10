@@ -3,6 +3,71 @@
     ViewBag.Title = "BulkUploadEmpData";
 }
 
+<script src="~/Web/js/xlsx.full.min.js"></script>
+
+<script type="text/javascript">
+
+    function Fn_Upload_BulkEmployeeData() {
+
+        var clsEmployee = {};
+
+        let file = $("#fileBulkEmpDataUpload").get(0).files[0];
+        if (!file) {
+            Swal.fire({ title: "", text: "Select an Excel File", icon: "error" });
+        }
+
+        let formData = new FormData();
+        formData.append("file", file);
+
+        $.ajax({
+            type: "POST",
+            url: "/Admin/Fn_Upload_BulkEmployeeData",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                if (res.success) {
+                    Swal.fire({ title: "", text: "Employee Data imported successfully", icon: "success" });
+                    Fn_ResetFields();
+                }
+                else {
+                    Swal.fire({ title: "", text: "Employee Data import failed", icon: "error" });
+                }
+            },
+            error: function (err) {
+                alert(err);
+            }
+        });
+    }
+
+
+    function Fn_ResetFields() {
+        const EmpDataExcelFile = document.getElementById('fileBulkEmpDataUpload');
+        EmpDataExcelFile.value = '';
+    }
+
+
+    function Fn_EmployeeExcelFileFormatDownload() {
+
+        var fileName = "EmpExcelFormat.xlsx";
+
+        var headers = [
+            "EmployeeId", "EmpName", "EmpLocation", "Department",
+            "EmpRole", "CanteenName", "EmpMobile"
+        ]
+
+        var excelData = [];
+        excelData.push(headers);
+
+        var worksheet = XLSX.utils.aoa_to_sheet(excelData);
+
+        var workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "EmployeeData");
+
+        XLSX.writeFile(workbook, fileName);
+    }
+
+</script>
 
 
 <div class="container">
