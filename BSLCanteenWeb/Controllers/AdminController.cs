@@ -2,11 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using OfficeOpenXml;
+using System.Globalization;
 
 namespace BSLCanteenWeb.Controllers
 {
@@ -181,5 +184,103 @@ namespace BSLCanteenWeb.Controllers
                 }
             }
         }
+
+
+        [HttpPost]
+        public JsonResult Fn_Upload_BulkEmployeeData(clsEmployee objReq)
+        {
+            HttpPostedFileBase file = Request.Files[0];
+
+            if (file == null || file.ContentLength == 0)
+            {
+                return Json(new { status = "error", message = "Please Upload Excel File" });
+            }
+
+            string fileExtension = Path.GetExtension(file.FileName).ToLower();
+
+            if (fileExtension != ".xls" && fileExtension != ".xlsx")
+            {
+                return Json(new { success = false, message = "Invalid file format. Only .xls or .xlsx are allowed." }, JsonRequestBehavior.AllowGet);
+            }
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+            List<clsEmployee> empList = new List<clsEmployee>();
+
+            using (ExcelPackage package = new ExcelPackage(file.InputStream))
+            {
+                ExcelWorksheet sheet = package.Workbook.Worksheets[0];
+                int rowCount = sheet.Dimension.End.Row;
+
+                for (int row = 2; row <= rowCount; row++)
+                {
+                    string CanteenName;
+                    int CanteenNo = 0;
+                    if (sheet.Cells[row, 6].Value is string)
+                    {
+                        CanteenName = sheet.Cells[row, 6].Value.ToString();
+                        switch (CanteenName)
+                        {
+                            case "BSL Canteen":
+                                CanteenNo = 1;
+                                break;
+                            case "TPP Canteen":
+                                CanteenNo = 2;
+                                break;
+                            case "BFL Canteen":
+                                CanteenNo = 3;
+                                break;
+                            case "BFL Worsted Canteen":
+                                CanteenNo = 4;
+                                break;
+                            case "Weaving Canteen":
+                                CanteenNo = 5;
+                                break;
+                            case "BTM Canteen":
+                                CanteenNo = 6;
+                                break;
+                            case "BJF Canteen":
+                                CanteenNo = 7;
+                                break;
+                        }
+                    }
+
+                    clsEmployee emp = new clsEmployee
+                    {
+                        EmpId = Convert.ToInt64(sheet.Cells[row, 1].Value),
+                        EmpName = sheet.Cells[row, 2].Text,
+                        EmpLocation = sheet.Cells[row, 3].Text,
+                        Department = sheet.Cells[row, 4].Text,
+                        EmpRole = sheet.Cells[row, 5].Text,
+                        CanteenId = CanteenNo,
+                        EmpMobile = sheet.Cells[row, 7].Text
+                    };
+
+                    empList.Add(emp);
+                }
+            }
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(empList);
+                HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
+
+                HttpResponseMessage responsePost = client.PostAsync("api/Employee/Fn_Upload_BulkEmployeeData", content).Result;
+                if (responsePost.IsSuccessStatusCode)
+                {
+                    return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Data Import Failed" }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+
     }
 }
