@@ -33,6 +33,11 @@ namespace BSLCanteenWeb.Controllers
             return View();
         }
 
+        public ActionResult BulkUploadEmpData()
+        {
+            return View();
+        }
+
         [HttpPost]
         public JsonResult Fn_Fetch_EmployeeDetails(clsEmployee objReq)
         {
