@@ -1,0 +1,39 @@
+﻿
+@{
+    ViewBag.Title = "BulkUploadEmpData";
+}
+
+
+
+<div class="container">
+    
+    <div class="row">
+        <div class="col-xl-12 col-xxl-12 col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-label"><b>Upload Excel File</b></label>
+                                <input type="file" id="fileBulkEmpDataUpload" name="fileBulkEmpDataUpload" accept=".xlsx,.xls" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4" style="margin-top: 3%;">
+                            <button type="submit" id="btnUpload" name="btnUpload" class="btn btn-primary pull-right" onclick="">Upload File</button>
+                            <button type="submit" id="btnSubmit" name="btnSubmit" class="btn btn-success pull-right" onclick="Fn_ResetField();" style="margin-right:0.5%;">Reset</button>
+                        </div>
+
+                        <div class="col-sm-4" style="margin-top: 3%;">
+                            <div class="form-group">
+                                <button type="submit" id="btnExcelSheetFormat" name="btnExcelSheetFormat" class="btn btn-primary pull-right" onclick="">Emp Excel Format Download</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
