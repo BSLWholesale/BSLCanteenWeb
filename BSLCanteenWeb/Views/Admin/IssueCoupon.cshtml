@@ -132,16 +132,23 @@
                 });
             }
 
-            if ($('#txtBreakfast').val() != "0" && $('#txtBreakfast').val() != null) {
+            if ($('#txtBreakfastQty').val() != "0" && $('#txtBreakfastQty').val() != null) {
                 clsCouponItem.push({
                     ItemCategory: 'Breakfast',
-                    Quantity: $('#txtBreakfast').val()
+                    Quantity: $('#txtBreakfastQty').val()
                 });
             }
-            if ($('#txtThali').val() != "0" && $('#txtThali').val() != null) {
+            
+            if ($('#txtThaliQty').val() != "0" && $('#txtThaliQty').val() != null) {
                 clsCouponItem.push({
                     ItemCategory: 'Thali',
-                    Quantity: $('#txtThali').val()
+                    Quantity: $('#txtThaliQty').val()
+                });
+            }
+            if ($('#txtMiniThaliQty').val() != "0" && $('#txtMiniThaliQty').val() != null) {
+                clsCouponItem.push({
+                    ItemCategory: 'Mini Thali',
+                    Quantity: $('#txtMiniThaliQty').val()
                 });
             }
             clsCouponOrder.Items = clsCouponItem;
@@ -218,11 +225,14 @@
                             if (obj[i].ItemCategory == "Tea") {
                                 html += "<div style='font-size: 20px'>Item: ☕ Tea</div>";
                             }
+                            else if (obj[i].ItemCategory == "Breakfast") {
+                                html += "<div style='font-size: 20px'>Item: 🍽️ Breakfast</div>";
+                            }
                             else if (obj[i].ItemCategory == "Thali") {
                                 html += "<div style='font-size: 20px'>Item: 🍛 Thali</div>";
                             }
-                            else if (obj[i].ItemCategory == "Breakfast") {
-                                html += "<div style='font-size: 20px'>Item: 🍽️ Breakfast</div>";
+                            else if (obj[i].ItemCategory == "Mini Thali") {
+                                html += "<div style='font-size: 20px'>Item: 🍛 Mini Thali</div>";
                             }
                             else {
                                 html += "<div style='font-size: 20px'>Item: " + obj[i].ItemCategory + "</div>";
