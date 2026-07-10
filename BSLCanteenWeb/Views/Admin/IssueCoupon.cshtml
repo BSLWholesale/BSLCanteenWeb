@@ -124,41 +124,52 @@
             clsCouponOrder.EmpId = $("#ddlEmpName").val();
             clsCouponOrder.CanteenId = $("#ddlCanteen").val();
             var clsCouponItem = [];
-
-            if ($('#txtTeaQty').val() != "0" && $('#txtTeaQty').val() != null) {
+            
+            if ($("#txtTeaQty").val() != "0" && $("#txtTeaQty").val() != "") {
                 clsCouponItem.push({
                     ItemCategory: 'Tea',
-                    Quantity: $('#txtTeaQty').val()
+                    Quantity: $("#txtTeaQty").val()
                 });
             }
 
-            if ($('#txtBreakfastQty').val() != "0" && $('#txtBreakfastQty').val() != null) {
+            if ($("#txtBreakfastQty").val() != "0" && $("#txtBreakfastQty").val() != "") {
                 clsCouponItem.push({
                     ItemCategory: 'Breakfast',
                     Quantity: $('#txtBreakfastQty').val()
                 });
             }
-            
-            if ($('#txtThaliQty').val() != "0" && $('#txtThaliQty').val() != null) {
+
+            if ($("#txtThaliQty").val() != "0" && $("#txtThaliQty").val() != "") {
                 clsCouponItem.push({
                     ItemCategory: 'Thali',
-                    Quantity: $('#txtThaliQty').val()
+                    Quantity: $("#txtThaliQty").val()
                 });
             }
-            if ($('#txtMiniThaliQty').val() != "0" && $('#txtMiniThaliQty').val() != null) {
+            if ($("#txtMiniThaliQty").val() != "0" && $("#txtMiniThaliQty").val() != "") {
                 clsCouponItem.push({
                     ItemCategory: 'Mini Thali',
-                    Quantity: $('#txtMiniThaliQty').val()
+                    Quantity: $("#txtMiniThaliQty").val()
                 });
             }
             clsCouponOrder.Items = clsCouponItem;
 
+            var txtTeaQty = $("#txtTeaQty").val();
+            var txtBreakfastQty = $("#txtBreakfastQty").val();
+            var txtThaliQty = $("#txtThaliQty").val();
+            var txtMiniThaliQty = $("#txtMiniThaliQty").val();
 
             if ($("#ddlEmpName").val() == "0") {
                 Swal.fire({ title: "", text: "Please Select Employee", icon: "error" });
             }
             else if ($("#ddlCanteen").val() == "0") {
                 Swal.fire({ title: "", text: "Please Select Canteen", icon: "error" });
+            }
+            else if (txtTeaQty == "0" && txtBreakfastQty == "0" && txtThaliQty == "0" && txtMiniThaliQty == "0" && 
+                txtTeaQty == "" && txtBreakfastQty == "" && txtThaliQty == "" && txtMiniThaliQty == "") {
+                Swal.fire({ title: "", text: "Please enter quantity of any one items ", icon: "error" });
+            }
+            else if (txtTeaQty == "" && txtBreakfastQty == "" && txtThaliQty == "" && txtMiniThaliQty == "") {
+                Swal.fire({ title: "", text: "Please enter quantity of any one items ", icon: "error" });
             }
             else if (clsCouponOrder.Items.length == 0 || clsCouponOrder.Items.length == null) {
                 Swal.fire({ title: "", text: "Please Select Item Menu", icon: "error" });
@@ -174,6 +185,10 @@
                         var obj = JSON.parse(data.message);
                         if (obj.vErrorMsg == "Success") {
                             Swal.fire({ title: "", text: "Coupons Generated Successfully", icon: "success" });
+                            $("#txtTeaQty").val("");
+                            $("#txtBreakfastQty").val("");
+                            $("#txtThaliQty").val("");
+                            $("#txtMiniThaliQty").val("");
                             Fn_Get_Coupon_Order();
                         }
                         else {
@@ -284,72 +299,72 @@
             var printWindow = window.open("", "", "width=800,height=600");
 
             printWindow.document.write(`
-            <html>
-            <head>
-                <title>Print Stickers</title>
-                <style>
-                    *{
-                        box-sizing:border-box;
-                    }
+                <html>
+                <head>
+                    <title>Print Stickers</title>
+                    <style>
+                        *{
+                            box-sizing:border-box;
+                        }
 
-                    @@page{
-                        size:auto;
-                        margin:8mm;      /* Reduce printer margin */
-                    }
+                        @@page{
+                            size:auto;
+                            margin:8mm;      /* Reduce printer margin */
+                        }
 
-                    html,body{
-                        width:100%;
-                        margin:0;
-                        padding:0;
-                        font-family:Arial,sans-serif;
-                    }
-
-                    body{
-                        display:flex;
-                        flex-direction:column;
-                        align-items:center;
-                        padding:5mm;
-                    }
-
-                    .qr-card{
-                        width:3in;
-                        border:1px solid #000;
-                        padding:8px;
-                        margin:8px auto;
-                        page-break-inside:avoid;
-                        overflow:hidden;
-                    }
-
-                    .lbl-text{
-                        font-size:14px;
-                        text-align:left;
-                        word-break:break-word;
-                    }
-
-                    img{
-                        display:block;
-                        margin:0 auto;
-                        max-width:100%;
-                        height:auto;
-                    }
-
-                    @@media print{
-                        body{
+                        html,body{
+                            width:100%;
+                            margin:0;
                             padding:0;
+                            font-family:Arial,sans-serif;
+                        }
+
+                        body{
+                            display:flex;
+                            flex-direction:column;
+                            align-items:center;
+                            padding:5mm;
                         }
 
                         .qr-card{
+                            width:3in;
+                            border:1px solid #000;
+                            padding:8px;
+                            margin:8px auto;
                             page-break-inside:avoid;
-                            break-inside:avoid;
+                            overflow:hidden;
                         }
-                    }
-                </style>
-            </head>
-            <body>
-                ${printContents}
-            </body>
-            </html>
-        `);
+
+                        .lbl-text{
+                            font-size:14px;
+                            text-align:left;
+                            word-break:break-word;
+                        }
+
+                        img{
+                            display:block;
+                            margin:0 auto;
+                            max-width:100%;
+                            height:auto;
+                        }
+
+                        @@media print{
+                            body{
+                                padding:0;
+                            }
+
+                            .qr-card{
+                                page-break-inside:avoid;
+                                break-inside:avoid;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${printContents}
+                </body>
+                </html>
+            `);
 
             printWindow.document.close();
             printWindow.focus();
@@ -368,8 +383,8 @@
     <div class="row">
         <div class="col-8">
             <h4>Issue / Recharge Coupon</h4>
-            <div class="card pb-5">                
-                <div class="row mb-3">
+            <div class="card pb-5">
+                <div class="row mb-3 mt-3">
                     <div class="col-sm-6">
                         <div class="form-group">
                             <label>Employee No.</label>
@@ -413,3 +428,13 @@
     </div>
 </div>
 <!-- Team End -->
+<script src="~/Web/js/select2.min.js"></script>
+<script>
+    $(function () {
+        $("#ddlEmpName").select2();
+        $("#ddlCanteen").select2();
+
+
+    });
+
+</script>
