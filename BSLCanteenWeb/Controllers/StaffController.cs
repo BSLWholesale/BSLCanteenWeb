@@ -17,6 +17,10 @@ namespace BSLCanteenWeb.Controllers
         {
             return View();
         }
+        public ActionResult StaffTodayHistory()
+        {
+            return View();
+        }
 
         [HttpPost]
         public JsonResult Fn_ProcessCouponTransaction(clsCouponReport objReq)

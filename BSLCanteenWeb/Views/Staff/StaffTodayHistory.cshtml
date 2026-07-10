@@ -1,7 +1,8 @@
 ﻿
 @{
-    ViewBag.Title = "StaffDashboard";
+    ViewBag.Title = "StaffTodayHistory";
 }
+
 
 @{
     <script src="~/Scripts/jquery-3.4.1.min.js"></script>
@@ -11,6 +12,16 @@
 
         $(document).ready(function () {
 
+            var CurrentDate = new Date();
+
+            var day = String(CurrentDate.getDate()).padStart(2, '0');
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = months[CurrentDate.getMonth()];
+            var year = CurrentDate.getFullYear();
+
+            var formattedDate = day + "-" + month + "-" + year;
+            $("#spnDate").html(formattedDate);
             var spnCanteen = sessionStorage.getItem("CanteenName");
             $("#spCanteen").html(spnCanteen);
 
@@ -131,28 +142,11 @@
 }
 
 
-<div class="container  mt-4">
-
-    <div class="row">
-        <div class="col-lg-6 col-md-6">
-            <h4>Point of Sale — <span id="spCanteen"></span></h4>
-            <div class="card">
-                <div class="form-group">
-                    <div style="font-size: 52px; text-align: center;">📲</div>
-                    <h5>Scan QR-Code or Enter Coupon Id</h5>
-                    <input class="form-control" id="txtCouponId" placeholder="Please Scan QR-code" onkeydown="if (event.key === 'Enter') Fn_ProcessCouponTransaction();" oninput="Fn_ClearPosResult();" />
-                    <button class="btn btn-primary mb-2 mt-2" style="width: 100%;" onclick="Fn_ProcessCouponTransaction()">✓ Process Transaction</button>
-                    <button class="btn btn-danger mb-2" style="width: 100%;" onclick="Fn_Clear_Control()">Reset</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<div class="container">
+<div class="container mt-4">
     <div class="row">
         <div class="col-12 col-md-12 col-sm-12">
+            <h4>Today's <span id="spnDate"></span> Transactions</h4>
+            <p><span id="spCanteen"></span> — Today's records</p>
             <div class="card">
                 <div class="table-responsive mt-3">
                     <table class="table table-bordered table-hover">
@@ -173,3 +167,4 @@
         </div>
     </div>
 </div>
+
