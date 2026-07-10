@@ -286,6 +286,7 @@
     <Content Include="NewTemp\scss\bootstrap\scss\_type.scss" />
     <Content Include="NewTemp\scss\bootstrap\scss\_utilities.scss" />
     <Content Include="NewTemp\scss\bootstrap\scss\_variables.scss" />
+    <Content Include="Web\js\xlsx.full.min.js" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -319,6 +320,7 @@
     <Content Include="Views\Admin\IssueCoupon.cshtml" />
     <Content Include="Views\Admin\DisplayEmployee.cshtml" />
     <Content Include="Views\Admin\Reports.cshtml" />
+    <Content Include="Views\Admin\BulkUploadEmpData.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
