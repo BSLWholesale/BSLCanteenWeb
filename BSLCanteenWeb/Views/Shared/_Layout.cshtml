@@ -34,6 +34,10 @@
             var EmpRole = sessionStorage.getItem("EmpRole");
             var CanteenId = sessionStorage.getItem("CanteenId");
 
+            if (strLogInId == null || strLogInId == 0) {
+                window.location.href = '/Home/Index';
+            }
+
             if (EmpRole == "Admin") {
                 $("#AdminPage").show();
                 $("#IssueCouponPage").show();
