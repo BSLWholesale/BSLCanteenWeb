@@ -5,9 +5,9 @@
 
 @{
     <script src="~/Web/js/jquery-3.7.1.min.js"></script>
-    <link href="~/Web/css/select2.min.css" rel="stylesheet" />
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link href="~/Web/css/select2.min.css" rel="stylesheet" />   
+    <script src="~/Web/js/jquery-ui.min.js"></script>
+    <link href="~/Web/css/jquery-ui.css" rel="stylesheet" />
     <script type="text/javascript">
 
         $(document).ready(function () {
@@ -18,13 +18,13 @@
             Fn_Fill_DropdownList("ddlCanteen", "CanteenMaster", "CanteenName", "CanteenId", "");
 
             $("#txtFromDate").datepicker({
-                dateFormat: "dd-MMM-yyyy",
+                dateFormat: "dd-M-yy",
                 defaultDate: new Date()
             });
-            //$("#ToDate").datepicker({
-            //    dateFormat: "dd-MMM-yyyy",
-            //    defaultDate: new Date()
-            //});
+            $("#txtToDate").datepicker({
+                dateFormat: "dd-M-yy",
+                defaultDate: new Date()
+            });
 
             Fn_Get_Report();
 
