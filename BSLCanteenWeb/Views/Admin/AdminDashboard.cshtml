@@ -85,13 +85,11 @@
             var year = today.getFullYear();
 
             var formattedDate = day + "-" + month + "-" + year;
-
-
+            $("#spnTodays").html(formattedDate);
 
             var clsCouponReport = {};
-            // clsCouponReport.CreatedBy = 2000300; // sessionStorage.getItem("LogInID");
             clsCouponReport.OrderStatus = "Scanned";
-            // clsCouponReport.OrderTakenDate = formattedDate;
+            //clsCouponReport.OrderTakenDate = formattedDate;
             $("#tbodyRecent_TNX").html('');
             var html = '';
             $.ajax({
@@ -130,7 +128,7 @@
                     }
                     else {
                         html += "<tr>";
-                        html += "<td colspan='6'>" + obj[0].vErrorMsg + "</td>";
+                        html += "<td colspan='6' class='text-center'>" + obj[0].vErrorMsg + "</td>";
                         html += "<tr>";
                     }
                     $("#tbodyRecent_TNX").append(html);
@@ -193,8 +191,9 @@
 
 <div class="container mt-4">
     <div class="row">
-
         <div class="col-12 col-md-12 col-sm-12">
+            <h4>Adnin</h4>
+            <p>Today's  <span id="spnTodays"></span> Transcation</p>
             <div class="card">
                 <div class="table-responsive mt-3">
                     <table class="table table-bordered table-hover">

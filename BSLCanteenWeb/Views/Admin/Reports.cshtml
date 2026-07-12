@@ -26,7 +26,7 @@
                 defaultDate: new Date()
             });
 
-            Fn_Monthly_Report();
+            Fn_CanteenWise_Report();
 
         });
         function Fn_Fill_DropdownList(ddlName, strTBLName, strFieldName, strValueField, strCriteria) {
@@ -64,7 +64,7 @@
             });
         }
 
-        function Fn_Monthly_Report() {
+        function Fn_CanteenWise_Report() {
 
             var clsMonthlyReportReq = {};
             clsMonthlyReportReq.OrderStatus = "Scanned";
@@ -81,7 +81,7 @@
             var html = '';
             $.ajax({
                 type: "POST",
-                url: "/Admin/Fn_Monthly_Report",
+                url: "/Admin/Fn_CanteenWise_Report",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 data: JSON.stringify(clsMonthlyReportReq),
@@ -156,6 +156,10 @@
                             html += "<td>" + totalPrice.toFixed(2) + "</td>";
                             html += "</tr>";
                         }
+                       
+                        $("#tblCanteen").show();
+                        $("#tbodyEmpReport").html('');
+                        $("#tblEmp").hide();
                     }
                     else {
                         html += "<tr>";
@@ -172,6 +176,120 @@
             });
         }
 
+        function Fn_EmployeeWise_Report() {
+
+            var clsMonthlyReportReq = {};
+            clsMonthlyReportReq.OrderStatus = "Scanned";
+            if ($("#ddlCanteen").val() != "0") {
+                clsMonthlyReportReq.CanteenName = $("#ddlCanteen").val();
+            }
+            if ($("#txtFromDate").val() != "") {
+                clsMonthlyReportReq.FromDate = $("#txtFromDate").val();
+            } if ($("#txtToDate").val() != "0") {
+                clsMonthlyReportReq.ToDate = $("#txtToDate").val();
+            }
+
+            $("#tbodyEmpReport").html('');
+            var html = '';
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Fn_EmployeeWise_Report",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsMonthlyReportReq),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj[0].vErrorMsg == "Success") {
+
+                        var currentEmp = "";
+                        var empTotalPrice = 0;
+                        var empTotalCoupons = 0;
+                        for (var i = 0; i < obj.length; i++) {
+
+                            // If employee changes, show previous employee total
+                            if (currentEmp != "" && currentEmp != obj[i].EmpName) {
+                                html += "<tr style='background-color:#f2f2f2;font-weight:bold;'>";
+                                html += "<td colspan='5' style='text-align:left;'>Total for " + currentEmp + "</td>";
+                                html += "<td>" + empTotalCoupons + "</td>";
+                                html += "<td>" + empTotalPrice + "</td>";
+                                html += "</tr>";
+
+                                empTotalPrice = 0;
+                                empTotalCoupons = 0;
+                            }
+
+                            currentEmp = obj[i].EmpName;
+
+                            empTotalCoupons += parseInt(obj[i].TotalCoupons) || 0;
+                            empTotalPrice += parseFloat(obj[i].TotalPrice) || 0;
+
+                            html += "<tr>";
+                            html += "<td>" + obj[i].EmpId + "</td>";
+                            html += "<td>" + obj[i].EmpName + "</td>";
+                            html += "<td>" + obj[i].CanteenName + "</td>";
+                            html += "<td>" + obj[i].OrderTakenDate + "</td>";
+
+                            if (obj[i].ItemCategory == "Tea") {
+                                html += "<td>☕ Tea</td>";
+                            }
+                            else if (obj[i].ItemCategory == "Thali") {
+                                html += "<td>🍛 Thali</td>";
+                            }
+                            else if (obj[i].ItemCategory == "Mini Thali") {
+                                html += "<td>🍛 Mini Thali</td>";
+                            }
+                            else if (obj[i].ItemCategory == "Breakfast") {
+                                html += "<td>🍽️ Breakfast</td>";
+                            }
+                            else {
+                                html += "<td>" + obj[i].ItemCategory + "</td>";
+                            }
+
+                            html += "<td>" + obj[i].TotalCoupons + "</td>";
+                            html += "<td>" + obj[i].TotalPrice + "</td>";
+                            html += "</tr>";
+                        }
+
+                        // Show total for the last employee
+                        if (currentEmp != "") {
+                            html += "<tr style='background-color:#f2f2f2;font-weight:bold;'>";
+                            html += "<td colspan='5' style='text-align:left;'>Total for " + currentEmp + "</td>";
+                            html += "<td>" + empTotalCoupons + "</td>";
+                            html += "<td>" + empTotalPrice + "</td>";
+                            html += "</tr>";
+                        }
+
+                        $("#tblEmp").show();
+                        $("#tbodyEmpReport").html(html);
+                        $("#tblCanteen").hide();
+                    }
+                    else {
+                        html += "<tr>";
+                        html += "<td colspan='7'>" + obj[0].vErrorMsg + "</td>";
+                        html += "</tr>";
+                        $("#tbodyEmpReport").html(html);
+                    }
+                   // $("#tbodyEmpReport").append(html);
+                },
+                error: function (err) {
+                    alert(err);
+
+                }
+            });
+        }
+
+        function onRadioChange() {
+
+            var selectedValue = $('input[name="rb"]:checked').val();
+            if (selectedValue == "Canteenwise") {
+                Fn_CanteenWise_Report();
+            } else if (selectedValue == "Employeewise") {
+                Fn_EmployeeWise_Report();
+            }
+            else {
+
+            }
+        }
 
     </script>
 }
@@ -185,7 +303,7 @@
                 <div class="row mt-2">
                     <div class="col-sm-3">
                         <label>Canteen</label>
-                        <select id="ddlCanteen" class="form-control" onchange="Fn_Monthly_Report();">
+                        <select id="ddlCanteen" class="form-control" onchange="onRadioChange();">
                             <option value="0">--Select--</option>
                         </select>
                     </div>
@@ -197,12 +315,16 @@
                         <label>To Date</label>
                         <input type="text" id="txtToDate" class="form-control" />
                     </div>
+                    <div class="col-sm-3">
+                        <input type="radio" onchange="onRadioChange();" style="margin-top: 30px" name="rb" value="Canteenwise" checked="checked" /> Canteenwise
+                        <input type="radio" onchange="onRadioChange();" style="margin-top: 30px" name="rb" value="Employeewise" /> Employeewise
+                    </div>
                     <div class="col-sm-2">
-                        <button id="btnSearch" class="btn btn-primary mt-4" onclick="Fn_Monthly_Report();"> Search</button>
+                        <button id="btnSearch" class="btn btn-primary mt-4" onclick="onRadioChange();"> Search</button>
                     </div>
                 </div>
                 <div class="table-responsive mt-3">
-                    <table class="table table-bordered table-hover">
+                    <table class="table table-bordered table-hover" id="tblCanteen" style="display: none;">
                         <thead>
                             <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
                                 @*<th>Canteen Id</th>*@
@@ -214,6 +336,22 @@
                             </tr>
                         </thead>
                         <tbody id="tbodyReport"></tbody>
+                    </table>
+                    <!-- Employee table start-->
+
+                    <table class="table table-bordered table-hover" id="tblEmp" style="display: none;">
+                        <thead>
+                            <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
+                                <th>Emp Id</th>
+                                <th>Emp Name</th>
+                                <th>Canteen Name</th>
+                                <th>Order Date</th>
+                                <th>Item</th>
+                                <th>TotalCoupons</th>
+                                <th>Amt (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyEmpReport"></tbody>
                     </table>
                 </div>
 
