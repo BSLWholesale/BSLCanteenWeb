@@ -12,10 +12,10 @@
 
         $(document).ready(function () {
 
-            var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
-            Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", "");
+            //var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
+            //Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", "");
 
-            Fn_Fill_DropdownList("ddlCanteen", "CanteenMaster", "CanteenName", "CanteenId", "");
+            Fn_Fill_DropdownList("ddlCanteen", "CanteenMaster", "CanteenName", "", "");
 
             $("#txtFromDate").datepicker({
                 dateFormat: "dd-M-yy",
@@ -26,7 +26,7 @@
                 defaultDate: new Date()
             });
 
-            Fn_Get_Report();
+            Fn_Monthly_Report();
 
         });
         function Fn_Fill_DropdownList(ddlName, strTBLName, strFieldName, strValueField, strCriteria) {
@@ -64,59 +64,106 @@
             });
         }
 
-        function Fn_Get_Report() {
+        function Fn_Monthly_Report() {
 
-            var clsCouponReport = {};
-            clsCouponReport.OrderStatus = "Scanned";
-            $("#all-txn-tbl").html('');
+            var clsMonthlyReportReq = {};
+            clsMonthlyReportReq.OrderStatus = "Scanned";
+            if ($("#ddlCanteen").val() != "0") {
+                clsMonthlyReportReq.CanteenName = $("#ddlCanteen").val();
+            }
+            if ($("#txtFromDate").val() != "") {
+                clsMonthlyReportReq.FromDate = $("#txtFromDate").val();
+            } if ($("#txtToDate").val() != "0") {
+                clsMonthlyReportReq.ToDate = $("#txtToDate").val();
+            }
+            
+            $("#tbodyReport").html('');
             var html = '';
             $.ajax({
                 type: "POST",
-                url: "/Admin/Fn_Get_Coupon_Order",
+                url: "/Admin/Fn_Monthly_Report",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                data: JSON.stringify(clsCouponReport),
+                data: JSON.stringify(clsMonthlyReportReq),
                 success: function (data) {
                     var obj = JSON.parse(data.message);
                     if (obj[0].vErrorMsg == "Success") {
-                        for (var i = 0; i < obj.length; i++) {
-                            html += "<tr>";
-                            html += "<td>" + obj[i].CouponId + "</td>";
-                            html += "<td>" + obj[i].OrderTakenDate + " " + obj[i].OrderTakenTime + "</td>";
 
-                            html += "<td>" + obj[i].EmpId + "</td>";
-                            html += "<td>" + obj[i].EmpName + "</td>";
+                        var previousCanteen = "";
+                        var totalCoupons = 0;
+                        var totalPrice = 0;
+
+                        for (var i = 0; i < obj.length; i++) {
+
+                            if (i == 0 && $("#txtFromDate").val() != "" && $("#txtToDate").val() != "") {
+                                html += "<tr style='font-weight:bold;background-color:#e9ecef;'>";
+                                html += "<td style='text-align:center;'>Report</td>";
+                                html += "<td style='text-align:center;'>From</td>";
+                                html += "<td style='text-align:center;'><b>" + $("#txtFromDate").val() + "</b></td>";
+                                html += "<td style='text-align:center;'>To</td>";
+                                html += "<td style='text-align:center;'><b>" + $("#txtToDate").val() + "</b></td>";
+                                html += "</tr>";
+                            }
+                            // If canteen changes, display totals for previous canteen
+                            if (previousCanteen != "" && previousCanteen != obj[i].CanteenName) {
+
+                                html += "<tr style='font-weight:bold;background:#f2f2f2;'>";
+                                html += "<td colspan='3' align='left'>Total (" + previousCanteen + ")</td>";
+                                html += "<td>" + totalCoupons + "</td>";
+                                html += "<td>" + totalPrice.toFixed(2) + "</td>";
+                                html += "</tr>";
+
+                                // Reset totals
+                                totalCoupons = 0;
+                                totalPrice = 0;
+                            }
+
+                            previousCanteen = obj[i].CanteenName;
+
+                            totalCoupons += parseInt(obj[i].TotalCoupons || 0);
+                            totalPrice += parseFloat(obj[i].TotalPrice || 0);
+
+                            html += "<tr>";
                             html += "<td>" + obj[i].CanteenName + "</td>";
+                            html += "<td>" + obj[i].OrderTakenDate + "</td>";
+
                             if (obj[i].ItemCategory == "Tea") {
                                 html += "<td>☕ Tea</td>";
-                                html += "<td><strong>₹" + obj[i].Price + "</strong></td>";
                             }
                             else if (obj[i].ItemCategory == "Thali") {
                                 html += "<td>🍛 Thali</td>";
-                                html += "<td><strong>₹" + obj[i].Price + "</strong></td>";
                             }
                             else if (obj[i].ItemCategory == "Mini Thali") {
                                 html += "<td>🍛 Mini Thali</td>";
-                                html += "<td><strong>₹" + obj[i].Price + "</strong></td>";
                             }
                             else if (obj[i].ItemCategory == "Breakfast") {
                                 html += "<td>🍽️ Breakfast</td>";
-                                html += "<td><strong>₹" + obj[i].Price + "</strong></td>";
                             }
                             else {
                                 html += "<td>" + obj[i].ItemCategory + "</td>";
-                                html += "<td><strong>₹" + obj[i].Price + "</strong></td>";
                             }
 
+                            html += "<td>" + obj[i].TotalCoupons + "</td>";
+                            html += "<td>" + obj[i].TotalPrice + "</td>";
+                            html += "</tr>";
+                        }
+
+                        // Total row for last canteen
+                        if (previousCanteen != "") {
+                            html += "<tr style='font-weight:bold;background:#f2f2f2;'>";
+                            html += "<td colspan='3' align='left'>Total (" + previousCanteen + ")</td>";
+                            html += "<td>" + totalCoupons + "</td>";
+                            html += "<td>" + totalPrice.toFixed(2) + "</td>";
                             html += "</tr>";
                         }
                     }
                     else {
                         html += "<tr>";
-                        html += "<td colspan='8'>" + obj[0].vErrorMsg + "</td>";
-                        html += "<tr>";
+                        html += "<td colspan='5'>" + obj[0].vErrorMsg + "</td>";
+                        html += "</tr>";
                     }
-                    $("#all-txn-tbl").append(html);
+
+                    $("#tbodyReport").append(html);
                 },
                 error: function (err) {
                     alert(err);
@@ -133,18 +180,12 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-12 col-md-12 col-sm-12">
+            <h4>Report</h4>
             <div class="card">
                 <div class="row mt-2">
-
                     <div class="col-sm-3">
-                        <label>Employe</label>
-                        <select id="ddlEmpName" class="form-control">
-                            <option value="0">--Select--</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-2">
                         <label>Canteen</label>
-                        <select id="ddlCanteen" class="form-control">
+                        <select id="ddlCanteen" class="form-control" onchange="Fn_Monthly_Report();">
                             <option value="0">--Select--</option>
                         </select>
                     </div>
@@ -156,21 +197,23 @@
                         <label>To Date</label>
                         <input type="text" id="txtToDate" class="form-control" />
                     </div>
+                    <div class="col-sm-2">
+                        <button id="btnSearch" class="btn btn-primary mt-4" onclick="Fn_Monthly_Report();"> Search</button>
+                    </div>
                 </div>
                 <div class="table-responsive mt-3">
                     <table class="table table-bordered table-hover">
                         <thead>
-                            <tr>
-                                <th>Txn ID</th>
-                                <th>Date & Time</th>
-                                <th>Emp No</th>
-                                <th>Name</th>
-                                <th>Canteen</th>
+                            <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
+                                @*<th>Canteen Id</th>*@
+                                <th>Canteen Name</th>
+                                <th>Order Date</th>
                                 <th>Item</th>
+                                <th>TotalCoupons</th>
                                 <th>Amt (₹)</th>
                             </tr>
                         </thead>
-                        <tbody id="all-txn-tbl"></tbody>
+                        <tbody id="tbodyReport"></tbody>
                     </table>
                 </div>
 
@@ -182,7 +225,7 @@
 <script src="~/Web/js/select2.min.js"></script>
 <script>
     $(function () {
-        $("#ddlEmpName").select2();
+       // $("#ddlEmpName").select2();
         $("#ddlCanteen").select2();      
     });
 
