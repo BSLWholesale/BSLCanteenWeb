@@ -5,26 +5,19 @@
 
 @{
     <script src="~/Web/js/jquery-3.7.1.min.js"></script>
-    <link href="~/Web/css/select2.min.css" rel="stylesheet" />   
+    <link href="~/Web/css/select2.min.css" rel="stylesheet" />
     <script src="~/Web/js/jquery-ui.min.js"></script>
     <link href="~/Web/css/jquery-ui.css" rel="stylesheet" />
     <script type="text/javascript">
 
         $(document).ready(function () {
 
-            //var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
-            //Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", "");
+            var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
+            Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", "");
 
             Fn_Fill_DropdownList("ddlCanteen", "CanteenMaster", "CanteenName", "", "");
 
-            $("#txtFromDate").datepicker({
-                dateFormat: "dd-M-yy",
-                defaultDate: new Date()
-            });
-            $("#txtToDate").datepicker({
-                dateFormat: "dd-M-yy",
-                defaultDate: new Date()
-            });
+           
 
             Fn_CanteenWise_Report();
 
@@ -64,19 +57,59 @@
             });
         }
 
+
+
+        function formatDate(date) {
+            var day = String(date.getDate()).padStart(2, '0');
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = months[date.getMonth()];
+            var year = date.getFullYear();
+
+            return day + "-" + month + "-" + year;
+        }
+
         function Fn_CanteenWise_Report() {
 
+            var today = new Date();
             var clsMonthlyReportReq = {};
             clsMonthlyReportReq.OrderStatus = "Scanned";
+
+            var ddlDays = $("#ddlDays").val();
+            if (ddlDays == "Today") {
+                var CurrentDate = new Date(today); // Current date
+                clsMonthlyReportReq.ReportType = "Today";
+                clsMonthlyReportReq.OrderTakenDate = formatDate(CurrentDate);
+            }
+            else if (ddlDays == "Monthly") {
+                clsMonthlyReportReq.ReportType = "Monthly";
+
+                var fromDate = new Date(today); // Current date
+                var toDate = new Date(today);
+                if (today.getDate() >= 25) {
+                    // Current cycle: 25th of this month to 24th of next month
+                    fromDate = new Date(today.getFullYear(), today.getMonth(), 25);
+                    toDate = new Date(today.getFullYear(), today.getMonth() + 1, 24);
+                } else {
+                    // Previous cycle: 25th of previous month to 24th of this month
+                    fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 25);
+                    toDate = new Date(today.getFullYear(), today.getMonth(), 24);
+                }
+
+                clsMonthlyReportReq.FromDate = formatDate(fromDate);
+                clsMonthlyReportReq.ToDate = formatDate(toDate);
+            }
+            else {
+                var CurrentDate = new Date(today); // Current date
+                clsMonthlyReportReq.ReportType = "Today";
+                clsMonthlyReportReq.OrderTakenDate = formatDate(CurrentDate);
+            }
+
             if ($("#ddlCanteen").val() != "0") {
                 clsMonthlyReportReq.CanteenName = $("#ddlCanteen").val();
             }
-            if ($("#txtFromDate").val() != "") {
-                clsMonthlyReportReq.FromDate = $("#txtFromDate").val();
-            } if ($("#txtToDate").val() != "0") {
-                clsMonthlyReportReq.ToDate = $("#txtToDate").val();
-            }
-            
+
+
             $("#tbodyReport").html('');
             var html = '';
             $.ajax({
@@ -95,13 +128,13 @@
 
                         for (var i = 0; i < obj.length; i++) {
 
-                            if (i == 0 && $("#txtFromDate").val() != "" && $("#txtToDate").val() != "") {
+                            if (i == 0 && ddlDays == "Monthly") {
                                 html += "<tr style='font-weight:bold;background-color:#e9ecef;'>";
-                                html += "<td style='text-align:center;'>Report</td>";
-                                html += "<td style='text-align:center;'>From</td>";
-                                html += "<td style='text-align:center;'><b>" + $("#txtFromDate").val() + "</b></td>";
-                                html += "<td style='text-align:center;'>To</td>";
-                                html += "<td style='text-align:center;'><b>" + $("#txtToDate").val() + "</b></td>";
+                                html += "<th style='text-align:center;'>Report</th>";
+                                html += "<th style='text-align:center;'>From</th>";
+                                html += "<th style='text-align:center;'>" + clsMonthlyReportReq.ToDate + "</th>";
+                                html += "<th style='text-align:center;'>To</th>";
+                                html += "<th style='text-align:center;'>" + clsMonthlyReportReq.FromDate + "</th>";
                                 html += "</tr>";
                             }
                             // If canteen changes, display totals for previous canteen
@@ -151,19 +184,19 @@
                         // Total row for last canteen
                         if (previousCanteen != "") {
                             html += "<tr style='font-weight:bold;background:#f2f2f2;'>";
-                            html += "<td colspan='3' align='left'>Total (" + previousCanteen + ")</td>";
-                            html += "<td>" + totalCoupons + "</td>";
-                            html += "<td>" + totalPrice.toFixed(2) + "</td>";
+                            html += "<th colspan='3' align='left'>Total (" + previousCanteen + ")</th>";
+                            html += "<th>" + totalCoupons + "</th>";
+                            html += "<th>" + totalPrice.toFixed(2) + "</th>";
                             html += "</tr>";
                         }
-                       
+
                         $("#tblCanteen").show();
                         $("#tbodyEmpReport").html('');
                         $("#tblEmp").hide();
                     }
                     else {
                         html += "<tr>";
-                        html += "<td colspan='5'>" + obj[0].vErrorMsg + "</td>";
+                        html += "<td colspan='5' class='text-center'>" + obj[0].vErrorMsg + "</td>";
                         html += "</tr>";
                     }
 
@@ -178,8 +211,43 @@
 
         function Fn_EmployeeWise_Report() {
 
+
+
             var clsMonthlyReportReq = {};
             clsMonthlyReportReq.OrderStatus = "Scanned";
+
+            var today = new Date();
+            var ddlDays = $("#ddlDays").val();
+
+            if (ddlDays == "Today") {
+                var CurrentDate = new Date(today); // Current date
+                clsMonthlyReportReq.ReportType = "Today";
+                clsMonthlyReportReq.OrderTakenDate = formatDate(CurrentDate);
+            }
+            else if (ddlDays == "Monthly") {
+                clsMonthlyReportReq.ReportType = "Monthly";
+                var fromDate = new Date(today); // Current date
+                var toDate = new Date(today);
+
+                if (today.getDate() >= 25) {
+                    // Current cycle: 25th of this month to 24th of next month
+                    fromDate = new Date(today.getFullYear(), today.getMonth(), 25);
+                    toDate = new Date(today.getFullYear(), today.getMonth() + 1, 24);
+                } else {
+                    // Previous cycle: 25th of previous month to 24th of this month
+                    fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 25);
+                    toDate = new Date(today.getFullYear(), today.getMonth(), 24);
+                }
+
+                clsMonthlyReportReq.FromDate = formatDate(fromDate);
+                clsMonthlyReportReq.ToDate = formatDate(toDate);
+            }
+            else {
+                var CurrentDate = new Date(today); // Current date
+                clsMonthlyReportReq.ReportType = "Today";
+                clsMonthlyReportReq.OrderTakenDate = formatDate(CurrentDate);
+            }
+
             if ($("#ddlCanteen").val() != "0") {
                 clsMonthlyReportReq.CanteenName = $("#ddlCanteen").val();
             }
@@ -209,9 +277,9 @@
                             // If employee changes, show previous employee total
                             if (currentEmp != "" && currentEmp != obj[i].EmpName) {
                                 html += "<tr style='background-color:#f2f2f2;font-weight:bold;'>";
-                                html += "<td colspan='5' style='text-align:left;'>Total for " + currentEmp + "</td>";
-                                html += "<td>" + empTotalCoupons + "</td>";
-                                html += "<td>" + empTotalPrice + "</td>";
+                                html += "<th colspan='5' style='text-align:left;'>Total for " + currentEmp + "</th>";
+                                html += "<th>" + empTotalCoupons + "</th>";
+                                html += "<th>" + empTotalPrice + "</th>";
                                 html += "</tr>";
 
                                 empTotalPrice = 0;
@@ -253,9 +321,9 @@
                         // Show total for the last employee
                         if (currentEmp != "") {
                             html += "<tr style='background-color:#f2f2f2;font-weight:bold;'>";
-                            html += "<td colspan='5' style='text-align:left;'>Total for " + currentEmp + "</td>";
-                            html += "<td>" + empTotalCoupons + "</td>";
-                            html += "<td>" + empTotalPrice + "</td>";
+                            html += "<th colspan='5' style='text-align:left;'>Total for " + currentEmp + "</th>";
+                            html += "<th>" + empTotalCoupons + "</th>";
+                            html += "<th>" + empTotalPrice + "</th>";
                             html += "</tr>";
                         }
 
@@ -265,11 +333,11 @@
                     }
                     else {
                         html += "<tr>";
-                        html += "<td colspan='7'>" + obj[0].vErrorMsg + "</td>";
+                        html += "<td colspan='7' class='text-center'>" + obj[0].vErrorMsg + "</td>";
                         html += "</tr>";
                         $("#tbodyEmpReport").html(html);
                     }
-                   // $("#tbodyEmpReport").append(html);
+                    // $("#tbodyEmpReport").append(html);
                 },
                 error: function (err) {
                     alert(err);
@@ -291,6 +359,81 @@
             }
         }
 
+        
+
+        function Fn_ExportExcel() {
+
+            var tab = ""; var strFileName = "";
+            var selectedValue = $('input[name="rb"]:checked').val();
+            if (selectedValue == "Canteenwise") {
+                tab = document.getElementById('tblCanteen');
+                strFileName = "Canteenwise";
+            }
+            if (selectedValue == "Employeewise") {
+                tab = document.getElementById('tblEmp');
+                strFileName = "Employeewise";
+            }
+           
+            var tab_text = "<table border='2px'>";
+
+            for (var j = 0; j < tab.rows.length; j++) {
+                tab_text += "<tr>";
+
+                var cells = tab.rows[j].cells;
+
+                for (var i = 0; i < cells.length; i++) {
+
+                    var cellValue = cells[i].innerText.trim();
+                    var tagName = cells[i].tagName.toLowerCase();
+
+                    if (tagName === "th") {
+                        tab_text += "<th bgcolor='#87AFC6'>" + cellValue + "</th>";
+                    }
+                    else if (i === 0) {
+                        tab_text += "<td style=\"mso-number-format:'0';\">" + cellValue + "</td>";
+                    }
+                    else {
+                        tab_text += "<td>" + cellValue + "</td>";
+                    }
+                }
+
+                tab_text += "</tr>";
+            }
+
+            tab_text += "</table>";
+
+            tab_text = tab_text.replace(/<A[^>]*>|<\/A>/g, "");
+            tab_text = tab_text.replace(/<img[^>]*>/gi, "");
+            tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, "");
+
+            var ua = window.navigator.userAgent;
+            var msie = ua.indexOf("MSIE ");
+
+            if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+                txtArea1.document.open("txt/html", "replace");
+                txtArea1.document.write(tab_text);
+                txtArea1.document.close();
+                txtArea1.focus();
+                sa = txtArea1.document.execCommand("SaveAs", true, "report.xls");
+            } else {
+                var fileName = strFileName;  //"MyReport.xls"; // change dynamically if needed
+
+                var blob = new Blob([tab_text], {
+                    type: "application/vnd.ms-excel"
+                });
+
+                var link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = fileName;
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            return sa;
+        }
+
     </script>
 }
 
@@ -307,13 +450,19 @@
                             <option value="0">--Select--</option>
                         </select>
                     </div>
-                    <div class="col-sm-2">
-                        <label>From Date</label>
-                        <input type="text" id="txtFromDate" class="form-control" />
+                    <div class="col-sm-3">
+                        <label>Employee</label>
+                        <select id="ddlEmpName" class="form-control" onchange="onRadioChange();">
+                            <option value="0">--Select--</option>
+                        </select>
                     </div>
                     <div class="col-sm-2">
-                        <label>To Date</label>
-                        <input type="text" id="txtToDate" class="form-control" />
+                        <label>Days</label>
+                        <select id="ddlDays" class="form-control" onchange="onRadioChange();">
+                            <option value="0">--Select--</option>
+                            <option value="Today">Today</option>
+                            <option value="Monthly">Monthly</option>
+                        </select>
                     </div>
                     <div class="col-sm-3">
                         <input type="radio" onchange="onRadioChange();" style="margin-top: 30px" name="rb" value="Canteenwise" checked="checked" /> Canteenwise
@@ -321,6 +470,7 @@
                     </div>
                     <div class="col-sm-2">
                         <button id="btnSearch" class="btn btn-primary mt-4" onclick="onRadioChange();"> Search</button>
+                        <button id="btnExport" class="btn btn-primary mt-4" onclick="Fn_ExportExcel();"> Export</button>
                     </div>
                 </div>
                 <div class="table-responsive mt-3">
@@ -363,8 +513,9 @@
 <script src="~/Web/js/select2.min.js"></script>
 <script>
     $(function () {
-       // $("#ddlEmpName").select2();
-        $("#ddlCanteen").select2();      
+        $("#ddlEmpName").select2();
+        $("#ddlCanteen").select2();
+        $("#ddlDays").select2();
     });
 
 </script>
