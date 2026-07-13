@@ -1,0 +1,109 @@
+﻿
+@{
+    ViewBag.Title = "ViewEmployeeList";
+}
+
+@*<h2>ViewEmployeeList</h2>*@
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        Fn_Fetch_All_Employee();
+    });
+
+
+    function Fn_Fetch_All_Employee() {
+
+        var clsEmployee = {};
+        var html = "";
+        $("#tbody").html("");
+
+        $.ajax({
+            type: "POST",
+            url: "/Admin/Fn_Fetch_All_Employee",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(clsEmployee),
+            success: function (data) {
+                var obj = JSON.parse(data.message);
+                if (obj[0].vErrorMsg == "Success") {
+                    for (var i = 0; i < obj.length; i++) {
+                        html += "<tr>";
+                        html += "<td>" + obj[i].EmpId + "</td>";
+                        html += "<td>" + obj[i].EmpName + "</td>";
+                        html += "<td>" + obj[i].Department + "</td>";
+                        html += "<td>" + obj[i].EmpMobile + "</td>";
+                        html += "<td>" + obj[i].EmpLocation + "</td>";
+                        html += "<td>" + obj[i].EmpRole + "</td>";
+                        html += "<td>" + obj[i].CanteenName + "</td>";
+                        html += "<td><a href='javascript: void(0);' class='btn btn-xs sharp btn-info edit'><i class='fa' style='align-content:center;' onclick='Fn_NavigateToEditEmployee(" + obj[i].ID + ")'>Edit</i></td>";
+                        html += "</tr>";
+                    }
+                }
+                else {
+                    html += "<tr><td colspan='12' class='text-center'>No Employee/Worker records found.</td></tr>";
+                }
+                $("#tbody").append(html);
+            },
+            error: function (err) {
+                alert(err);
+            }
+        });
+    }
+
+
+
+
+    function Fn_NavigateToAddDivision() {
+
+        var AddEmployee = $("#btnAddEmployee").val();
+        AddEmployee = window.location.replace("@Url.Action("AddEmployee", "Admin")");
+        return true;
+    }
+
+
+</script>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12 col-md-12 col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row card-header">
+                        <div class="col-sm-7">
+                            <h5>View Employee/Worker List</h5>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="btn btn-primary" title="Add Employee/Worker" id="btnAddEmployee" name="btnAddEmployee" value="Add Employee/Worker" onclick="Fn_NavigateToAddDivision();">Add Employee</button>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="text" id="txtSearch" class="form-control" placeholder="Search ID/Name..." onkeydown="if (event.key === 'Enter') Fn_Get_Worker();" />
+                        </div>
+                    </div>
+
+                    <div class="table-responsive mt-3">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
+                                    <th>Emp ID</th>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Mobile</th>
+                                    <th>Location</th>
+                                    <th>Role</th>
+                                    <th>Canteen Name</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
