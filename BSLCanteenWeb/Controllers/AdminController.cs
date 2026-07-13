@@ -46,6 +46,10 @@ namespace BSLCanteenWeb.Controllers
             return View();
         }
 
+        public ActionResult ViewEmployeeList()
+        {
+            return View();
+        }
 
         [HttpPost]
         public JsonResult Fn_Fetch_EmployeeDetails(clsEmployee objReq)
@@ -360,6 +364,30 @@ namespace BSLCanteenWeb.Controllers
             }
         }
 
+
+        [HttpPost]
+        public JsonResult Fn_Fetch_All_Employee(clsEmployee objReq)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(Convert.ToString(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]));
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(objReq);
+
+                HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
+                HttpResponseMessage responsePost = client.PostAsync("api/Employee/Fn_Fetch_All_Employee", content).Result;
+                if (responsePost.IsSuccessStatusCode)
+                {
+                    return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Emp/Worker records fetch Failed." }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
 
 
     }
