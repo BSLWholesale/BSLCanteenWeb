@@ -1,0 +1,232 @@
+﻿
+@{
+    ViewBag.Title = "AddEmployee";
+}
+
+<script type="text/javascript">
+
+
+    function Fn_Insert_Employee() {
+
+        if ($("#txtEmpId").val() == "") {
+            Swal.fire({ title: "", text: "Please Enter Employee/Worker ID", icon: "error", });
+        }
+        else if ($("#txtEmpName").val() == "") {
+            Swal.fire({ title: "", text: "Please Enter Employee Name", icon: "error", });
+        }
+        else if ($("#txtEmpDepartment").val() == "") {
+            Swal.fire({ title: "", text: "Please Enter the Department", icon: "error", });
+        }
+        else if ($("#txtEmpMobile").val() == "") {
+            Swal.fire({ title: "", text: "Please Enter the Mobile Number", icon: "error", });
+        }
+        else if ($("#ddlEmpRole option:selected").val() == "0") {
+            Swal.fire({ title: "", text: "Please Select the Role", icon: "error", });
+        }
+        else if ($("#ddlEmpLocation option:selected").val() == "0") {
+            Swal.fire({ title: "", text: "Please Select the Location", icon: "error", });
+        }
+        else if ($("#ddlCanteenName option:selected").val() == "0") {
+            Swal.fire({ title: "", text: "Please Select teh Canteen Name", icon: "error", });
+        }
+        else {
+
+            var clsEmployee = {};
+            clsEmployee.EmpId = $("#txtEmpId").val().trim();
+            clsEmployee.EmpName = $("#txtEmpName").val().trim();
+            clsEmployee.Department = $("#txtEmpDepartment").val().trim();
+            clsEmployee.EmpMobile = $("#txtEmpMobile").val().trim();
+            clsEmployee.EmpPassword = $("#txtEmpPassword").val();
+            clsEmployee.EmpRole = $("#ddlEmpRole").val();
+            clsEmployee.EmpLocation = $("#ddlEmpLocation").val();
+            clsEmployee.CanteenId = $("#ddlCanteenName").val();
+            clsEmployee.CreatedBy = sessionStorage.getItem("LogInID");
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Fn_Insert_Employee",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsEmployee),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj.vErrorMsg == "Success") {
+                        Swal.fire({ title: "", text: "Employee/Worker Added Successfully", icon: "success", });
+                        Fn_ResetFields();
+                    }
+                    else {
+                        Swal.fire({ title: "", text: "Failed To Employee Added", icon: "error", });
+                    }
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
+
+        }
+    }
+
+
+    function Fn_EmpIdValidate() {
+
+        var clsEmployee = {};
+        var EmpId = $('#txtEmpId').val();
+        var EmpRegEx = /^[0-9\s]*$/;
+
+        if (EmpId.match(EmpRegEx)) {
+            clsEmployee.vErrorMsg = "";
+            return true;
+        }
+        else {
+            clsEmployee.vErrorMsg = "Please Enter only Numbers.";
+            Swal.fire({ title: "", text: clsEmployee.vErrorMsg, icon: "error" });
+            $("#txtEmpId").val('');
+            $("#txtEmpId").focus();
+            return false;
+        }
+    }
+
+
+    function Fn_ValidateEmpMobileNumber() {
+        var clsEmployee = {};
+        var MobileNo = $("#txtEmpMobile").val();
+        var MobRegEx = /^\d{10}$/;
+        if (MobileNo.match(MobRegEx)) {
+            clsEmployee.vErrorMsg = "";
+            return true;
+        }
+        else {
+            clsEmployee.vErrorMsg = "Invalid Mobile Number format";
+            Swal.fire({ title: "", text: clsEmployee.vErrorMsg, icon: "error" });
+            $("#txtEmpMobile").val('');
+            $("#txtEmpMobile").focus();
+            return false;
+        }
+    }
+
+
+
+    function Fn_ResetFields() {
+
+        $("#txtEmpId").val("");
+        $("#txtEmpName").val("");
+        $("#txtEmpDepartment").val("");
+        $("#txtEmpMobile").val("");
+        $("#txtEmpPassword").val("");
+        $("#ddlEmpRole option:first").prop('selected', true);
+        $("#ddlEmpLocation option:first").prop('selected', true);
+        $("#ddlCanteenName option:first").prop('selected', true);
+
+    }
+
+
+</script>
+<div class="container mt-3">
+
+    <div class="row">
+        <div class="col-xl-12 col-xxl-12 col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="card-header">
+                            <h5>Add Employee/Worker</h5>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-label"><b>Emp/Worker Id</b> <span style="color:red;">*</span></label>
+                                <input type="text" id="txtEmpId" name="txtEmpId" class="form-control" onchange="Fn_EmpIdValidate();" />
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-label"><b>Name</b> <span style="color:red;">*</span></label>
+                                <input type="text" id="txtEmpName" name="txtEmpName" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-label"><b>Department</b> <span style="color:red;">*</span></label>
+                                <input type="text" id="txtEmpDepartment" name="txtEmpDepartment" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-label"><b>Mobile</b> <span style="color:red;">*</span></label>
+                                <input type="text" id="txtEmpMobile" name="txtEmpMobile" class="form-control" onchange="Fn_ValidateEmpMobileNumber();" min="10" maxlength="10" />
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-label"><b>Password</b> <span style="color:red;">*</span></label>
+                                <input type="password" id="txtEmpPassword" name="txtEmpPassword" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-label"><b>Role</b> <span style="color:red;">*</span></label>
+                                <select class="form-control" id="ddlEmpRole" name="ddlEmpRole">
+                                    <option value="0">--Select Role--</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Staff">Staff</option>
+                                    <option value="Employee">Employee</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-label"><b>Location</b> <span style="color:red;">*</span></label>
+                                <select class="form-control" id="ddlEmpLocation" name="ddlEmpLocation">
+                                    <option value="0">--Select Location--</option>
+                                    <option value="Worsted">Worsted</option>
+                                    <option value="BFL WVG SHED-02">BFL WVG SHED-02</option>
+                                    <option value="BFL">BFL</option>
+                                    <option value="Toshco">Toshco</option>
+                                    <option value="BFL WVG-4">BFL WVG-4</option>
+                                    <option value="BSL">BSL</option>
+                                    <option value="BTM">BTM</option>
+                                    <option value="Banswara">Banswara</option>
+                                    <option value="TPP">TPP</option>
+                                    <option value="Syntex">Syntex</option>
+                                    <option value="BJF">BJF</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-label"><b>Canteen Name</b> <span style="color:red;">*</span></label>
+                                <select class="form-control" id="ddlCanteenName" name="ddlCanteenName">
+                                    <option value="0">--Select Canteen Name--</option>
+                                    <option value="1">BSL Canteen</option>
+                                    <option value="2">TPP Canteen</option>
+                                    <option value="3">BFL Canteen</option>
+                                    <option value="4">BFL Worsted Canteen</option>
+                                    <option value="5">Weaving Canteen</option>
+                                    <option value="6">BTM Canteen</option>
+                                    <option value="7">BJF Canteen</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="col-sm-4" style="margin-top: 3%;">
+                            <button type="submit" id="btnAddEmployee" name="btnAddEmployee" class="btn btn-primary pull-right" onclick="Fn_Insert_Employee();">Submit</button>
+                            <button type="submit" id="btnReset" name="btnReset" class="btn btn-success pull-right" onclick="Fn_ResetFields();" style="margin-right:0.5%;">Reset</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

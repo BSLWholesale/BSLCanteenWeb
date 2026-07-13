@@ -342,6 +342,7 @@
     <Content Include="Views\Admin\Reports.cshtml" />
     <Content Include="Views\Staff\StaffTodayHistory.cshtml" />
     <Content Include="Views\Admin\BulkUploadEmpData.cshtml" />
+    <Content Include="Views\Admin\AddEmployee.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
