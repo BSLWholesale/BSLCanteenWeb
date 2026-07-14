@@ -124,7 +124,7 @@
             clsCouponOrder.EmpId = $("#ddlEmpName").val();
             clsCouponOrder.CanteenId = $("#ddlCanteen").val();
             var clsCouponItem = [];
-            
+
             if ($("#txtTeaQty").val() != "0" && $("#txtTeaQty").val() != "") {
                 clsCouponItem.push({
                     ItemCategory: 'Tea',
@@ -164,7 +164,7 @@
             else if ($("#ddlCanteen").val() == "0") {
                 Swal.fire({ title: "", text: "Please Select Canteen", icon: "error" });
             }
-            else if (txtTeaQty == "0" && txtBreakfastQty == "0" && txtThaliQty == "0" && txtMiniThaliQty == "0" && 
+            else if (txtTeaQty == "0" && txtBreakfastQty == "0" && txtThaliQty == "0" && txtMiniThaliQty == "0" &&
                 txtTeaQty == "" && txtBreakfastQty == "" && txtThaliQty == "" && txtMiniThaliQty == "") {
                 Swal.fire({ title: "", text: "Please enter quantity of any one items ", icon: "error" });
             }
@@ -276,7 +276,7 @@
                             });
 
                             qrcode.makeCode(text);
-                        }
+                        }                        
                         $("#dvQR").show();
                         $("#issue-print-btn").show();
                     }
@@ -299,72 +299,72 @@
             var printWindow = window.open("", "", "width=800,height=600");
 
             printWindow.document.write(`
-                <html>
-                <head>
-                    <title>Print Stickers</title>
-                    <style>
-                        *{
-                            box-sizing:border-box;
-                        }
+                        <html>
+                        <head>
+                            <title>Print Stickers</title>
+                            <style>
+                                *{
+                                    box-sizing:border-box;
+                                }
 
-                        @@page{
-                            size:auto;
-                            margin:8mm;      /* Reduce printer margin */
-                        }
+                                @@page{
+                                    size:auto;
+                                    margin:8mm;      /* Reduce printer margin */
+                                }
 
-                        html,body{
-                            width:100%;
-                            margin:0;
-                            padding:0;
-                            font-family:Arial,sans-serif;
-                        }
+                                html,body{
+                                    width:100%;
+                                    margin:0;
+                                    padding:0;
+                                    font-family:Arial,sans-serif;
+                                }
 
-                        body{
-                            display:flex;
-                            flex-direction:column;
-                            align-items:center;
-                            padding:5mm;
-                        }
+                                body{
+                                    display:flex;
+                                    flex-direction:column;
+                                    align-items:center;
+                                    padding:5mm;
+                                }
 
-                        .qr-card{
-                            width:3in;
-                            border:1px solid #000;
-                            padding:8px;
-                            margin:8px auto;
-                            page-break-inside:avoid;
-                            overflow:hidden;
-                        }
+                                .qr-card{
+                                    width:3in;
+                                    border:1px solid #000;
+                                    padding:8px;
+                                    margin:8px auto;
+                                    page-break-inside:avoid;
+                                    overflow:hidden;
+                                }
 
-                        .lbl-text{
-                            font-size:14px;
-                            text-align:left;
-                            word-break:break-word;
-                        }
+                                .lbl-text{
+                                    font-size:14px;
+                                    text-align:left;
+                                    word-break:break-word;
+                                }
 
-                        img{
-                            display:block;
-                            margin:0 auto;
-                            max-width:100%;
-                            height:auto;
-                        }
+                                img{
+                                    display:block;
+                                    margin:0 auto;
+                                    max-width:100%;
+                                    height:auto;
+                                }
 
-                        @@media print{
-                            body{
-                                padding:0;
-                            }
+                                @@media print{
+                                    body{
+                                        padding:0;
+                                    }
 
-                            .qr-card{
-                                page-break-inside:avoid;
-                                break-inside:avoid;
-                            }
-                        }
-                    </style>
-                </head>
-                <body>
-                    ${printContents}
-                </body>
-                </html>
-            `);
+                                    .qr-card{
+                                        page-break-inside:avoid;
+                                        break-inside:avoid;
+                                    }
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            ${printContents}
+                        </body>
+                        </html>
+                    `);
 
             printWindow.document.close();
             printWindow.focus();
@@ -374,7 +374,7 @@
                 printWindow.close();
             }, 500);
         }
-
+        
     </script>
 }
 
