@@ -344,6 +344,7 @@
     <Content Include="Views\Admin\BulkUploadEmpData.cshtml" />
     <Content Include="Views\Admin\AddEmployee.cshtml" />
     <Content Include="Views\Admin\ViewEmployeeList.cshtml" />
+    <Content Include="Views\Admin\EditEmployeeDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
