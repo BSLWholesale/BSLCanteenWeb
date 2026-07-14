@@ -223,75 +223,80 @@
             clsCouponOrder.OrderStatus = "Generated";
             $("#dvQR").html('');
             var html = '';
-            $.ajax({
-                type: "POST",
-                url: "/Admin/Fn_Get_Coupon_Order",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify(clsCouponOrder),
-                success: function (data) {
-                    var obj = JSON.parse(data.message);
-                    if (obj[0].vErrorMsg == "Success") {
-                        for (var i = 0; i < obj.length; i++) {
-                            html += "<div class='card'>";
-                            html += "<div class='qr-card' id='gen-qr-card_" + i + "'>";
-                            html += "<div style='display:flex;  justify-content:space-between; gap:10px;'>";
-                            html += "<div class='lbl-text'>";
-                            if (obj[i].ItemCategory == "Tea") {
-                                html += "<div style='font-size: 20px'>Item: ☕ Tea</div>";
+            if ($("#ddlEmpName").val() == "0") {
+                Swal.fire({ title: "", text: "Please Select employee", icon: "error" });
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/Fn_Get_Coupon_Order",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(clsCouponOrder),
+                    success: function (data) {
+                        var obj = JSON.parse(data.message);
+                        if (obj[0].vErrorMsg == "Success") {
+                            for (var i = 0; i < obj.length; i++) {
+                                html += "<div class='card'>";
+                                html += "<div class='qr-card' id='gen-qr-card_" + i + "'>";
+                                html += "<div style='display:flex;  justify-content:space-between; gap:10px;'>";
+                                html += "<div class='lbl-text'>";
+                                if (obj[i].ItemCategory == "Tea") {
+                                    html += "<div style='font-size: 20px'>Item: ☕ Tea</div>";
+                                }
+                                else if (obj[i].ItemCategory == "Breakfast") {
+                                    html += "<div style='font-size: 20px'>Item: 🍽️ Breakfast</div>";
+                                }
+                                else if (obj[i].ItemCategory == "Thali") {
+                                    html += "<div style='font-size: 20px'>Item: 🍛 Thali</div>";
+                                }
+                                else if (obj[i].ItemCategory == "Mini Thali") {
+                                    html += "<div style='font-size: 20px'>Item: 🍛 Mini Thali</div>";
+                                }
+                                else {
+                                    html += "<div style='font-size: 20px'>Item: " + obj[i].ItemCategory + "</div>";
+                                }
+                                html += "<div>CId: " + obj[i].CouponId + "</div>";
+                                html += "<div>Issued: " + obj[i].CouponIssueDate + "</div>";
+                                html += "<div>Canteen: " + obj[i].CanteenName + "</div>";
+                                html += "<div>Code: " + obj[i].EmpId + "</div>";
+                                html += "</div>";
+                                html += "<div id='gen-qr-wrap_" + i + "' style='width:90px; height:90px; display:flex; align-items:center; justify-content:center; margin-top:10px;'></div>";
+                                html += "</div>";
+                                html += "<div>Name: " + obj[i].EmpName + "</div>";
+                                html += "</div>";
+                                html += "</div>";
                             }
-                            else if (obj[i].ItemCategory == "Breakfast") {
-                                html += "<div style='font-size: 20px'>Item: 🍽️ Breakfast</div>";
+
+                            $("#dvQR").append(html);
+
+                            for (var i = 0; i < obj.length; i++) {
+
+                                var text = "" + obj[i].CouponId + "";
+
+                                var qrcode = new QRCode(document.getElementById("gen-qr-wrap_" + i), {
+                                    width: 90,
+                                    height: 90
+                                });
+
+                                qrcode.makeCode(text);
                             }
-                            else if (obj[i].ItemCategory == "Thali") {
-                                html += "<div style='font-size: 20px'>Item: 🍛 Thali</div>";
-                            }
-                            else if (obj[i].ItemCategory == "Mini Thali") {
-                                html += "<div style='font-size: 20px'>Item: 🍛 Mini Thali</div>";
-                            }
-                            else {
-                                html += "<div style='font-size: 20px'>Item: " + obj[i].ItemCategory + "</div>";
-                            }
-                            html += "<div>CId: " + obj[i].CouponId + "</div>";
-                            html += "<div>Issued: " + obj[i].CouponIssueDate + "</div>";
-                            html += "<div>Canteen: " + obj[i].CanteenName + "</div>";
-                            html += "<div>Code: " + obj[i].EmpId + "</div>";
-                            html += "</div>";
-                            html += "<div id='gen-qr-wrap_" + i + "' style='width:90px; height:90px; display:flex; align-items:center; justify-content:center; margin-top:10px;'></div>";
-                            html += "</div>";
-                            html += "<div>Name: " + obj[i].EmpName + "</div>";
-                            html += "</div>";
-                            html += "</div>";
+                            $("#dvQR").show();
+                            $("#btnPrintCard").show();
+                            $("#btnPrintA4").hide();
+                            $("#dvA4Size").html('');
                         }
+                        else {
+                            $("#btnPrintCard").hide();
+                        }
+                    },
+                    error: function (err) {
+                        alert(err);
 
-                        $("#dvQR").append(html);
-
-                        for (var i = 0; i < obj.length; i++) {
-
-                            var text = "" + obj[i].CouponId + "";
-
-                            var qrcode = new QRCode(document.getElementById("gen-qr-wrap_" + i), {
-                                width: 90,
-                                height: 90
-                            });
-
-                            qrcode.makeCode(text);
-                        }                        
-                        $("#dvQR").show();
-                        $("#issue-print-btn").show();
                     }
-                    else {
-                        $("#issue-print-btn").hide();
-                    }
-                },
-                error: function (err) {
-                    alert(err);
-
-                }
-            });
+                });
+            }            
         }
-
-
 
         function printQRCoupons() {
             var printContents = document.getElementById("dvQR").innerHTML;
@@ -299,72 +304,72 @@
             var printWindow = window.open("", "", "width=800,height=600");
 
             printWindow.document.write(`
-                        <html>
-                        <head>
-                            <title>Print Stickers</title>
-                            <style>
-                                *{
-                                    box-sizing:border-box;
-                                }
+                                            <html>
+                                            <head>
+                                                <title>Print Stickers</title>
+                                                <style>
+                                                    *{
+                                                        box-sizing:border-box;
+                                                    }
 
-                                @@page{
-                                    size:auto;
-                                    margin:8mm;      /* Reduce printer margin */
-                                }
+                                                    @@page{
+                                                        size:auto;
+                                                        margin:8mm;      /* Reduce printer margin */
+                                                    }
 
-                                html,body{
-                                    width:100%;
-                                    margin:0;
-                                    padding:0;
-                                    font-family:Arial,sans-serif;
-                                }
+                                                    html,body{
+                                                        width:100%;
+                                                        margin:0;
+                                                        padding:0;
+                                                        font-family:Arial,sans-serif;
+                                                    }
 
-                                body{
-                                    display:flex;
-                                    flex-direction:column;
-                                    align-items:center;
-                                    padding:5mm;
-                                }
+                                                    body{
+                                                        display:flex;
+                                                        flex-direction:column;
+                                                        align-items:center;
+                                                        padding:5mm;
+                                                    }
 
-                                .qr-card{
-                                    width:3in;
-                                    border:1px solid #000;
-                                    padding:8px;
-                                    margin:8px auto;
-                                    page-break-inside:avoid;
-                                    overflow:hidden;
-                                }
+                                                    .qr-card{
+                                                        width:3in;
+                                                        border:1px solid #000;
+                                                        padding:8px;
+                                                        margin:8px auto;
+                                                        page-break-inside:avoid;
+                                                        overflow:hidden;
+                                                    }
 
-                                .lbl-text{
-                                    font-size:14px;
-                                    text-align:left;
-                                    word-break:break-word;
-                                }
+                                                    .lbl-text{
+                                                        font-size:14px;
+                                                        text-align:left;
+                                                        word-break:break-word;
+                                                    }
 
-                                img{
-                                    display:block;
-                                    margin:0 auto;
-                                    max-width:100%;
-                                    height:auto;
-                                }
+                                                    img{
+                                                        display:block;
+                                                        margin:0 auto;
+                                                        max-width:100%;
+                                                        height:auto;
+                                                    }
 
-                                @@media print{
-                                    body{
-                                        padding:0;
-                                    }
+                                                    @@media print{
+                                                        body{
+                                                            padding:0;
+                                                        }
 
-                                    .qr-card{
-                                        page-break-inside:avoid;
-                                        break-inside:avoid;
-                                    }
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            ${printContents}
-                        </body>
-                        </html>
-                    `);
+                                                        .qr-card{
+                                                            page-break-inside:avoid;
+                                                            break-inside:avoid;
+                                                        }
+                                                    }
+                                                </style>
+                                            </head>
+                                            <body>
+                                                ${printContents}
+                                            </body>
+                                            </html>
+                                        `);
 
             printWindow.document.close();
             printWindow.focus();
@@ -374,7 +379,162 @@
                 printWindow.close();
             }, 500);
         }
-        
+
+        function Fn_Get_A4_Coupon_Order() {
+
+            var today = new Date();
+
+            var day = String(today.getDate()).padStart(2, '0');
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = months[today.getMonth()];
+            var year = today.getFullYear();
+
+            var formattedDate = day + "-" + month + "-" + year;
+
+            var clsCouponOrder = {};
+            clsCouponOrder.CreatedBy = sessionStorage.getItem("LogInID");
+            clsCouponOrder.EmpId = $("#ddlEmpName").val();
+            clsCouponOrder.CouponIssueDate = formattedDate;
+            clsCouponOrder.OrderStatus = "Generated";
+            $("#dvA4Size").html('');
+            var html = '';
+            if ($("#ddlEmpName").val() == "0") {
+                Swal.fire({ title: "", text: "Please Select employee", icon: "error" });
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/Fn_Get_Coupon_Order",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(clsCouponOrder),
+                    success: function (data) {
+                        var obj = JSON.parse(data.message);
+                        if (obj[0].vErrorMsg == "Success") {
+                            for (var i = 0; i < obj.length; i++) {
+                                html += "<div class='col-sm-4'>";
+                                html += "<div class='card'>";
+                                html += "<div class='qr-card' id='gen-qr-card_" + i + "'>";
+                                html += "<div style='display:flex;  justify-content:space-between; gap:10px;'>";
+                                html += "<div class='lbl-text'>";
+                                if (obj[i].ItemCategory == "Tea") {
+                                    html += "<div style='font-size: 15px'>Item: ☕ Tea</div>";
+                                }
+                                else if (obj[i].ItemCategory == "Breakfast") {
+                                    html += "<div style='font-size: 15px'>Item: 🍽️ Breakfast</div>";
+                                }
+                                else if (obj[i].ItemCategory == "Thali") {
+                                    html += "<div style='font-size: 15px'>Item: 🍛 Thali</div>";
+                                }
+                                else if (obj[i].ItemCategory == "Mini Thali") {
+                                    html += "<div style='font-size: 15px'>Item: 🍛 Mini Thali</div>";
+                                }
+                                else {
+                                    html += "<div style='font-size: 20px'>Item: " + obj[i].ItemCategory + "</div>";
+                                }
+                                html += "<div>CId: " + obj[i].CouponId + "</div>";
+                                html += "<div>Issued: " + obj[i].CouponIssueDate + "</div>";
+                                html += "<div>Canteen: " + obj[i].CanteenName + "</div>";
+                                html += "<div>Code: " + obj[i].EmpId + "</div>";
+                                html += "</div>";
+                                html += "<div id='gen-qr-wrap_" + i + "' style='width:90px; height:90px; display:flex; align-items:center; justify-content:center; margin-top:10px;'></div>";
+                                html += "</div>";
+                                html += "<div>Name: " + obj[i].EmpName + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+
+                            $("#dvA4Size").append(html);
+
+                            for (var i = 0; i < obj.length; i++) {
+
+                                var text = "" + obj[i].CouponId + "";
+
+                                var qrcode = new QRCode(document.getElementById("gen-qr-wrap_" + i), {
+                                    width: 90,
+                                    height: 90
+                                });
+
+                                qrcode.makeCode(text);
+                            }
+                            $("#dvA4Size").show();
+                            $("#btnPrintA4").show();
+                            $("#btnPrintCard").hide();
+                            $("#dvQR").html('');
+                        }
+                        else {
+                            $("#btnPrintA4").hide();
+                        }
+                    },
+                    error: function (err) {
+                        alert(err);
+
+                    }
+                });
+            }           
+        }
+
+        function Print_A4_Coupon() {
+            var printContents = document.getElementById("dvA4Size").innerHTML;
+            var printWindow = window.open('', '', 'width=900,height=700');
+
+            printWindow.document.write(`
+                        <html>
+                        <head>
+                            <title>Print Coupons</title>
+                            <style>
+                                @@page {
+                                    size: A4 portrait;
+                                    margin: 10mm;
+                                }
+
+                                body {
+                                    font-family: Arial, sans-serif;
+                                    margin: 0;
+                                    padding: 10px;
+                                }
+
+                                #dvA4Size {
+                                    display: flex;
+                                    flex-wrap: wrap;
+                                }
+
+                                .col-sm-4 {
+                                    width: 33.33%;
+                                    float: left;
+                                    padding: 5px;
+                                    box-sizing: border-box;
+                                }
+
+                                .card {
+                                    border: 1px solid #000;
+                                    padding: 8px;
+                                }
+
+                                .qr-card {
+                                    page-break-inside: avoid;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div id="dvA4Size">
+                                ${printContents}
+                            </div>
+                        </body>
+                        </html>
+                    `);
+
+            printWindow.document.close();
+
+            printWindow.onload = function () {
+                printWindow.focus();
+                printWindow.print();
+                printWindow.close();
+            };
+        }
+
     </script>
 }
 
@@ -410,21 +570,33 @@
                         <button class="btn btn-primary" style="width:100%" onclick="Fn_Emp_CouponGeneration();">Generate Coupon & QR Code</button>
                     </div>
                     <div class="col-12 mt-2">
-                        <button class="btn btn-success" style="width:100%" onclick="Fn_Get_Coupon_Order();">Display</button>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <button class="btn btn-success" style="width:100%" onclick="Fn_Get_Coupon_Order();">View Sticker</button>
+                            </div>
+                            <div class="col-sm-6">
+                                <button class="btn btn-success" style="width:100%" onclick="Fn_Get_A4_Coupon_Order();">View A4</button>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="col-12 mt-2">
-                        <button id="issue-print-btn" style="display:none; width: 100%;" class="btn btn-primary" onclick="printQRCoupons();">🖨 Print Card</button>
+                        <button id="btnPrintCard" style="display:none; width: 100%;" class="btn btn-primary" onclick="printQRCoupons();">🖨 Print Card</button>
+                        <button id="btnPrintA4" style="display:none; width: 100%;" class="btn btn-primary" onclick="Print_A4_Coupon();">🖨 Print A4</button>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-4">
             <h5>Generated Card</h5>
-            <div id="dvQR" style="height: 500px; overflow-y: auto;">
-
+            <div id="dvQR" style="max-height: 500px; overflow-y: auto;">
             </div>
 
         </div>
+    </div>
+
+    <div class="row" id="dvA4Size">
+
     </div>
 </div>
 <!-- Team End -->
