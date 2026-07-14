@@ -33,6 +33,7 @@
             var EmpLocation = sessionStorage.getItem("EmpLocation");
             var EmpRole = sessionStorage.getItem("EmpRole");
             var CanteenId = sessionStorage.getItem("CanteenId");
+            var LoginID = sessionStorage.getItem("LoginID");
 
             if (strLogInId == null || strLogInId == 0) {
                 window.location.href = '/Home/Index';
@@ -45,6 +46,7 @@
                 $(".StaffPage").hide();
                 $(".EmployeePage").hide();
                 $("#LogoutPage").show();
+
             }
             else if (EmpRole == "Staff") {
                 
@@ -53,7 +55,6 @@
                 $(".StaffPage").show();
                 $(".EmployeePage").hide();
                 $("#LogoutPage").show();
-
                 
             }
             else if (EmpRole == "Employee") {
@@ -63,8 +64,7 @@
                 $(".StaffPage").hide();
                 $(".EmployeePage").show();
                 $("#LogoutPage").show();
-
-                
+               
             }
 
             //$("#dvRoleType").html(EmpRole);
