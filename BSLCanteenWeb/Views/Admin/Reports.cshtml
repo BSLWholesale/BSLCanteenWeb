@@ -17,7 +17,7 @@
 
             Fn_Fill_DropdownList("ddlCanteen", "CanteenMaster", "CanteenName", "", "");
 
-           
+
 
             Fn_CanteenWise_Report();
 
@@ -110,7 +110,7 @@
             }
 
 
-            $("#tbodyReport").html('');
+            $("#tbodyCanteen").html('');
             var html = '';
             $.ajax({
                 type: "POST",
@@ -147,8 +147,8 @@
                                 html += "<th align='left'>Total (" + previousCanteen + ")</th>";
                                 html += "<th></th>";
                                 html += "<th></th>";
-                                html += "<th align='right'>" + totalCoupons + "</th>";
-                                html += "<th align='right'>" + totalPrice.toFixed(2) + "</th>";
+                                html += "<th style='text-align:right;'>" + totalCoupons + "</th>";
+                                html += "<th style='text-align:right;'>" + totalPrice.toFixed(2) + "</th>";
                                 html += "</tr>";
 
                                 // Reset totals
@@ -184,8 +184,8 @@
                                 html += "<td>" + obj[i].ItemCategory + "</td>";
                             }
 
-                            html += "<td>" + obj[i].TotalCoupons + "</td>";
-                            html += "<td>" + obj[i].TotalPrice + "</td>";
+                            html += "<td style='text-align:right;'>" + obj[i].TotalCoupons + "</td>";
+                            html += "<td style='text-align:right;'>" + obj[i].TotalPrice + "</td>";
                             html += "</tr>";
                         }
 
@@ -195,8 +195,8 @@
                             html += "<th align='left'>Total (" + previousCanteen + ")</th>";
                             html += "<th></th>";
                             html += "<th></th>";
-                            html += "<th align='right'>" + totalCoupons + "</th>";
-                            html += "<th align='right'>" + totalPrice.toFixed(2) + "</th>";
+                            html += "<th style='text-align:right;'>" + totalCoupons + "</th>";
+                            html += "<th style='text-align:right;'>" + totalPrice.toFixed(2) + "</th>";
                             html += "</tr>";
                         }
 
@@ -205,21 +205,35 @@
                         html += "<th align='left'>Grand Total</th>";
                         html += "<th></th>";
                         html += "<th></th>";
-                        html += "<th align='right'>" + grandTotalCoupons + "</th>";
-                        html += "<th align='right'>" + grandTotalPrice.toFixed(2) + "</th>";
+                        html += "<th style='text-align:right;'>" + grandTotalCoupons + "</th>";
+                        html += "<th style='text-align:right;'>" + grandTotalPrice.toFixed(2) + "</th>";
                         html += "</tr>";
 
-                        $("#tblCanteen").show();
-                        $("#tbodyEmpReport").html('');
+
+                        $("#tbodySummery").html('');
+                        $("#tblSummery").hide();
+
+                        $("#tbodyEmp").html('');
                         $("#tblEmp").hide();
+
+                        $("#tbodyEmpSummery").html('');
+                        $("#tblEmpSummery").hide();
                     }
                     else {
                         html += "<tr>";
                         html += "<td colspan='5' class='text-center'>" + obj[0].vErrorMsg + "</td>";
                         html += "</tr>";
+
+                        $("#tbodySummery").html('');
+                        $("#tblSummery").hide();
+                        $("#tbodyEmp").html('');
+                        $("#tblEmp").hide();
+                        $("#tbodyEmpSummery").html('');
+                        $("#tblEmpSummery").hide();
                     }
 
-                    $("#tbodyReport").append(html);
+                    $("#tbodyCanteen").append(html);
+                    $("#tblCanteen").show();
                 },
                 error: function (err) {
                     alert(err);
@@ -229,8 +243,6 @@
         }
 
         function Fn_EmployeeWise_Report() {
-
-
 
             var clsMonthlyReportReq = {};
             clsMonthlyReportReq.OrderStatus = "Scanned";
@@ -276,7 +288,7 @@
                 clsMonthlyReportReq.ToDate = $("#txtToDate").val();
             }
 
-            $("#tbodyEmpReport").html('');
+            $("#tbodyEmp").html('');
             var html = '';
             $.ajax({
                 type: "POST",
@@ -305,8 +317,8 @@
                                 html += "<th></th>";
                                 html += "<th></th>";
                                 html += "<th></th>";
-                                html += "<th align='right'>" + empTotalCoupons + "</th>";
-                                html += "<th align='right'>" + empTotalPrice + "</th>";
+                                html += "<th style='text-align:right;'>" + empTotalCoupons + "</th>";
+                                html += "<th style='text-align:right;'>" + empTotalPrice + "</th>";
                                 html += "</tr>";
 
                                 empTotalPrice = 0;
@@ -343,8 +355,8 @@
                                 html += "<td>" + obj[i].ItemCategory + "</td>";
                             }
 
-                            html += "<td>" + obj[i].TotalCoupons + "</td>";
-                            html += "<td>" + obj[i].TotalPrice + "</td>";
+                            html += "<td align='right'>" + obj[i].TotalCoupons + "</td>";
+                            html += "<td align='right'>" + obj[i].TotalPrice + "</td>";
                             html += "</tr>";
                         }
 
@@ -356,8 +368,8 @@
                             html += "<th></th>";
                             html += "<th></th>";
                             html += "<th></th>";
-                            html += "<th align='right'>" + empTotalCoupons + "</th>";
-                            html += "<th align='right'>" + empTotalPrice + "</th>";
+                            html += "<th style='text-align:right;'>" + empTotalCoupons + "</th>";
+                            html += "<th style='text-align:right;'>" + empTotalPrice + "</th>";
                             html += "</tr>";
                         }
 
@@ -368,21 +380,249 @@
                         html += "<th></th>";
                         html += "<th></th>";
                         html += "<th></th>";
-                        html += "<th align='right'>" + grandTotalCoupons + "</th>";
-                        html += "<th align='right'>" + grandTotalPrice.toFixed(2) + "</th>";
+                        html += "<th style='text-align:right;'>" + grandTotalCoupons + "</th>";
+                        html += "<th style='text-align:right;'>" + grandTotalPrice.toFixed(2) + "</th>";
                         html += "</tr>";
 
-                        $("#tblEmp").show();
-                        $("#tbodyEmpReport").html(html);
+                        $("#tbodyEmpSummery").html('');
+                        $("#tblEmpSummery").hide();
+
+                        $("#tbodyCanteen").html('');
                         $("#tblCanteen").hide();
+
+                        $("#tbodySummery").html('');
+                        $("#tblSummery").hide();
                     }
                     else {
                         html += "<tr>";
                         html += "<td colspan='7' class='text-center'>" + obj[0].vErrorMsg + "</td>";
                         html += "</tr>";
-                        $("#tbodyEmpReport").html(html);
+
+                        $("#tbodyEmpSummery").html('');
+                        $("#tblEmpSummery").hide();
+                        $("#tbodyCanteen").html('');
+                        $("#tblCanteen").hide();
+                        $("#tbodySummery").html('');
+                        $("#tblSummery").hide();
                     }
-                    // $("#tbodyEmpReport").append(html);
+                    $("#tbodyEmp").append(html);
+                    $("#tblEmp").show();
+                },
+                error: function (err) {
+                    alert(err);
+
+                }
+            });
+        }
+
+        function Fn_CanteenWise_Summery() {
+
+            var clsMonthlyReportReq = {};
+            clsMonthlyReportReq.OrderStatus = "Scanned";
+
+            var today = new Date();
+            var ddlDays = $("#ddlDays").val();
+
+            if (ddlDays == "Today") {
+                var CurrentDate = new Date(today); // Current date
+                clsMonthlyReportReq.ReportType = "Today";
+                clsMonthlyReportReq.OrderTakenDate = formatDate(CurrentDate);
+            }
+            else if (ddlDays == "Monthly") {
+                clsMonthlyReportReq.ReportType = "Monthly";
+                var fromDate = new Date(today); // Current date
+                var toDate = new Date(today);
+
+                if (today.getDate() >= 25) {
+                    // Current cycle: 25th of this month to 24th of next month
+                    fromDate = new Date(today.getFullYear(), today.getMonth(), 25);
+                    toDate = new Date(today.getFullYear(), today.getMonth() + 1, 24);
+                } else {
+                    // Previous cycle: 25th of previous month to 24th of this month
+                    fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 25);
+                    toDate = new Date(today.getFullYear(), today.getMonth(), 24);
+                }
+
+                clsMonthlyReportReq.FromDate = formatDate(fromDate);
+                clsMonthlyReportReq.ToDate = formatDate(toDate);
+            }
+            else {
+                var CurrentDate = new Date(today); // Current date
+                clsMonthlyReportReq.ReportType = "Today";
+                clsMonthlyReportReq.OrderTakenDate = formatDate(CurrentDate);
+            }
+
+            if ($("#ddlCanteen").val() != "0") {
+                clsMonthlyReportReq.CanteenName = $("#ddlCanteen").val();
+            }
+            $("#tbodySummery").html('');
+            var html = '';
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Fn_CanteenWise_Summery",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsMonthlyReportReq),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj[0].vErrorMsg == "Success") {
+
+                        var html = "";
+                        var totalCoupons = 0;
+                        var totalPrice = 0;
+
+                        for (var i = 0; i < obj.length; i++) {
+
+                            totalCoupons += parseInt(obj[i].TotalCoupons) || 0;
+                            totalPrice += parseFloat(obj[i].TotalPrice) || 0;
+
+                            html += "<tr>";
+                            html += "<td>" + obj[i].CanteenName + "</td>";
+                            html += "<td style='text-align:right;'>" + obj[i].TotalCoupons + "</td>";
+                            html += "<td style='text-align:right;'>" + obj[i].TotalPrice + "</td>";
+                            html += "</tr>";
+                        }
+
+                        // Add Total Row
+                        html += "<tr style='font-weight:bold;background:#f2f2f2;'>";
+                        html += "<td style='text-align:left;'>Total</td>";
+                        html += "<td style='text-align:right;'>" + totalCoupons + "</td>";
+                        html += "<td style='text-align:right;'>" + totalPrice.toFixed(2) + "</td>";
+                        html += "</tr>";
+
+                        $("#tbodyCanteen").html('');
+                        $("#tblCanteen").hide();
+
+                        $("#tbodyEmp").html('');
+                        $("#tblEmp").hide();
+
+                        $("#tbodyEmpSummery").html('');
+                        $("#tblEmpSummery").hide();
+
+                    }
+                    else {
+                        html += "<tr>";
+                        html += "<td colspan='3' class='text-center'>" + obj[0].vErrorMsg + "</td>";
+                        html += "</tr>";
+
+                        $("#tbodyCanteen").html('');
+                        $("#tblCanteen").hide();
+                        $("#tbodyEmp").html('');
+                        $("#tblEmp").hide();
+                        $("#tbodyEmpSummery").html('');
+                        $("#tblEmpSummery").hide();
+                    }
+                    $("#tbodySummery").html(html);
+                    $("#tblSummery").show();
+                },
+                error: function (err) {
+                    alert(err);
+
+                }
+            });
+        }
+
+        function Fn_EmployeeWise_Summery() {
+
+            var clsMonthlyReportReq = {};
+            clsMonthlyReportReq.OrderStatus = "Scanned";
+
+            var today = new Date();
+            var ddlDays = $("#ddlDays").val();
+
+            if (ddlDays == "Today") {
+                var CurrentDate = new Date(today); // Current date
+                clsMonthlyReportReq.ReportType = "Today";
+                clsMonthlyReportReq.OrderTakenDate = formatDate(CurrentDate);
+            }
+            else if (ddlDays == "Monthly") {
+                clsMonthlyReportReq.ReportType = "Monthly";
+                var fromDate = new Date(today); // Current date
+                var toDate = new Date(today);
+
+                if (today.getDate() >= 25) {
+                    // Current cycle: 25th of this month to 24th of next month
+                    fromDate = new Date(today.getFullYear(), today.getMonth(), 25);
+                    toDate = new Date(today.getFullYear(), today.getMonth() + 1, 24);
+                } else {
+                    // Previous cycle: 25th of previous month to 24th of this month
+                    fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 25);
+                    toDate = new Date(today.getFullYear(), today.getMonth(), 24);
+                }
+
+                clsMonthlyReportReq.FromDate = formatDate(fromDate);
+                clsMonthlyReportReq.ToDate = formatDate(toDate);
+            }
+            else {
+                var CurrentDate = new Date(today); // Current date
+                clsMonthlyReportReq.ReportType = "Today";
+                clsMonthlyReportReq.OrderTakenDate = formatDate(CurrentDate);
+            }
+
+            if ($("#ddlCanteen").val() != "0") {
+                clsMonthlyReportReq.CanteenName = $("#ddlCanteen").val();
+            }
+            $("#tbodyEmpSummery").html('');
+            var html = '';
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Fn_EmployeeWise_Summery",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsMonthlyReportReq),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj[0].vErrorMsg == "Success") {
+
+                        var html = "";
+                        var totalCoupons = 0;
+                        var totalPrice = 0;
+
+                        for (var i = 0; i < obj.length; i++) {
+
+                            totalCoupons += parseInt(obj[i].TotalCoupons) || 0;
+                            totalPrice += parseFloat(obj[i].TotalPrice) || 0;
+
+                            html += "<tr>";
+                            html += "<td>" + obj[i].EmpId + "</td>";
+                            html += "<td>" + obj[i].EmpName + "</td>";
+                            html += "<td>" + obj[i].CanteenName + "</td>";
+                            html += "<td style='text-align:right;'>" + obj[i].TotalCoupons + "</td>";
+                            html += "<td style='text-align:right;'>" + obj[i].TotalPrice + "</td>";
+                            html += "</tr>";
+                        }
+
+                        html += "<tr style='font-weight:bold;background:#f2f2f2;'>";
+                        html += "<td  style='text-align:left;'>Total</td>";
+                        html += "<td></td>";
+                        html += "<td></td>";
+                        html += "<td style='text-align:right;'>" + totalCoupons + "</td>";
+                        html += "<td style='text-align:right;'>" + totalPrice.toFixed(2) + "</td>";
+                        html += "</tr>";
+
+                        $("#tbodyCanteen").html('');
+                        $("#tblCanteen").hide();
+
+                        $("#tbodySummery").html('');
+                        $("#tblSummery").hide();
+
+                        $("#tbodyEmp").html('');
+                        $("#tblEmp").hide();
+
+                    }
+                    else {
+                        html += "<tr>";
+                        html += "<td colspan='5' class='text-center'>" + obj[0].vErrorMsg + "</td>";
+                        html += "</tr>";
+                        $("#tbodyCanteen").html('');
+                        $("#tblCanteen").hide();
+                        $("#tbodySummery").html('');
+                        $("#tblSummery").hide();
+                        $("#tbodyEmp").html('');
+                        $("#tblEmp").hide();
+                    }
+                    $("#tbodyEmpSummery").html(html);
+                    $("#tblEmpSummery").show();
                 },
                 error: function (err) {
                     alert(err);
@@ -399,175 +639,41 @@
             } else if (selectedValue == "Employeewise") {
                 Fn_EmployeeWise_Report();
             }
+            else if (selectedValue == "CanteenwiseSummery") {
+                Fn_CanteenWise_Summery();
+            }
+            else if (selectedValue == "EmployeewiseSummery") {
+                Fn_EmployeeWise_Summery();
+            }
             else {
 
             }
         }
 
-        
-
-        function Fn_ExportExcel11() {
-
-            var tab = "";
-            var strFileName = "";
-
-            var selectedValue = $('input[name="rb"]:checked').val();
-
-            if (selectedValue == "Canteenwise") {
-                tab = document.getElementById('tblCanteen');
-                strFileName = "Canteenwise";
-            }
-
-            if (selectedValue == "Employeewise") {
-                tab = document.getElementById('tblEmp');
-                strFileName = "Employeewise";
-            }
-
-            var tab_text = "<table border='2px'>";
-
-            for (var j = 0; j < tab.rows.length; j++) {
-
-                tab_text += "<tr>";
-
-                var cells = tab.rows[j].cells;
-
-                for (var i = 0; i < cells.length; i++) {
-
-                    var cellValue = "";
-
-                    var tagName = cells[i].tagName.toLowerCase();
-
-
-                    // Get normal text
-                    cellValue = cells[i].innerText.trim();
-
-
-                    // Replace Icon/Image in Item column
-                    // Change 2 to your Item column number
-                    if (i === 2) {
-
-                        var img = cells[i].querySelector("img");
-                        var icon = cells[i].querySelector("i");
-
-                        if (img) {
-
-                            // If image has alt text
-                            cellValue = img.alt || "Item";
-
-                        }
-                        else if (icon) {
-
-                            // Font Awesome / Bootstrap icon replacement
-                            if (icon.classList.contains("fa-check")) {
-                                cellValue = "Approved";
-                            }
-                            else if (icon.classList.contains("fa-times")) {
-                                cellValue = "Rejected";
-                            }
-                            else if (icon.classList.contains("fa-edit")) {
-                                cellValue = "Edit";
-                            }
-                            else {
-                                cellValue = "Item";
-                            }
-
-                        }
-                    }
-
-
-                    if (tagName === "th") {
-
-                        tab_text += "<th bgcolor='#87AFC6'>"
-                            + cellValue
-                            + "</th>";
-
-                    }
-                    else if (i === 0) {
-
-                        tab_text += "<td style=\"mso-number-format:'0';\">"
-                            + cellValue
-                            + "</td>";
-
-                    }
-                    else {
-
-                        tab_text += "<td>"
-                            + cellValue
-                            + "</td>";
-
-                    }
-
-                }
-
-                tab_text += "</tr>";
-            }
-
-
-            tab_text += "</table>";
-
-
-            // Remove unwanted HTML elements
-            tab_text = tab_text.replace(/<A[^>]*>|<\/A>/g, "");
-            tab_text = tab_text.replace(/<img[^>]*>/gi, "");
-            tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, "");
-
-
-            var ua = window.navigator.userAgent;
-            var msie = ua.indexOf("MSIE ");
-
-
-            if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
-
-                txtArea1.document.open("txt/html", "replace");
-                txtArea1.document.write(tab_text);
-                txtArea1.document.close();
-                txtArea1.focus();
-
-                sa = txtArea1.document.execCommand(
-                    "SaveAs",
-                    true,
-                    strFileName + ".xls"
-                );
-
-            }
-            else {
-
-                var blob = new Blob(
-                    [tab_text],
-                    {
-                        type: "application/vnd.ms-excel"
-                    }
-                );
-
-                var link = document.createElement("a");
-
-                link.href = URL.createObjectURL(blob);
-                link.download = strFileName + ".xls";
-
-                document.body.appendChild(link);
-                link.click();
-
-                document.body.removeChild(link);
-            }
-
-            return sa;
-        }
 
         function Fn_ExportExcel() {
 
             var tab = "";
             var strFileName = "";
 
+            var ddlDays = $("#ddlDays").val();
             var selectedValue = $('input[name="rb"]:checked').val();
 
             if (selectedValue == "Canteenwise") {
                 tab = document.getElementById('tblCanteen');
-                strFileName = "Canteenwise";
+                strFileName = "Canteenwise-Detail-" + ddlDays;
             }
-
-            if (selectedValue == "Employeewise") {
+            else if (selectedValue == "Employeewise") {
                 tab = document.getElementById('tblEmp');
-                strFileName = "Employeewise";
+                strFileName = "Employeewise-Detail-" + ddlDays;
+            }
+            else if (selectedValue == "CanteenwiseSummery") {
+                tab = document.getElementById('tblSummery');
+                strFileName = "Canteenwise-Summery-" + ddlDays;
+            }
+            else if (selectedValue == "EmployeewiseSummery") {
+                tab = document.getElementById('tblEmpSummery');
+                strFileName = "Employeewise-Summery-" + ddlDays;
             }
 
             var tab_text = "<table border='2px'>";
@@ -598,7 +704,7 @@
 
                         // Normal text
                         cellValue = cells[i].innerText.trim();
-                    }                    
+                    }
 
                     if (tagName === "th") {
 
@@ -677,31 +783,72 @@
             <h4>Report</h4>
             <div class="card">
                 <div class="row mt-2">
-                    <div class="col-sm-3">
+                    <div class="col-sm-4">
                         <label>Canteen</label>
                         <select id="ddlCanteen" class="form-control" onchange="onRadioChange();">
                             <option value="0">--Select--</option>
                         </select>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-4">
                         <label>Employee</label>
                         <select id="ddlEmpName" class="form-control" onchange="onRadioChange();">
                             <option value="0">--Select--</option>
                         </select>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-4">
                         <label>Days</label>
                         <select id="ddlDays" class="form-control" onchange="onRadioChange();">
-                            <option value="0">--Select--</option>
+                            @*<option value="0">--Select--</option>*@
                             <option value="Today">Today</option>
                             <option value="Monthly">Monthly</option>
                         </select>
                     </div>
-                    <div class="col-sm-3">
-                        <input type="radio" onchange="onRadioChange();" style="margin-top: 30px" name="rb" value="Canteenwise" checked="checked" /> Canteenwise
-                        <input type="radio" onchange="onRadioChange();" style="margin-top: 30px" name="rb" value="Employeewise" /> Employeewise
+                    <div class="col-sm-8">
+                        @*<input type="radio" onchange="onRadioChange();" style="margin-top: 30px" name="rb" value="Canteenwise" checked="checked" /> Canteenwise Detail
+        <input type="radio" onchange="onRadioChange();" style="margin-top: 30px" name="rb" value="Employeewise" /> Employeewise Detail
+        <input type="radio" onchange="onRadioChange();" style="margin-top: 30px" name="rb" value="CanteenwiseSummery" /> Canteenwise Summary
+        <input type="radio" onchange="onRadioChange();" style="margin-top: 30px" name="rb" value="EmployeewiseSummery" /> Employeewise Summary*@
+
+                        <div class="row">
+                            <!-- Detail Column -->
+                            <div class="col-md-6">
+                                <h5>Detail</h5>
+
+                                <label>
+                                    <input type="radio" name="rb" value="Canteenwise"
+                                           onchange="onRadioChange();" checked="checked" />
+                                    Canteenwise Detail
+                                </label>
+                                <br />
+
+                                <label>
+                                    <input type="radio" name="rb" value="Employeewise"
+                                           onchange="onRadioChange();" />
+                                    Employeewise Detail
+                                </label>
+                            </div>
+
+                            <!-- Summary Column -->
+                            <div class="col-md-6">
+                                <h5>Summary</h5>
+
+                                <label>
+                                    <input type="radio" name="rb" value="CanteenwiseSummery"
+                                           onchange="onRadioChange();" />
+                                    Canteenwise Summary
+                                </label>
+                                <br />
+
+                                <label>
+                                    <input type="radio" name="rb" value="EmployeewiseSummery"
+                                           onchange="onRadioChange();" />
+                                    Employeewise Summary
+                                </label>
+                            </div>
+                        </div>
+
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-4">
                         <button id="btnSearch" class="btn btn-primary mt-4" onclick="onRadioChange();"> Search</button>
                         <button id="btnExport" class="btn btn-primary mt-4" onclick="Fn_ExportExcel();"> Export</button>
                     </div>
@@ -715,11 +862,25 @@
                                 <th>Order Date</th>
                                 <th>Item</th>
                                 <th>TotalCoupons</th>
-                                <th>Amt (₹)</th>
+                                <th>Amt</th>
                             </tr>
                         </thead>
-                        <tbody id="tbodyReport"></tbody>
+                        <tbody id="tbodyCanteen"></tbody>
                     </table>
+
+                    <!-- Canteen Summery Start-->
+
+                    <table class="table table-bordered table-hover" id="tblSummery" style="display: none;">
+                        <thead>
+                            <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
+                                <th>Canteen Name</th>
+                                <th>TotalCoupons</th>
+                                <th>Amt</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodySummery"></tbody>
+                    </table>
+
                     <!-- Employee table start-->
 
                     <table class="table table-bordered table-hover" id="tblEmp" style="display: none;">
@@ -731,10 +892,24 @@
                                 <th>Order Date</th>
                                 <th>Item</th>
                                 <th>TotalCoupons</th>
-                                <th>Amt (₹)</th>
+                                <th>Amt</th>
                             </tr>
                         </thead>
-                        <tbody id="tbodyEmpReport"></tbody>
+                        <tbody id="tbodyEmp"></tbody>
+                    </table>
+
+                    <!-- Emp Summery Start-->
+                    <table class="table table-bordered table-hover" id="tblEmpSummery" style="display: none;">
+                        <thead>
+                            <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
+                                <th>Emp Id</th>
+                                <th>Emp Name</th>
+                                <th>Canteen Name</th>
+                                <th>TotalCoupons</th>
+                                <th>Amt</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyEmpSummery"></tbody>
                     </table>
                 </div>
 
