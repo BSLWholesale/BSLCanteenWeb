@@ -13,7 +13,7 @@
 
             var spnCanteen = sessionStorage.getItem("CanteenName");
             $("#spCanteen").html(spnCanteen);
-
+            $("#txtCouponId").focus();
             Fn_Get_Coupon_Order();
         });
 
@@ -42,11 +42,13 @@
                         if (obj.vErrorMsg == "Success") {
                             Swal.fire({ title: "", text: "Coupon Scanned Successfully", icon: "success" });
                             $("#txtCouponId").val("");
+                            $("#txtCouponId").focus();
                             Fn_Get_Coupon_Order();
                         }
                         else {
                             Swal.fire({ title: "", text: obj.vErrorMsg, icon: "error" });
                             $("#txtCouponId").val("");
+                            $("#txtCouponId").focus();
                         }
                     },
                     error: function (err) {
