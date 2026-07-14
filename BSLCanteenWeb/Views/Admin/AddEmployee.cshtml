@@ -3,6 +3,8 @@
     ViewBag.Title = "AddEmployee";
 }
 
+<link href="~/Web/css/select2.min.css" rel="stylesheet" />
+
 <script type="text/javascript">
 
 
@@ -230,3 +232,17 @@
     </div>
 
 </div>
+
+
+<script src="~/Web/js/select2.min.js"></script>
+<script type="text/javascript">
+
+    $(function () {
+
+        $("#ddlEmpRole").select2();
+        $("#ddlEmpLocation").select2();
+        $("#ddlCanteenName").select2();
+
+    });
+
+</script>
