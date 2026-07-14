@@ -3,8 +3,6 @@
     ViewBag.Title = "ViewEmployeeList";
 }
 
-@*<h2>ViewEmployeeList</h2>*@
-
 <script type="text/javascript">
 
 
@@ -37,7 +35,7 @@
                         html += "<td>" + obj[i].EmpLocation + "</td>";
                         html += "<td>" + obj[i].EmpRole + "</td>";
                         html += "<td>" + obj[i].CanteenName + "</td>";
-                        html += "<td><a href='javascript: void(0);' class='btn btn-xs sharp btn-info edit'><i class='fa' style='align-content:center;' onclick='Fn_NavigateToEditEmployee(" + obj[i].ID + ")'>Edit</i></td>";
+                        html += "<td><a href='javascript: void(0);' class='btn btn-xs sharp btn-info edit'><i class='fa' style='align-content:center;' onclick='Fn_NavigateToEditEmployee(" + obj[i].EmpId + ")'>Edit</i></td>";
                         html += "</tr>";
                     }
                 }
@@ -53,6 +51,11 @@
     }
 
 
+    function Fn_NavigateToEditEmployee(EmpId) {
+
+        window.location.href = "/Admin/EditEmployeeDetails?EID=" + EmpId;
+
+    }
 
 
     function Fn_NavigateToAddDivision() {
