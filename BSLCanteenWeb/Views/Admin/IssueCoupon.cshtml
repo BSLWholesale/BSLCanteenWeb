@@ -11,9 +11,9 @@
 
         $(document).ready(function () {
 
-
+            var strCriteria = " AND EmpRole = 'Employee' ";
             var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
-            Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", "");
+            Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", strCriteria);
             Fn_Get_All_MenuItems();
         });
         function Fn_Fill_DropdownList(ddlName, strTBLName, strFieldName, strValueField, strCriteria) {
