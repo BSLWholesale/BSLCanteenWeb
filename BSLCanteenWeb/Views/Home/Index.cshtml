@@ -21,10 +21,21 @@
         }
         else {
             var clsEmployee = {};
-            clsEmployee.EmpId = $("#txtEmployeeId").val();
-            clsEmployee.EmpMobile = $("#txtEmployeeId").val();
-            clsEmployee.EmpPassword = $("#txtPassword").val();
+            var employeeValue = $("#txtEmployeeId").val().trim();
 
+            if (/^\d+$/.test(employeeValue)) {
+                clsEmployee.EmpId = employeeValue;
+                clsEmployee.EmpMobile = employeeValue;
+                clsEmployee.EmpPassword = $("#txtPassword").val();
+            }
+            else if (/^[a-zA-Z0-9]+$/.test(employeeValue)) {
+                clsEmployee.LoginID = employeeValue;
+                clsEmployee.EmpPassword = $("#txtPassword").val();
+            }
+            else {
+                Swal.fire({ title: "Login", text: "Please enter a valid Employee ID", icon: "error", });
+            }
+            
             $.ajax({
                 type: "POST",
                 url: "/Home/Fn_Login_Employee",
@@ -41,6 +52,7 @@
                         sessionStorage.setItem("EmpRole", obj.EmpRole);
                         sessionStorage.setItem("CanteenId", obj.CanteenId);
                         sessionStorage.setItem("CanteenName", obj.CanteenName);
+                        sessionStorage.setItem("CanteenName", obj.LoginID);
                         if (obj.EmpRole == "Admin") {                            
                             window.location.href = '/Admin/AdminDashboard';
                         }
