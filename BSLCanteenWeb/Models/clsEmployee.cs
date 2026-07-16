@@ -119,6 +119,7 @@ namespace BSLCanteenWeb.Models
         public string ModifiedOn { get; set; }
         public string vErrorMsg { get; set; }
         public int vErrorCode { get; set; }
+        public string OrderByReport { get; set; }
     }
     public class clsMonthlyReportReq
     {

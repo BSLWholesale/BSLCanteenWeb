@@ -40,15 +40,31 @@
                     success: function (data) {
                         var obj = JSON.parse(data.message);
                         if (obj.vErrorMsg == "Success") {
-                            Swal.fire({ title: "", text: "Coupon Scanned Successfully", icon: "success" });
-                            $("#txtCouponId").val("");
-                            $("#txtCouponId").focus();
-                            Fn_Get_Coupon_Order();
+                            Swal.fire({
+                                title: "",
+                                text: "Coupon Scanned Successfully",
+                                icon: "success",
+                                timer: 1000,              // Auto close after 3 seconds
+                                timerProgressBar: true,   // Optional progress bar
+                                showConfirmButton: false
+                            }).then(() => {
+                                $("#txtCouponId").val("");
+                                $("#txtCouponId").focus();
+                                Fn_Get_Coupon_Order();
+                            });
                         }
-                        else {
-                            Swal.fire({ title: "", text: obj.vErrorMsg, icon: "error" });
-                            $("#txtCouponId").val("");
-                            $("#txtCouponId").focus();
+                        else {                            
+                            Swal.fire({
+                                title: "",
+                                text: obj.vErrorMsg,
+                                icon: "error",
+                                timer: 1000,              // Auto close after 3 seconds
+                                timerProgressBar: true,
+                                showConfirmButton: false
+                            }).then(() => {
+                                $("#txtCouponId").val("");
+                                $("#txtCouponId").focus();
+                            });
                         }
                     },
                     error: function (err) {
@@ -71,7 +87,8 @@
 
             var formattedDate = day + "-" + month + "-" + year;
 
-            $("#spnDate").html(formattedDate);
+            $("#spnTodays").html(formattedDate);
+
 
             var clsCouponReport = {};
             clsCouponReport.ModifiedBy = sessionStorage.getItem("LogInID");
@@ -92,21 +109,21 @@
                     if (obj[0].vErrorMsg == "Success") {
                         for (var i = 0; i < obj.length; i++) {
                             html += "<tr>";
-                            html += "<td>" + obj[i].OrderTakenDate + "</td>";
+                            html += "<td>" + obj[i].OrderTakenTime + "</td>";
                             html += "<td>" + obj[i].CouponId + "</td>";
                             html += "<td>" + obj[i].EmpId + "</td>";
                             html += "<td>" + obj[i].EmpName + "</td>";
                             if (obj[i].ItemCategory == "Tea") {
-                                html += "<td>☕ Tea</td>";
+                                html += "<td>☕ Tea (₹" + obj[i].Price + ")</td>";
                             }
                             else if (obj[i].ItemCategory == "Breakfast") {
-                                html += "<td>🍽️ Breakfast</td>";
+                                html += "<td>🍽️ Breakfast (₹" + obj[i].Price + ")</td>";
                             }
                             else if (obj[i].ItemCategory == "Thali") {
-                                html += "<td>🍛 Thali</td>";
+                                html += "<td>🍛 Thali (₹" + obj[i].Price + ")</td>";
                             }
                             else if (obj[i].ItemCategory == "Mini Thali") {
-                                html += "<td>🍛 Mini Thali</td>";
+                                html += "<td>🍛 Mini Thali (₹" + obj[i].Price + ")</td>";
                             }
                             else {
                                 html += "<td>" + obj[i].ItemCategory + "</td>";
@@ -152,12 +169,13 @@
     <div class="row">
         <div class="col-lg-6 col-md-6">
             <h4>Point of Sale — <span id="spCanteen"></span></h4>
+            <p>Today's  <span id="spnTodays"></span> Transcation</p>
             <div class="card">
                 <div class="form-group">
                     <div style="font-size: 52px; text-align: center;">📲</div>
                     <h5>Scan QR-Code or Enter Coupon Id</h5>
                     <input class="form-control" id="txtCouponId" placeholder="Please Scan QR-code" onkeydown="if(event.key==='Enter'){clearTimeout(scanTimer);Fn_ProcessCouponTransaction();}" oninput="scanCompleted()" />
-                    @*<input class="form-control" id="txtCouponId" placeholder="Please Scan QR-code" onkeydown="if (event.key === 'Enter') Fn_ProcessCouponTransaction();"  />*@
+                    @*<input class="form-control" id="txtCouponId" placeholder="Please Scan QR-code" onkeydown="if (event.key === 'Enter') Fn_ProcessCouponTransaction();" />*@
                     <button class="btn btn-primary mb-2 mt-2" style="width: 100%;" onclick="Fn_ProcessCouponTransaction()">✓ Process Transaction</button>
                     <button class="btn btn-danger mb-2" style="width: 100%;" onclick="Fn_Clear_Control()">Reset</button>
                 </div>
@@ -175,7 +193,7 @@
                     <table class="table table-bordered table-hover">
                         <thead>
                             <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
-                                <th>Issue Date</th>
+                                <th>Time</th>
                                 <th>Coupon ID</th>
                                 <th>Emp ID</th>
                                 <th>Name</th>
