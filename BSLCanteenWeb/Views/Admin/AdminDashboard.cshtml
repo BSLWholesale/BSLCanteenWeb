@@ -10,32 +10,9 @@
     <script>
 
         $(document).ready(function () {
-
-
-            var strCriteria = "";
-            strFieldName = "";
-            strFieldName = " Count(EmployeeId) AS RC ";
-            Fn_Get_Count_Record("spnTotalEmp", "EmployeeMaster", strFieldName, "");
-            strFieldName = "";
-            strFieldName = " Count(CouponId) As RC ";
-            strCriteria = " AND OrdStatus = 'Generated' ";
-            Fn_Get_Count_Record("spnActiveCoupon", "CouponOrder2026", strFieldName, strCriteria);
-
-
-            //$("#emp-search").on("keyup", function () {
-            //    var value = $(this).val().toLowerCase();
-
-            //    $("#emp-tbl tr").each(function () {
-            //        var col1 = $(this).find("td:eq(0)").text().toLowerCase(); // First column
-            //        var col2 = $(this).find("td:eq(1)").text().toLowerCase(); // Second column
-
-            //        $(this).toggle(
-            //            col1.indexOf(value) > -1 || col2.indexOf(value) > -1
-            //        );
-            //    });
-            //});
-
+           
             Fn_Get_Recent_Coupon_Transactions();
+            Fn_Get_Count_ItemMenu();
 
         });
 
@@ -140,26 +117,74 @@
             });
         }
 
-        function Fn_Get_Count_Record(TagId, strTBLName, strFieldName, strCriteria) {
+        function Fn_Get_Count_ItemMenu() {
 
-            var clsRequestDropdown = {};
-            clsRequestDropdown.vFieldName = strFieldName;
-            clsRequestDropdown.vTBLName = strTBLName;
-            clsRequestDropdown.vCriteria = strCriteria;
-            $("#" + TagId).html('');
+            var today = new Date();
+
+            var day = String(today.getDate()).padStart(2, '0');
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = months[today.getMonth()];
+            var year = today.getFullYear();
+
+            var formattedDate = day + "-" + month + "-" + year;
+
+            var clsCountMenuItem = {};
+            clsCountMenuItem.OrderTakenDate = formattedDate;
+            $("#ItemCountRow").html('');
+            var html = '';
             $.ajax({
                 type: "POST",
-                url: '/Admin/Fn_Get_Count_Record',
+                url: '/Admin/Fn_Get_Count_ItemMenu',
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                data: JSON.stringify(clsRequestDropdown),
+                data: JSON.stringify(clsCountMenuItem),
                 success: function (data) {
                     var obj = JSON.parse(data.message);
-                    if (obj.vErrorMsg == "Success") {
-                        $("#" + TagId).html(obj.vFieldName);
+                    if (obj[0].vErrorMsg == "Success") {
+                        var rCount = 1;
+                        for (var i = 0; i < obj.length; i++) {
+                            if (obj[i].ItemCategory == "Tea") {
+                                html += "<div class='col-sm-3'>";
+                                html += "<div class='card p-4 food-card" + rCount + "'>";
+                                html += "<div style='font-size: 15px; font-weight: 800'>☕ Tea - " + obj[i].CountItem + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+                            else if (obj[i].ItemCategory == "Breakfast") {
+                                html += "<div class='col-sm-3'>";
+                                html += "<div class='card p-4 food-card" + rCount + "'>";
+                                html += "<div style='font-size: 15px; font-weight: 800'>🍽️ Breakfast - " + obj[i].CountItem + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+                            else if (obj[i].ItemCategory == "Thali") {
+                                html += "<div class='col-sm-3'>";
+                                html += "<div class='card p-4 food-card" + rCount + "'>";
+                                html += "<div style='font-size: 15px; font-weight: 800'>🍛 Thali - " + obj[i].CountItem + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+                            else if (obj[i].ItemCategory == "Mini Thali") {
+                                html += "<div class='col-sm-3'>";
+                                html += "<div class='card p-4 food-card" + rCount + "'>";
+                                html += "<div style='font-size: 15px; font-weight: 800'>🍛 Mini Thali - " + obj[i].CountItem + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+                            else {
+                                html += "<div class='col-sm-3'>";
+                                html += "<div class='card p-4 food-card" + rCount + "'>";
+                                html += "<div style='font-size: 15px; font-weight: 800'>" + obj[i].ItemCategory + " - " + obj[i].CountItem + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+                            rCount++;
+                        }
+                        $("#ItemCountRow").append(html);
                     }
                     else {
-                        $("#" + TagId).html('');
+                        
                     }
 
                 },
@@ -172,17 +197,33 @@
 
     </script>
 
-
     <style>
-        .stat-ic {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 17px;
-            margin-bottom: 10px;
+        .food-card1 {
+            background-color: #D7CCC8; /* Light Brown */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(121, 85, 72, 0.25);
+        }
+
+        .food-card2 {
+            background-color: #C8E6C9; /* Light Green */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(76, 175, 80, 0.25);
+        }
+
+        .food-card3 {
+            background-color: #FFCCBC; /* Light Orange */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(255, 87, 34, 0.25);
+        }
+
+        .food-card4 {
+            background-color: #E1BEE7; /* Light Purple */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(156, 39, 176, 0.25);
         }
     </style>
 
@@ -194,6 +235,9 @@
         <div class="col-12 col-md-12 col-sm-12">
             <h4>Admin</h4>
             <p>Today's  <span id="spnTodays"></span> Transcation</p>
+            <div class="row" id="ItemCountRow">
+            </div>
+
             <div class="card">
                 <div class="table-responsive mt-3">
                     <table class="table table-bordered table-hover">

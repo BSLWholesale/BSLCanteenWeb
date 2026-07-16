@@ -26,46 +26,9 @@
             $("#spCanteen").html(spnCanteen);
 
             Fn_Get_Coupon_Order();
+            Fn_Get_Count_ItemMenu()
+
         });
-
-
-        function Fn_ProcessCouponTransaction() {
-
-            const input = document.getElementById("txtCouponId").value.trim();
-
-            var clsCouponReport = {};
-            clsCouponReport.ModifiedBy = sessionStorage.getItem("LogInID");
-            clsCouponReport.CouponId = input;
-            clsCouponReport.CanteenId = sessionStorage.getItem("CanteenId");
-
-            if (input == "") {
-                Swal.fire({ title: "", text: "Please Scan QR-Code", icon: "error" });
-            }
-            else {
-                $.ajax({
-                    type: "POST",
-                    url: "/Staff/Fn_ProcessCouponTransaction",
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify(clsCouponReport),
-                    success: function (data) {
-                        var obj = JSON.parse(data.message);
-                        if (obj.vErrorMsg == "Success") {
-                            Swal.fire({ title: "", text: "Coupon Scanned Successfully", icon: "success" });
-                            $("#txtCouponId").val("");
-                            Fn_Get_Coupon_Order();
-                        }
-                        else {
-                            Swal.fire({ title: "", text: obj.vErrorMsg, icon: "error" });
-                            $("#txtCouponId").val("");
-                        }
-                    },
-                    error: function (err) {
-                        alert(err);
-                    }
-                });
-            }
-        }
 
 
         function Fn_Get_Coupon_Order() {
@@ -86,7 +49,7 @@
             clsCouponReport.ModifiedBy = sessionStorage.getItem("LogInID");
             clsCouponReport.OrderStatus = "Scanned";
             clsCouponReport.OrderTakenDate = formattedDate;
-
+            clsCouponReport.CanteenId = sessionStorage.getItem("CanteenId");
             $("#tbody").html('');
             var html = '';
 
@@ -137,21 +100,128 @@
             });
         }
 
-        function Fn_Clear_Control() {
-            $("#txtCouponId").val("");
+
+        function Fn_Get_Count_ItemMenu() {
+
+            var today = new Date();
+
+            var day = String(today.getDate()).padStart(2, '0');
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = months[today.getMonth()];
+            var year = today.getFullYear();
+
+            var formattedDate = day + "-" + month + "-" + year;
+
+            var clsCountMenuItem = {};
+            clsCountMenuItem.OrderTakenDate = formattedDate;
+            clsCountMenuItem.CanteenId = sessionStorage.getItem("CanteenId");
+            $("#ItemCountRow").html('');
+            var html = '';
+            $.ajax({
+                type: "POST",
+                url: '/Admin/Fn_Get_Count_ItemMenu',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsCountMenuItem),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj[0].vErrorMsg == "Success") {
+                        var rCount = 1;
+                        for (var i = 0; i < obj.length; i++) {
+                            if (obj[i].ItemCategory == "Tea") {
+                                html += "<div class='col-sm-3'>";
+                                html += "<div class='card p-4 food-card" + rCount + "'>";
+                                html += "<div style='font-size: 15px; font-weight: 800'>☕ Tea - " + obj[i].CountItem + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+                            else if (obj[i].ItemCategory == "Breakfast") {
+                                html += "<div class='col-sm-3'>";
+                                html += "<div class='card p-4 food-card" + rCount + "'>";
+                                html += "<div style='font-size: 15px; font-weight: 800'>🍽️ Breakfast - " + obj[i].CountItem + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+                            else if (obj[i].ItemCategory == "Thali") {
+                                html += "<div class='col-sm-3'>";
+                                html += "<div class='card p-4 food-card" + rCount + "'>";
+                                html += "<div style='font-size: 15px; font-weight: 800'>🍛 Thali - " + obj[i].CountItem + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+                            else if (obj[i].ItemCategory == "Mini Thali") {
+                                html += "<div class='col-sm-3'>";
+                                html += "<div class='card p-4 food-card" + rCount + "'>";
+                                html += "<div style='font-size: 15px; font-weight: 800'>🍛 Mini Thali - " + obj[i].CountItem + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+                            else {
+                                html += "<div class='col-sm-3'>";
+                                html += "<div class='card p-4 food-card" + rCount + "'>";
+                                html += "<div style='font-size: 15px; font-weight: 800'>" + obj[i].ItemCategory + " - " + obj[i].CountItem + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+                            rCount++;
+                        }
+                        $("#ItemCountRow").append(html);
+                    }
+                    else {
+
+                    }
+
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
         }
 
     </script>
 
+    <style>
+        .food-card1 {
+            background-color: #D7CCC8; /* Light Brown */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(121, 85, 72, 0.25);
+        }
+
+        .food-card2 {
+            background-color: #C8E6C9; /* Light Green */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(76, 175, 80, 0.25);
+        }
+
+        .food-card3 {
+            background-color: #FFCCBC; /* Light Orange */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(255, 87, 34, 0.25);
+        }
+
+        .food-card4 {
+            background-color: #E1BEE7; /* Light Purple */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(156, 39, 176, 0.25);
+        }
+    </style>
 }
 
 
 <div class="container mt-4">
     <div class="row">
         <div class="col-12 col-md-12 col-sm-12">
-            
+
             <h4><span id="spCanteen"></span> — Today's Records</h4>
             <p>Today's <span id="spnDate"></span> Transactions</p>
+            <div class="row" id="ItemCountRow">
+
+            </div>
             <div class="card">
                 <div class="table-responsive mt-3">
                     <table class="table table-bordered table-hover">

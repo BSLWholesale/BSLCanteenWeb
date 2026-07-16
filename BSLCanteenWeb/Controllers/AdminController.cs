@@ -129,7 +129,7 @@ namespace BSLCanteenWeb.Controllers
         }
 
         [HttpPost]
-        public JsonResult Fn_Get_Count_Record(clsRequestDropdown cs)
+        public JsonResult Fn_Get_Count_ItemMenu(clsCountMenuItem cs)
         {
             using (var client = new HttpClient())
             {
@@ -140,7 +140,7 @@ namespace BSLCanteenWeb.Controllers
                 string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(cs);
 
                 HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
-                HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_Get_Count_Record", content).Result;
+                HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_Get_Count_ItemMenu", content).Result;
                 if (responsePost.IsSuccessStatusCode)
                 {
                     return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
