@@ -315,7 +315,7 @@
 
                     }
                 });
-            }            
+            }
         }
 
         function printQRCoupons() {
@@ -324,72 +324,72 @@
             var printWindow = window.open("", "", "width=800,height=600");
 
             printWindow.document.write(`
-                                            <html>
-                                            <head>
-                                                <title>Print Stickers</title>
-                                                <style>
-                                                    *{
-                                                        box-sizing:border-box;
-                                                    }
+                                                <html>
+                                                <head>
+                                                    <title>Print Stickers</title>
+                                                    <style>
+                                                        *{
+                                                            box-sizing:border-box;
+                                                        }
 
-                                                    @@page{
-                                                        size:auto;
-                                                        margin:8mm;      /* Reduce printer margin */
-                                                    }
+                                                        @@page{
+                                                            size:auto;
+                                                            margin:8mm;      /* Reduce printer margin */
+                                                        }
 
-                                                    html,body{
-                                                        width:100%;
-                                                        margin:0;
-                                                        padding:0;
-                                                        font-family:Arial,sans-serif;
-                                                    }
-
-                                                    body{
-                                                        display:flex;
-                                                        flex-direction:column;
-                                                        align-items:center;
-                                                        padding:5mm;
-                                                    }
-
-                                                    .qr-card{
-                                                        width:3in;
-                                                        border:1px solid #000;
-                                                        padding:8px;
-                                                        margin:8px auto;
-                                                        page-break-inside:avoid;
-                                                        overflow:hidden;
-                                                    }
-
-                                                    .lbl-text{
-                                                        font-size:14px;
-                                                        text-align:left;
-                                                        word-break:break-word;
-                                                    }
-
-                                                    img{
-                                                        display:block;
-                                                        margin:0 auto;
-                                                        max-width:100%;
-                                                        height:auto;
-                                                    }
-
-                                                    @@media print{
-                                                        body{
+                                                        html,body{
+                                                            width:100%;
+                                                            margin:0;
                                                             padding:0;
+                                                            font-family:Arial,sans-serif;
+                                                        }
+
+                                                        body{
+                                                            display:flex;
+                                                            flex-direction:column;
+                                                            align-items:center;
+                                                            padding:5mm;
                                                         }
 
                                                         .qr-card{
+                                                            width:3in;
+                                                            border:1px solid #000;
+                                                            padding:8px;
+                                                            margin:8px auto;
                                                             page-break-inside:avoid;
-                                                            break-inside:avoid;
+                                                            overflow:hidden;
                                                         }
-                                                    }
-                                                </style>
-                                            </head>
-                                            <body>
-                                                ${printContents}
-                                            </body>
-                                            </html>
-                                        `);
+
+                                                        .lbl-text{
+                                                            font-size:14px;
+                                                            text-align:left;
+                                                            word-break:break-word;
+                                                        }
+
+                                                        img{
+                                                            display:block;
+                                                            margin:0 auto;
+                                                            max-width:100%;
+                                                            height:auto;
+                                                        }
+
+                                                        @@media print{
+                                                            body{
+                                                                padding:0;
+                                                            }
+
+                                                            .qr-card{
+                                                                page-break-inside:avoid;
+                                                                break-inside:avoid;
+                                                            }
+                                                        }
+                                                    </style>
+                                                </head>
+                                                <body>
+                                                    ${printContents}
+                                                </body>
+                                                </html>
+                                            `);
 
             printWindow.document.close();
             printWindow.focus();
@@ -493,58 +493,81 @@
 
                     }
                 });
-            }           
+            }
         }
 
         function Print_A4_Coupon() {
+
             var printContents = document.getElementById("dvA4Size").innerHTML;
             var printWindow = window.open('', '', 'width=900,height=700');
 
             printWindow.document.write(`
-                        <html>
-                        <head>
-                            <title>Print Coupons</title>
-                            <style>
-                                @@page {
-                                    size: A4 portrait;
-                                    margin: 10mm;
-                                }
-
-                                body {
-                                    font-family: Arial, sans-serif;
-                                    margin: 0;
-                                    padding: 10px;
-                                }
-
-                                #dvA4Size {
-                                    display: flex;
-                                    flex-wrap: wrap;
-                                }
-
-                                .col-sm-4 {
-                                    width: 33.33%;
-                                    float: left;
-                                    padding: 5px;
-                                    box-sizing: border-box;
-                                }
-
-                                .card {
-                                    border: 1px solid #000;
-                                    padding: 8px;
-                                }
-
-                                .qr-card {
-                                    page-break-inside: avoid;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <div id="dvA4Size">
-                                ${printContents}
-                            </div>
-                        </body>
-                        </html>
-                    `);
+             <!DOCTYPE html>
+             <html>
+             <head>
+                 <title>Print Coupons</title>             
+                 <style>             
+                     @@page {
+                         size: A4 portrait;
+                         margin: 10mm;
+                     }
+             
+                     *{
+                         box-sizing:border-box;
+                     }
+             
+                     body{
+                         margin:0;
+                         padding:0;
+                         font-family:Arial,sans-serif;
+                     }
+             
+                     /* 3 Coupons Per Row */
+                     #dvA4Size{
+                         display:grid;
+                         grid-template-columns:repeat(3,1fr);
+                         width:100%;
+                     }
+             
+                     .col-sm-4{
+                         padding:10px;
+             
+                         /* Horizontal & Vertical Dotted Cut Lines */
+                         border-right:2px dotted #000;
+                         border-bottom:2px dotted #000;
+             
+                         page-break-inside:avoid;
+                         break-inside:avoid;
+                     }
+             
+                     /* Remove right dotted line on last column */
+                     .col-sm-4:nth-child(3n){
+                         border-right:none;
+                     }
+             
+                     .card{
+                         border:1px solid #000;
+                         padding:8px;
+                         min-height:180px;
+                     }
+             
+                     .qr-card{
+                         page-break-inside:avoid;
+                         break-inside:avoid;
+                     }
+             
+                     img{
+                         max-width:100%;
+                     }             
+                 </style>             
+             </head>             
+             <body>             
+                 <div id="dvA4Size">
+                     ${printContents}
+                 </div>             
+             </body>
+             </html>
+             `);
 
             printWindow.document.close();
 
