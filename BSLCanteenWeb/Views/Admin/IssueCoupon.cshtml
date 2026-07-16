@@ -24,8 +24,10 @@
             clsRequestDropdown.vCriteria = strCriteria;
             $("#" + ddlName).html('');
             var dropdown = ''; var dropdown1 = "";
-            dropdown1 = "<option value='0'>--Select--</option>";
-            $("#" + ddlName).append(dropdown1);
+            if (ddlName == "ddlEmpName") {
+                dropdown1 = "<option value='0'>--Select--</option>";
+                $("#" + ddlName).append(dropdown1);
+            }
             $.ajax({
                 type: "POST",
                 url: '/Home/Fn_Fill_DropdownList',
@@ -55,6 +57,19 @@
             var strCriteria = "";
             var ddlEmpName = $("#ddlEmpName").val();
             strCriteria = " AND EmployeeId=" + ddlEmpName + "";
+            Fn_Fill_DropdownList("ddlEmpLocation", "vGetEmpDetail", "EmpLocation", "", strCriteria);
+
+            var strCriteria = "";
+            var ddlEmpName = $("#ddlEmpName").val();
+            var ddlEmpLocation = $("#ddlEmpLocation option:selected").text();
+            strCriteria = " AND EmployeeId=" + ddlEmpName + " OR EmpLocation='" + ddlEmpLocation + "'";
+            Fn_Fill_DropdownList("ddlCanteen", "vGetEmpDetail", "CanteenName", "CanteenId", strCriteria);
+        }
+
+        function Fn_OnChange_ddlEmpLocation() {
+            var strCriteria = "";
+            var ddlEmpName = $("#ddlEmpName").val();
+            strCriteria = " AND EmployeeId=" + ddlEmpName + " AND EmpLocation='" + $("#ddlEmpLocation").val() + "'";
             Fn_Fill_DropdownList("ddlCanteen", "vGetEmpDetail", "CanteenName", "CanteenId", strCriteria);
         }
 
@@ -119,9 +134,11 @@
         }
 
         function Fn_Emp_CouponGeneration() {
+
             var clsCouponOrder = {};
             clsCouponOrder.CreatedBy = sessionStorage.getItem("LogInID");
             clsCouponOrder.EmpId = $("#ddlEmpName").val();
+            clsCouponOrder.EmpLocation = $("#ddlEmpLocation").val();
             clsCouponOrder.CanteenId = $("#ddlCanteen").val();
             var clsCouponItem = [];
 
@@ -161,6 +178,9 @@
             if ($("#ddlEmpName").val() == "0") {
                 Swal.fire({ title: "", text: "Please Select Employee", icon: "error" });
             }
+            if ($("#ddlEmpLocation").val() == "0") {
+                Swal.fire({ title: "", text: "Please Select EmpLocation", icon: "error" });
+            }
             else if ($("#ddlCanteen").val() == "0") {
                 Swal.fire({ title: "", text: "Please Select Canteen", icon: "error" });
             }
@@ -189,7 +209,7 @@
                             $("#txtBreakfastQty").val("");
                             $("#txtThaliQty").val("");
                             $("#txtMiniThaliQty").val("");
-                            Fn_Get_Coupon_Order();
+                            Fn_Get_A4_Coupon_Order();
                         }
                         else {
                             Swal.fire({ title: "", text: obj.vErrorMsg, icon: "error" });
@@ -545,19 +565,27 @@
             <h4>Issue / Recharge Coupon</h4>
             <div class="card pb-5">
                 <div class="row mb-3 mt-3">
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <div class="form-group">
                             <label>Employee No.</label>
                             <select id="ddlEmpName" class="form-control" onchange="Fn_OnChange_ddlEmpName()" style="width: 100%;">
-                                <option value="0">--Select Emp--</option>
+                                <option value="0">--Select--</option>
                             </select>
                         </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label>Emp Location</label>
+                            <select id="ddlEmpLocation" class="form-control" onchange="Fn_OnChange_ddlEmpLocation()" style="width: 100%;">
+                                <option value="0">--Select--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
                         <div class="form-group">
                             <label>Assign Canteen</label>
                             <select id="ddlCanteen" class="form-control" style="width: 100%;">
-                                <option value="">--Select Canteen--</option>
+                                <option value="0">--Select--</option>
                             </select>
                         </div>
                     </div>
@@ -605,7 +633,7 @@
     $(function () {
         $("#ddlEmpName").select2();
         $("#ddlCanteen").select2();
-
+        $("#ddlEmpLocation").select2();
 
     });
 

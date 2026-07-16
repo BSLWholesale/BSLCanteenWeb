@@ -129,6 +129,17 @@
 
         function Fn_Clear_Control() {
             $("#txtCouponId").val("");
+            $("#txtCouponId").focus();
+        }
+
+        let scanTimer;
+
+        function scanCompleted() {
+            clearTimeout(scanTimer);
+
+            scanTimer = setTimeout(() => {
+                Fn_ProcessCouponTransaction();
+            }, 100);
         }
 
     </script>
@@ -145,7 +156,8 @@
                 <div class="form-group">
                     <div style="font-size: 52px; text-align: center;">📲</div>
                     <h5>Scan QR-Code or Enter Coupon Id</h5>
-                    <input class="form-control" id="txtCouponId" placeholder="Please Scan QR-code" onkeydown="if (event.key === 'Enter') Fn_ProcessCouponTransaction();" oninput="Fn_ClearPosResult();" />
+                    <input class="form-control" id="txtCouponId" placeholder="Please Scan QR-code" onkeydown="if(event.key==='Enter'){clearTimeout(scanTimer);Fn_ProcessCouponTransaction();}" oninput="scanCompleted()" />
+                    @*<input class="form-control" id="txtCouponId" placeholder="Please Scan QR-code" onkeydown="if (event.key === 'Enter') Fn_ProcessCouponTransaction();"  />*@
                     <button class="btn btn-primary mb-2 mt-2" style="width: 100%;" onclick="Fn_ProcessCouponTransaction()">✓ Process Transaction</button>
                     <button class="btn btn-danger mb-2" style="width: 100%;" onclick="Fn_Clear_Control()">Reset</button>
                 </div>
