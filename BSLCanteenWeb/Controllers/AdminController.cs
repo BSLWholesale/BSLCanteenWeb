@@ -56,6 +56,11 @@ namespace BSLCanteenWeb.Controllers
             return View();
         }
 
+        public ActionResult PrintCoupon()
+        {
+            return View();
+        }
+
         [HttpPost]
         public JsonResult Fn_Fetch_EmployeeDetails(clsEmployee objReq)
         {

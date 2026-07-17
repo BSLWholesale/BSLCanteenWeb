@@ -47,6 +47,7 @@ namespace BSLCanteenWeb.Models
     {
         public Int64 CouponId { get; set; }
         public Int32 EmpId { get; set; }
+        public Int32 RowIndex { get; set; }
         public string CouponIssueDate { get; set; }
         public string OrderStatus { get; set; }
         public string OrderTakenDate { get; set; }
@@ -102,6 +103,7 @@ namespace BSLCanteenWeb.Models
     public class clsCouponReport
     {
         public Int64 CouponId { get; set; }
+        public Int32 RowIndex { get; set; }
         public string ItemCategory { get; set; }
         public string CouponIssueDate { get; set; }
         public string CouponIssueTime { get; set; }
@@ -110,10 +112,10 @@ namespace BSLCanteenWeb.Models
         public string OrderStatus { get; set; }
         public int CanteenId { get; set; }
         public string CanteenName { get; set; }
-        public Int32 EmpId { get; set; }
+        public Int32 EmpId { get; set; } //
         public string EmpName { get; set; }
         public decimal Price { get; set; }
-        public int CreatedBy { get; set; }
+        public int CreatedBy { get; set; } //
         public string CreatedOn { get; set; }
         public int ModifiedBy { get; set; }
         public string ModifiedOn { get; set; }

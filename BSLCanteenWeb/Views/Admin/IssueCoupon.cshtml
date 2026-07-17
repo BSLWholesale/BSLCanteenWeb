@@ -135,11 +135,22 @@
 
         function Fn_Emp_CouponGeneration() {
 
+            var today = new Date();
+
+            var day = String(today.getDate()).padStart(2, '0');
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = months[today.getMonth()];
+            var year = today.getFullYear();
+
+            var formattedDate = day + "-" + month + "-" + year;
+
             var clsCouponOrder = {};
             clsCouponOrder.CreatedBy = sessionStorage.getItem("LogInID");
             clsCouponOrder.EmpId = $("#ddlEmpName").val();
             clsCouponOrder.EmpLocation = $("#ddlEmpLocation").val();
             clsCouponOrder.CanteenId = $("#ddlCanteen").val();
+            clsCouponOrder.CreatedOn = formattedDate;
             var clsCouponItem = [];
 
             if ($("#txtTeaQty").val() != "0" && $("#txtTeaQty").val() != "") {
@@ -204,6 +215,7 @@
                     success: function (data) {
                         var obj = JSON.parse(data.message);
                         if (obj.vErrorMsg == "Success") {
+                            $("#hdnRowIndex").val(obj.RowIndex);
                             Swal.fire({ title: "", text: "Coupons Generated Successfully", icon: "success" });
                             $("#txtTeaQty").val("");
                             $("#txtBreakfastQty").val("");
@@ -224,182 +236,6 @@
 
         }
 
-        function Fn_Get_Coupon_Order() {
-
-            var today = new Date();
-
-            var day = String(today.getDate()).padStart(2, '0');
-            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            var month = months[today.getMonth()];
-            var year = today.getFullYear();
-
-            var formattedDate = day + "-" + month + "-" + year;
-
-            var clsCouponOrder = {};
-            clsCouponOrder.CreatedBy = sessionStorage.getItem("LogInID");
-            clsCouponOrder.EmpId = $("#ddlEmpName").val();
-            clsCouponOrder.CouponIssueDate = formattedDate;
-            clsCouponOrder.OrderStatus = "Generated";
-            $("#dvQR").html('');
-            var html = '';
-            if ($("#ddlEmpName").val() == "0") {
-                Swal.fire({ title: "", text: "Please Select employee", icon: "error" });
-            }
-            else {
-                $.ajax({
-                    type: "POST",
-                    url: "/Admin/Fn_Get_Coupon_Order",
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify(clsCouponOrder),
-                    success: function (data) {
-                        var obj = JSON.parse(data.message);
-                        if (obj[0].vErrorMsg == "Success") {
-                            for (var i = 0; i < obj.length; i++) {
-                                html += "<div class='card'>";
-                                html += "<div class='qr-card' id='gen-qr-card_" + i + "'>";
-                                html += "<div style='display:flex;  justify-content:space-between; gap:10px;'>";
-                                html += "<div class='lbl-text'>";
-                                if (obj[i].ItemCategory == "Tea") {
-                                    html += "<div style='font-size: 15px'>Item: ☕ Tea (<strong>₹" + obj[i].Price + ")</strong></div>";
-                                }
-                                else if (obj[i].ItemCategory == "Breakfast") {
-                                    html += "<div style='font-size: 15px'>Item: 🍽️ Breakfast (<strong>₹" + obj[i].Price + ")</strong></div>";
-                                }
-                                else if (obj[i].ItemCategory == "Thali") {
-                                    html += "<div style='font-size: 15px'>Item: 🍛 Thali (<strong>₹" + obj[i].Price + ")</strong></div>";
-                                }
-                                else if (obj[i].ItemCategory == "Mini Thali") {
-                                    html += "<div style='font-size: 15px'>Item: 🍛 Mini Thali (<strong>₹" + obj[i].Price + ")</strong></div>";
-                                }
-                                else {
-                                    html += "<div style='font-size: 15px'>Item: " + obj[i].ItemCategory + "</div>";
-                                }
-                                html += "<div>CId: " + obj[i].CouponId + "</div>";
-                                html += "<div>Issued: " + obj[i].CouponIssueDate + "</div>";
-                                html += "<div>Canteen: " + obj[i].CanteenName + "</div>";
-                                html += "<div>Code: " + obj[i].EmpId + "</div>";
-                                html += "</div>";
-                                html += "<div id='gen-qr-wrap_" + i + "' style='width:90px; height:90px; display:flex; align-items:center; justify-content:center; margin-top:10px;'></div>";
-                                html += "</div>";
-                                html += "<div>Name: " + obj[i].EmpName + "</div>";
-                                html += "</div>";
-                                html += "</div>";
-                            }
-
-                            $("#dvQR").append(html);
-
-                            for (var i = 0; i < obj.length; i++) {
-
-                                var text = "" + obj[i].CouponId + "";
-
-                                var qrcode = new QRCode(document.getElementById("gen-qr-wrap_" + i), {
-                                    width: 90,
-                                    height: 90
-                                });
-
-                                qrcode.makeCode(text);
-                            }
-                            $("#dvQR").show();
-                            $("#btnPrintCard").show();
-                            $("#btnPrintA4").hide();
-                            $("#dvA4Size").html('');
-                        }
-                        else {
-                            $("#btnPrintCard").hide();
-                        }
-                    },
-                    error: function (err) {
-                        alert(err);
-
-                    }
-                });
-            }
-        }
-
-        function printQRCoupons() {
-            var printContents = document.getElementById("dvQR").innerHTML;
-
-            var printWindow = window.open("", "", "width=800,height=600");
-
-            printWindow.document.write(`
-                                                <html>
-                                                <head>
-                                                    <title>Print Stickers</title>
-                                                    <style>
-                                                        *{
-                                                            box-sizing:border-box;
-                                                        }
-
-                                                        @@page{
-                                                            size:auto;
-                                                            margin:8mm;      /* Reduce printer margin */
-                                                        }
-
-                                                        html,body{
-                                                            width:100%;
-                                                            margin:0;
-                                                            padding:0;
-                                                            font-family:Arial,sans-serif;
-                                                        }
-
-                                                        body{
-                                                            display:flex;
-                                                            flex-direction:column;
-                                                            align-items:center;
-                                                            padding:5mm;
-                                                        }
-
-                                                        .qr-card{
-                                                            width:3in;
-                                                            border:1px solid #000;
-                                                            padding:8px;
-                                                            margin:8px auto;
-                                                            page-break-inside:avoid;
-                                                            overflow:hidden;
-                                                        }
-
-                                                        .lbl-text{
-                                                            font-size:14px;
-                                                            text-align:left;
-                                                            word-break:break-word;
-                                                        }
-
-                                                        img{
-                                                            display:block;
-                                                            margin:0 auto;
-                                                            max-width:100%;
-                                                            height:auto;
-                                                        }
-
-                                                        @@media print{
-                                                            body{
-                                                                padding:0;
-                                                            }
-
-                                                            .qr-card{
-                                                                page-break-inside:avoid;
-                                                                break-inside:avoid;
-                                                            }
-                                                        }
-                                                    </style>
-                                                </head>
-                                                <body>
-                                                    ${printContents}
-                                                </body>
-                                                </html>
-                                            `);
-
-            printWindow.document.close();
-            printWindow.focus();
-
-            setTimeout(function () {
-                printWindow.print();
-                printWindow.close();
-            }, 500);
-        }
-
         function Fn_Get_A4_Coupon_Order() {
 
             var today = new Date();
@@ -412,11 +248,12 @@
 
             var formattedDate = day + "-" + month + "-" + year;
 
-            var clsCouponOrder = {};
-            clsCouponOrder.CreatedBy = sessionStorage.getItem("LogInID");
-            clsCouponOrder.EmpId = $("#ddlEmpName").val();
-            clsCouponOrder.CouponIssueDate = formattedDate;
-            clsCouponOrder.OrderStatus = "Generated";
+            var clsCouponReport = {};
+            clsCouponReport.CreatedBy = sessionStorage.getItem("LogInID");
+            clsCouponReport.EmpId = $("#ddlEmpName").val();
+            clsCouponReport.CouponIssueDate = formattedDate;
+            clsCouponReport.OrderStatus = "Generated";
+            clsCouponReport.RowIndex = $("#hdnRowIndex").val();
             $("#dvA4Size").html('');
             var html = '';
             if ($("#ddlEmpName").val() == "0") {
@@ -428,11 +265,19 @@
                     url: "/Admin/Fn_Get_Coupon_Order",
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
-                    data: JSON.stringify(clsCouponOrder),
+                    data: JSON.stringify(clsCouponReport),
                     success: function (data) {
                         var obj = JSON.parse(data.message);
-                        if (obj[0].vErrorMsg == "Success") {
+                        var totalPrice = 0;
+                        var totalcouponIds = 0;
+                        if (obj[0].vErrorMsg == "Success") {                            
+
                             for (var i = 0; i < obj.length; i++) {
+
+                                // Add price
+                                totalPrice += parseFloat(obj[i].Price) || 0;
+                                totalcouponIds++;
+
                                 html += "<div class='col-sm-4'>";
                                 html += "<div class='card'>";
                                 html += "<div class='qr-card' id='gen-qr-card_" + i + "'>";
@@ -482,9 +327,11 @@
                             $("#dvA4Size").show();
                             $("#btnPrintA4").show();
                             $("#btnPrintCard").hide();
-                            $("#dvQR").html('');
+                            $("#spnTotalCoupons").html("Total Coupons: " + totalcouponIds)
+                            $("#spnTotalPrice").html("Total Coupon Price: " + totalPrice);
                         }
                         else {
+
                             $("#btnPrintA4").hide();
                         }
                     },
@@ -502,72 +349,72 @@
             var printWindow = window.open('', '', 'width=900,height=700');
 
             printWindow.document.write(`
-             <!DOCTYPE html>
-             <html>
-             <head>
-                 <title>Print Coupons</title>             
-                 <style>             
-                     @@page {
-                         size: A4 portrait;
-                         margin: 10mm;
-                     }
-             
-                     *{
-                         box-sizing:border-box;
-                     }
-             
-                     body{
-                         margin:0;
-                         padding:0;
-                         font-family:Arial,sans-serif;
-                     }
-             
-                     /* 3 Coupons Per Row */
-                     #dvA4Size{
-                         display:grid;
-                         grid-template-columns:repeat(3,1fr);
-                         width:100%;
-                     }
-             
-                     .col-sm-4{
-                         padding:10px;
-             
-                         /* Horizontal & Vertical Dotted Cut Lines */
-                         border-right:2px dotted #000;
-                         border-bottom:2px dotted #000;
-             
-                         page-break-inside:avoid;
-                         break-inside:avoid;
-                     }
-             
-                     /* Remove right dotted line on last column */
-                     .col-sm-4:nth-child(3n){
-                         border-right:none;
-                     }
-             
-                     .card{
-                         border:1px solid #000;
-                         padding:8px;
-                         min-height:180px;
-                     }
-             
-                     .qr-card{
-                         page-break-inside:avoid;
-                         break-inside:avoid;
-                     }
-             
-                     img{
-                         max-width:100%;
-                     }             
-                 </style>             
-             </head>             
-             <body>             
-                 <div id="dvA4Size">
-                     ${printContents}
-                 </div>             
-             </body>
-             </html>
-             `);
+                 <!DOCTYPE html>
+                 <html>
+                 <head>
+                     <title>Print Coupons</title>
+                     <style>
+                         @@page {
+                             size: A4 portrait;
+                             margin: 10mm;
+                         }
+
+                         *{
+                             box-sizing:border-box;
+                         }
+
+                         body{
+                             margin:0;
+                             padding:0;
+                             font-family:Arial,sans-serif;
+                         }
+
+                         /* 3 Coupons Per Row */
+                         #dvA4Size{
+                             display:grid;
+                             grid-template-columns:repeat(3,1fr);
+                             width:100%;
+                         }
+
+                         .col-sm-4{
+                             padding:10px;
+
+                             /* Horizontal & Vertical Dotted Cut Lines */
+                             border-right:2px dotted #000;
+                             border-bottom:2px dotted #000;
+
+                             page-break-inside:avoid;
+                             break-inside:avoid;
+                         }
+
+                         /* Remove right dotted line on last column */
+                         .col-sm-4:nth-child(3n){
+                             border-right:none;
+                         }
+
+                         .card{
+                             border:1px solid #000;
+                             padding:8px;
+                             min-height:180px;
+                         }
+
+                         .qr-card{
+                             page-break-inside:avoid;
+                             break-inside:avoid;
+                         }
+
+                         img{
+                             max-width:100%;
+                         }
+                     </style>
+                 </head>
+                 <body>
+                     <div id="dvA4Size">
+                         ${printContents}
+                     </div>
+                 </body>
+                 </html>
+                 `);
 
             printWindow.document.close();
 
@@ -579,14 +426,44 @@
         }
 
     </script>
+
+    <style>
+        .food-card1 {
+            background-color: #D7CCC8; /* Light Brown */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(121, 85, 72, 0.25);
+        }
+
+        .food-card2 {
+            background-color: #C8E6C9; /* Light Green */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(76, 175, 80, 0.25);
+        }
+
+        .food-card3 {
+            background-color: #FFCCBC; /* Light Orange */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(255, 87, 34, 0.25);
+        }
+
+        .food-card4 {
+            background-color: #E1BEE7; /* Light Purple */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(156, 39, 176, 0.25);
+        }
+    </style>
 }
 
 
 <div class="container mt-4">
     <div class="row">
+        <h4>Issue Coupon</h4>
         <div class="col-8">
-            <h4>Issue / Recharge Coupon</h4>
-            <div class="card pb-5">
+            <div class="card pb-2">
                 <div class="row mb-3 mt-3">
                     <div class="col-sm-4">
                         <div class="form-group">
@@ -621,28 +498,25 @@
                         <button class="btn btn-primary" style="width:100%" onclick="Fn_Emp_CouponGeneration();">Generate Coupon & QR Code</button>
                     </div>
                     <div class="col-12 mt-2">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <button class="btn btn-success" style="width:100%" onclick="Fn_Get_Coupon_Order();">View Sticker</button>
-                            </div>
-                            <div class="col-sm-6">
-                                <button class="btn btn-success" style="width:100%" onclick="Fn_Get_A4_Coupon_Order();">View A4</button>
-                            </div>
-                        </div>
-
+                        <button class="btn btn-success" style="width:100%" onclick="Fn_Get_A4_Coupon_Order();">View</button>
                     </div>
                     <div class="col-12 mt-2">
-                        <button id="btnPrintCard" style="display:none; width: 100%;" class="btn btn-primary" onclick="printQRCoupons();">🖨 Print Card</button>
-                        <button id="btnPrintA4" style="display:none; width: 100%;" class="btn btn-primary" onclick="Print_A4_Coupon();">🖨 Print A4</button>
+                        <button id="btnPrintA4" style="display:none; width: 100%;" class="btn btn-primary" onclick="Print_A4_Coupon();">🖨 Print</button>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-4">
-            <h5>Generated Card</h5>
-            <div id="dvQR" style="max-height: 500px; overflow-y: auto;">
+            <div class="row">
+                <div class="card pt-5 pb-5 food-card1">
+                    <span id="spnTotalCoupons" style="font-size: 15px; font-weight: 800;">Total Coupons: 0</span>
+                </div>
             </div>
-
+            <div class="row">
+                <div class="card pt-5 pb-5 food-card2">
+                    <span id="spnTotalPrice" style="float: right; font-size: 15px; font-weight: 800;">Total Coupon Price: 0</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -650,6 +524,7 @@
 
     </div>
 </div>
+<input type="hidden" id="hdnRowIndex" value="0" />
 <!-- Team End -->
 <script src="~/Web/js/select2.min.js"></script>
 <script>

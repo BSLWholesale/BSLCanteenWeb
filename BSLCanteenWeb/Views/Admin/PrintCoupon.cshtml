@@ -1,0 +1,315 @@
+﻿
+@{
+    ViewBag.Title = "PrintCoupon";
+}
+
+@{
+    <script src="~/Web/js/jquery-3.7.1.min.js"></script>
+    <link href="~/Web/css/select2.min.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var strCriteria = " AND EmpRole = 'Employee' ";
+            var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
+            Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", strCriteria);
+            Fn_Fill_DropdownList("ddlItemCategory", "MenuItems", "Category", "", "");
+            Fn_Fill_DropdownList("ddlOrderStatus", "vCouponOrder", "OrdStatus", "", "");
+        });
+        function Fn_Fill_DropdownList(ddlName, strTBLName, strFieldName, strValueField, strCriteria) {
+            var clsRequestDropdown = {};
+            clsRequestDropdown.vFieldName = strFieldName;
+            clsRequestDropdown.vValueField = strValueField;
+            clsRequestDropdown.vTBLName = strTBLName;
+            clsRequestDropdown.vCriteria = strCriteria;
+            $("#" + ddlName).html('');
+            var dropdown = ''; var dropdown1 = "";
+            dropdown1 = "<option value='0'>--Select--</option>";
+            $("#" + ddlName).append(dropdown1);
+            $.ajax({
+                type: "POST",
+                url: '/Home/Fn_Fill_DropdownList',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsRequestDropdown),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    for (var i = 0; i < obj.length; i++) {
+                        if (strValueField == "") {
+                            dropdown += "<option value='" + obj[i].vFieldName + "'>" + obj[i].vFieldName + "</option>";
+                        }
+                        else {
+                            dropdown += "<option value='" + obj[i].vValueField + "'>" + obj[i].vFieldName + "</option>";
+                        }
+
+                    }
+                    $("#" + ddlName).append(dropdown);
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
+        }        
+
+        function Fn_Get_A4_Coupon_Order() {
+
+            var today = new Date();
+
+            var day = String(today.getDate()).padStart(2, '0');
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = months[today.getMonth()];
+            var year = today.getFullYear();
+
+            var formattedDate = day + "-" + month + "-" + year;
+
+            var clsCouponOrder = {};
+            clsCouponOrder.CreatedBy = sessionStorage.getItem("LogInID");
+           
+            if ($("#ddlEmpName").val() != "0") {
+                clsCouponOrder.EmpId = $("#ddlEmpName").val();
+            }
+            if ($("#ddlItemCategory").val() != "0") {
+                clsCouponOrder.ItemCategory = $("#ddlItemCategory").val();
+            }
+            if ($("#ddlOrderStatus").val() != "0") {
+                clsCouponOrder.OrderStatus = $("#ddlOrderStatus").val();
+            }
+            else{
+                clsCouponOrder.OrderStatus = "Generated";
+            }
+            clsCouponOrder.CouponIssueDate = formattedDate;
+            
+            $("#dvA4Size").html('');
+            var html = '';
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Fn_Get_Coupon_Order",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsCouponOrder),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj[0].vErrorMsg == "Success") {
+                        var totalPrice = 0;
+                        var totalcouponIds = 0;
+                        for (var i = 0; i < obj.length; i++) {
+
+                            // Add price
+                            totalPrice += parseFloat(obj[i].Price) || 0;
+                            totalcouponIds++;
+
+                            html += "<div class='col-sm-4'>";
+                            html += "<div class='card'>";
+                            html += "<div class='qr-card' id='gen-qr-card_" + i + "'>";
+                            html += "<div style='display:flex;  justify-content:space-between; gap:10px;'>";
+                            html += "<div class='lbl-text'>";
+                            if (obj[i].ItemCategory == "Tea") {
+                                html += "<div style='font-size: 15px'>Item: ☕ Tea (<strong>₹" + obj[i].Price + ")</strong></div>";
+                            }
+                            else if (obj[i].ItemCategory == "Breakfast") {
+                                html += "<div style='font-size: 15px'>Item: 🍽️ Breakfast (<strong>₹" + obj[i].Price + ")</strong></div>";
+                            }
+                            else if (obj[i].ItemCategory == "Thali") {
+                                html += "<div style='font-size: 15px'>Item: 🍛 Thali (<strong>₹" + obj[i].Price + ")</strong></div>";
+                            }
+                            else if (obj[i].ItemCategory == "Mini Thali") {
+                                html += "<div style='font-size: 15px'>Item: 🍛 Mini Thali (<strong>₹" + obj[i].Price + ")</strong></div>";
+                            }
+                            else {
+                                html += "<div style='font-size: 15px'>Item: " + obj[i].ItemCategory + "</div>";
+                            }
+                            html += "<div>CId: " + obj[i].CouponId + "</div>";
+                            html += "<div>Issued: " + obj[i].CouponIssueDate + "</div>";
+                            html += "<div>Canteen: " + obj[i].CanteenName + "</div>";
+                            html += "<div>Code: " + obj[i].EmpId + "</div>";
+                            html += "</div>";
+                            html += "<div id='gen-qr-wrap_" + i + "' style='width:90px; height:90px; display:flex; align-items:center; justify-content:center; margin-top:10px;'></div>";
+                            html += "</div>";
+                            html += "<div>Name: " + obj[i].EmpName + "</div>";
+                            html += "</div>";
+                            html += "</div>";
+                            html += "</div>";
+                        }
+
+                        $("#dvA4Size").append(html);
+                        $("#spnTotalCoupons").html("Total Coupons: " + totalcouponIds)
+                        $("#spnTotalPrice").html("Total Coupon Price: " + totalPrice);
+                        for (var i = 0; i < obj.length; i++) {
+
+                            var text = "" + obj[i].CouponId + "";
+
+                            var qrcode = new QRCode(document.getElementById("gen-qr-wrap_" + i), {
+                                width: 90,
+                                height: 90
+                            });
+
+                            qrcode.makeCode(text);
+                        }
+                        $("#dvA4Size").show();
+                        $("#btnPrintA4").show();
+                    }
+                    else {
+                        $("#btnPrintA4").hide();
+                    }
+                },
+                error: function (err) {
+                    alert(err);
+
+                }
+            });
+        }
+
+        function Print_A4_Coupon() {
+
+            var printContents = document.getElementById("dvA4Size").innerHTML;
+            var printWindow = window.open('', '', 'width=900,height=700');
+
+            printWindow.document.write(`
+             <!DOCTYPE html>
+             <html>
+             <head>
+                 <title>Print Coupons</title>
+                 <style>
+                     @@page {
+                         size: A4 portrait;
+                         margin: 10mm;
+                     }
+
+                     *{
+                         box-sizing:border-box;
+                     }
+
+                     body{
+                         margin:0;
+                         padding:0;
+                         font-family:Arial,sans-serif;
+                     }
+
+                     /* 3 Coupons Per Row */
+                     #dvA4Size{
+                         display:grid;
+                         grid-template-columns:repeat(3,1fr);
+                         width:100%;
+                     }
+
+                     .col-sm-4{
+                         padding:10px;
+
+                         /* Horizontal & Vertical Dotted Cut Lines */
+                         border-right:2px dotted #000;
+                         border-bottom:2px dotted #000;
+
+                         page-break-inside:avoid;
+                         break-inside:avoid;
+                     }
+
+                     /* Remove right dotted line on last column */
+                     .col-sm-4:nth-child(3n){
+                         border-right:none;
+                     }
+
+                     .card{
+                         border:1px solid #000;
+                         padding:8px;
+                         min-height:180px;
+                     }
+
+                     .qr-card{
+                         page-break-inside:avoid;
+                         break-inside:avoid;
+                     }
+
+                     img{
+                         max-width:100%;
+                     }
+                 </style>
+             </head>
+             <body>
+                 <div id="dvA4Size">
+                     ${printContents}
+                 </div>
+             </body>
+             </html>
+             `);
+
+            printWindow.document.close();
+
+            printWindow.onload = function () {
+                printWindow.focus();
+                printWindow.print();
+                printWindow.close();
+            };
+        }
+
+    </script>
+}
+
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h4>Print Coupon</h4>
+            <div class="row" id="dvMenuItem">
+
+            </div>
+            <div class="card">
+                <div class="row mb-3 mt-3">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Employee No.</label>
+                            <select id="ddlEmpName" class="form-control" onchange="Fn_Get_A4_Coupon_Order();" style="width: 100%;">
+                                <option value="0">--Select--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Item Category</label>
+                            <select id="ddlItemCategory" class="form-control" onchange="Fn_Get_A4_Coupon_Order();" style="width: 100%;">
+                                <option value="0">--Select--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Order Status</label>
+                            <select id="ddlOrderStatus" class="form-control" onchange="Fn_Get_A4_Coupon_Order();" style="width: 100%;">
+                                <option value="0">--Select--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <button class="btn btn-success" style="margin-top: 20px;" onclick="Fn_Get_A4_Coupon_Order();">View</button>
+                        <button class="btn btn-primary" style="display: none; margin-top: 20px;" id="btnPrintA4" onclick="Print_A4_Coupon();">🖨 Print A4</button>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <span id="spnTotalCoupons" style="font-size: 20px; font-weight: 800;"></span>
+        </div>
+        <div class="col-sm-6">
+            <span id="spnTotalPrice" style="float: right; font-size: 20px; font-weight: 800;"></span>
+        </div>
+    </div>
+    <div class="row" id="dvA4Size">
+
+    </div>
+</div>
+<!-- Team End -->
+<script src="~/Web/js/select2.min.js"></script>
+<script>
+    $(function () {
+        $("#ddlEmpName").select2();
+        $("#ddlItemCategory").select2();
+        $("#ddlOrderStatus").select2();
+
+    });
+
+</script>
+
