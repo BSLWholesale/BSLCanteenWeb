@@ -15,6 +15,7 @@
             $("#spCanteen").html(spnCanteen);
             $("#txtCouponId").focus();
             Fn_Get_Coupon_Order();
+            Fn_Get_Count_ItemMenu();
         });
 
 
@@ -51,9 +52,10 @@
                                 $("#txtCouponId").val("");
                                 $("#txtCouponId").focus();
                                 Fn_Get_Coupon_Order();
+                                Fn_Get_Count_ItemMenu();
                             });
                         }
-                        else {                            
+                        else {
                             Swal.fire({
                                 title: "",
                                 text: obj.vErrorMsg,
@@ -94,7 +96,7 @@
             clsCouponReport.ModifiedBy = sessionStorage.getItem("LogInID");
             clsCouponReport.OrderStatus = "Scanned";
             clsCouponReport.OrderTakenDate = formattedDate;
-
+            clsCouponReport.CanteenId = sessionStorage.getItem("CanteenId");
             $("#tbody").html('');
             var html = '';
 
@@ -159,17 +161,124 @@
             }, 100);
         }
 
+        function Fn_Get_Count_ItemMenu() {
+
+            var today = new Date();
+
+            var day = String(today.getDate()).padStart(2, '0');
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = months[today.getMonth()];
+            var year = today.getFullYear();
+
+            var formattedDate = day + "-" + month + "-" + year;
+
+            var clsCountMenuItem = {};
+            clsCountMenuItem.OrderTakenDate = formattedDate;
+            clsCountMenuItem.CanteenId = sessionStorage.getItem("CanteenId");
+            $("#ItemCountRow").html('');
+            var html = '';
+            $.ajax({
+                type: "POST",
+                url: '/Admin/Fn_Get_Count_ItemMenu',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsCountMenuItem),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj[0].vErrorMsg == "Success") {
+                        var rCount = 1;
+                        for (var i = 0; i < obj.length; i++) {
+                            if (obj[i].ItemCategory == "Tea") {
+                                html += "<div class='col-sm-6'>";
+                                html += "<div class='card p-4 food-card" + rCount + "'>";
+                                html += "<div style='font-size: 28px; font-weight: 800'>☕ Tea - " + obj[i].CountItem + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+                            else if (obj[i].ItemCategory == "Breakfast") {
+                                html += "<div class='col-sm-6'>";
+                                html += "<div class='card p-4 food-card" + rCount + "'>";
+                                html += "<div style='font-size: 26px; font-weight: 800'>🍽️ Breakfast - " + obj[i].CountItem + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+                            else if (obj[i].ItemCategory == "Thali") {
+                                html += "<div class='col-sm-6'>";
+                                html += "<div class='card p-4 food-card" + rCount + "'>";
+                                html += "<div style='font-size: 28px; font-weight: 800'>🍛 Thali - " + obj[i].CountItem + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+                            else if (obj[i].ItemCategory == "Mini Thali") {
+                                html += "<div class='col-sm-6'>";
+                                html += "<div class='card p-4 food-card" + rCount + "'>";
+                                html += "<div style='font-size: 26px; font-weight: 800'>🍛 Mini Thali - " + obj[i].CountItem + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+                            else {
+                                html += "<div class='col-sm-3'>";
+                                html += "<div class='card p-4 food-card" + rCount + "'>";
+                                html += "<div style='font-size: 28px; font-weight: 800'>" + obj[i].ItemCategory + " - " + obj[i].CountItem + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+                            rCount++;
+                        }
+                        $("#ItemCountRow").append(html);
+                    }
+                    else {
+
+                    }
+
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
+        }
+
     </script>
 
+    <style>
+        .food-card1 {
+            background-color: #D7CCC8; /* Light Brown */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(121, 85, 72, 0.25);
+        }
+
+        .food-card2 {
+            background-color: #C8E6C9; /* Light Green */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(76, 175, 80, 0.25);
+        }
+
+        .food-card3 {
+            background-color: #FFCCBC; /* Light Orange */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(255, 87, 34, 0.25);
+        }
+
+        .food-card4 {
+            background-color: #E1BEE7; /* Light Purple */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(156, 39, 176, 0.25);
+        }
+    </style>
 }
 
 
 <div class="container mt-4">
 
     <div class="row">
+        <h4>Point of Sale — <span id="spCanteen"></span></h4>
+        <p>Today's  <span id="spnTodays"></span> Transcation</p>
         <div class="col-lg-6 col-md-6">
-            <h4>Point of Sale — <span id="spCanteen"></span></h4>
-            <p>Today's  <span id="spnTodays"></span> Transcation</p>
             <div class="card">
                 <div class="form-group">
                     <div style="font-size: 52px; text-align: center;">📲</div>
@@ -179,6 +288,11 @@
                     <button class="btn btn-primary mb-2 mt-2" style="width: 100%;" onclick="Fn_ProcessCouponTransaction()">✓ Process Transaction</button>
                     <button class="btn btn-danger mb-2" style="width: 100%;" onclick="Fn_Clear_Control()">Reset</button>
                 </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6">
+            <div class="row" id="ItemCountRow">
+                
             </div>
         </div>
     </div>
