@@ -19,9 +19,12 @@
         else if ($("#txtEmpDepartment").val() == "") {
             Swal.fire({ title: "", text: "Please Enter the Department", icon: "error", });
         }
-        else if ($("#txtEmpMobile").val() == "") {
-            Swal.fire({ title: "", text: "Please Enter the Mobile Number", icon: "error", });
-        }
+        //else if ($("#txtEmpMobile").val() == "") {
+        //    Swal.fire({ title: "", text: "Please Enter the Mobile Number", icon: "error", });
+        //}
+        //else if ($("#txtEmpPassword").val() == "") {
+        //    Swal.fire({ title: "", text: "Please Enter the Password", icon: "error" });
+        //}
         else if ($("#ddlEmpRole option:selected").val() == "0") {
             Swal.fire({ title: "", text: "Please Select the Role", icon: "error", });
         }
@@ -115,9 +118,9 @@
         $("#txtEmpDepartment").val("");
         $("#txtEmpMobile").val("");
         $("#txtEmpPassword").val("");
-        $("#ddlEmpRole option:first").prop('selected', true);
-        $("#ddlEmpLocation option:first").prop('selected', true);
-        $("#ddlCanteenName option:first").prop('selected', true);
+        $("#ddlEmpRole").select2("val", "0");
+        $("#ddlEmpLocation").select2("val", "0");
+        $("#ddlCanteenName").select2("val", "0");
 
     }
 
@@ -159,14 +162,14 @@
 
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <label class="form-label"><b>Mobile</b> <span style="color:red;">*</span></label>
+                                <label class="form-label"><b>Mobile</b></label>
                                 <input type="text" id="txtEmpMobile" name="txtEmpMobile" class="form-control" onchange="Fn_ValidateEmpMobileNumber();" min="10" maxlength="10" />
                             </div>
                         </div>
 
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <label class="form-label"><b>Password</b> <span style="color:red;">*</span></label>
+                                <label class="form-label"><b>Password</b></label>
                                 <input type="password" id="txtEmpPassword" name="txtEmpPassword" class="form-control" />
                             </div>
                         </div>
