@@ -135,6 +135,7 @@ namespace BSLCanteenWeb.Models
         public string OrderStatus { get; set; }
         public string ItemCategory { get; set; }
         public string ReportType { get; set; }
+        public string EmpLocation { get; set; }
     }
     public class clsMonthlyReportResp
     {
