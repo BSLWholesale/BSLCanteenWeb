@@ -153,7 +153,16 @@
                         $("#btnPrintA4").show();
                     }
                     else {
-                        $("#btnPrintA4").hide();
+                        Swal.fire({
+                            title: "",
+                            text: obj[0].vErrorMsg,
+                            icon: "error",
+                            timer: 1000,              // Auto close after 3 seconds
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        }).then(() => {
+                            $("#btnPrintA4").hide();
+                        });
                     }
                 },
                 error: function (err) {

@@ -112,10 +112,11 @@ namespace BSLCanteenWeb.Models
         public string OrderStatus { get; set; }
         public int CanteenId { get; set; }
         public string CanteenName { get; set; }
-        public Int32 EmpId { get; set; } //
+        public Int32 EmpId { get; set; }
         public string EmpName { get; set; }
+        public string EmpLocation { get; set; }
         public decimal Price { get; set; }
-        public int CreatedBy { get; set; } //
+        public int CreatedBy { get; set; }
         public string CreatedOn { get; set; }
         public int ModifiedBy { get; set; }
         public string ModifiedOn { get; set; }
@@ -153,6 +154,7 @@ namespace BSLCanteenWeb.Models
     {
         public int CountItem { get; set; }
         public int CanteenId { get; set; }
+        public string EmpLocation { get; set; }
         public string ItemCategory { get; set; }
         public string OrderTakenDate { get; set; }
         public string vErrorMsg { get; set; }
