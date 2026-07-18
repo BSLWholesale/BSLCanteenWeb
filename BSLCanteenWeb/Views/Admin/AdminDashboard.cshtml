@@ -67,6 +67,7 @@
             var clsCouponReport = {};
             clsCouponReport.OrderStatus = "Scanned";
             clsCouponReport.OrderTakenDate = formattedDate;
+            clsCouponReport.EmpLocation = sessionStorage.getItem("EmpLocation");
             $("#tbodyRecent_TNX").html('');
             var html = '';
             $.ajax({
@@ -131,6 +132,7 @@
 
             var clsCountMenuItem = {};
             clsCountMenuItem.OrderTakenDate = formattedDate;
+            clsCountMenuItem.EmpLocation = sessionStorage.getItem("EmpLocation");
             $("#ItemCountRow").html('');
             var html = '';
             $.ajax({

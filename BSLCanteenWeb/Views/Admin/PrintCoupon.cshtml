@@ -64,22 +64,23 @@
 
             var formattedDate = day + "-" + month + "-" + year;
 
-            var clsCouponOrder = {};
-            clsCouponOrder.CreatedBy = sessionStorage.getItem("LogInID");
+            var clsCouponReport = {};
+            clsCouponReport.CreatedBy = sessionStorage.getItem("LogInID");
+            clsCouponReport.EmpLocation = sessionStorage.getItem("EmpLocation");
            
             if ($("#ddlEmpName").val() != "0") {
-                clsCouponOrder.EmpId = $("#ddlEmpName").val();
+                clsCouponReport.EmpId = $("#ddlEmpName").val();
             }
             if ($("#ddlItemCategory").val() != "0") {
-                clsCouponOrder.ItemCategory = $("#ddlItemCategory").val();
+                clsCouponReport.ItemCategory = $("#ddlItemCategory").val();
             }
             if ($("#ddlOrderStatus").val() != "0") {
-                clsCouponOrder.OrderStatus = $("#ddlOrderStatus").val();
+                clsCouponReport.OrderStatus = $("#ddlOrderStatus").val();
             }
             else{
-                clsCouponOrder.OrderStatus = "Generated";
+                clsCouponReport.OrderStatus = "Generated";
             }
-            clsCouponOrder.CouponIssueDate = formattedDate;
+            clsCouponReport.CouponIssueDate = formattedDate;
             
             $("#dvA4Size").html('');
             var html = '';
@@ -89,7 +90,7 @@
                 url: "/Admin/Fn_Get_Coupon_Order",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                data: JSON.stringify(clsCouponOrder),
+                data: JSON.stringify(clsCouponReport),
                 success: function (data) {
                     var obj = JSON.parse(data.message);
                     if (obj[0].vErrorMsg == "Success") {
@@ -152,7 +153,16 @@
                         $("#btnPrintA4").show();
                     }
                     else {
-                        $("#btnPrintA4").hide();
+                        Swal.fire({
+                            title: "",
+                            text: obj[0].vErrorMsg,
+                            icon: "error",
+                            timer: 1000,              // Auto close after 3 seconds
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        }).then(() => {
+                            $("#btnPrintA4").hide();
+                        });
                     }
                 },
                 error: function (err) {

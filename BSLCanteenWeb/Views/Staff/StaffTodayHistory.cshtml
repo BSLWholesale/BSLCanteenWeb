@@ -69,19 +69,19 @@
                             html += "<td>" + obj[i].EmpId + "</td>";
                             html += "<td>" + obj[i].EmpName + "</td>";
                             if (obj[i].ItemCategory == "Tea") {
-                                html += "<td>☕ Tea</td>";
+                                html += "<td>☕ Tea <b>(₹" + obj[i].Price + ")</b></td>";
                             }
                             else if (obj[i].ItemCategory == "Breakfast") {
-                                html += "<td>🍽️ Breakfast</td>";
+                                html += "<td>🍽️ Breakfast <b>(₹" + obj[i].Price + ")</b></td>";
                             }
                             else if (obj[i].ItemCategory == "Thali") {
                                 html += "<td>🍛 Thali</td>";
                             }
                             else if (obj[i].ItemCategory == "Mini Thali") {
-                                html += "<td>🍛 Mini Thali</td>";
+                                html += "<td>🍛 Mini Thali <b>(₹" + obj[i].Price + ")</b></td>";
                             }
                             else {
-                                html += "<td>" + obj[i].ItemCategory + "</td>";
+                                html += "<td>" + obj[i].ItemCategory + " <b>(₹" + obj[i].Price + ")</b></td>";
                             }
 
                             html += "</tr>";
