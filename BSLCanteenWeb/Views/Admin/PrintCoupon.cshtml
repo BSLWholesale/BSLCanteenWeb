@@ -66,7 +66,7 @@
 
             var clsCouponReport = {};
             clsCouponReport.CreatedBy = sessionStorage.getItem("LogInID");
-            clsCouponOrder.EmpLocation = sessionStorage.getItem("EmpLocation");
+            clsCouponReport.EmpLocation = sessionStorage.getItem("EmpLocation");
            
             if ($("#ddlEmpName").val() != "0") {
                 clsCouponReport.EmpId = $("#ddlEmpName").val();
