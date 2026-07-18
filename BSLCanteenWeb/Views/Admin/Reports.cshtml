@@ -74,6 +74,7 @@
             var today = new Date();
             var clsMonthlyReportReq = {};
             clsMonthlyReportReq.OrderStatus = "Scanned";
+            clsMonthlyReportReq.EmpLocation = sessionStorage.getItem("EmpLocation");
 
             var ddlDays = $("#ddlDays").val();
             if (ddlDays == "Today") {
@@ -246,6 +247,7 @@
 
             var clsMonthlyReportReq = {};
             clsMonthlyReportReq.OrderStatus = "Scanned";
+            clsMonthlyReportReq.EmpLocation = sessionStorage.getItem("EmpLocation");
 
             var today = new Date();
             var ddlDays = $("#ddlDays").val();
@@ -419,6 +421,7 @@
 
             var clsMonthlyReportReq = {};
             clsMonthlyReportReq.OrderStatus = "Scanned";
+            clsMonthlyReportReq.EmpLocation = sessionStorage.getItem("EmpLocation");
 
             var today = new Date();
             var ddlDays = $("#ddlDays").val();
@@ -526,6 +529,7 @@
 
             var clsMonthlyReportReq = {};
             clsMonthlyReportReq.OrderStatus = "Scanned";
+            clsMonthlyReportReq.EmpLocation = sessionStorage.getItem("EmpLocation");
 
             var today = new Date();
             var ddlDays = $("#ddlDays").val();
