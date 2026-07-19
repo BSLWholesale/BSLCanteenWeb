@@ -61,8 +61,8 @@
 
             var strCriteria = "";
             var ddlEmpName = $("#ddlEmpName").val();
-            var ddlEmpLocation = $("#ddlEmpLocation option:selected").text();
-            strCriteria = " AND EmployeeId=" + ddlEmpName + " OR EmpLocation='" + ddlEmpLocation + "'";
+            //var ddlEmpLocation = $("#ddlEmpLocation option:selected").text();
+            //strCriteria = " AND EmployeeId=" + ddlEmpName + " OR EmpLocation='" + ddlEmpLocation + "'";
             Fn_Fill_DropdownList("ddlCanteen", "vGetEmpDetail", "CanteenName", "CanteenId", strCriteria);
         }
 
