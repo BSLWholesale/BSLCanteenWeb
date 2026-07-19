@@ -246,28 +246,28 @@ namespace BSLCanteenWeb.Controllers
                         CanteenName = sheet.Cells[row, 6].Value.ToString();
                         switch (CanteenName)
                         {
-                            case "BSL Worker":
+                            case "BSL WORKER":
                                 CanteenNo = 1;
                                 break;
-                            case "TPP Worker":
+                            case "TPP WORKER":
                                 CanteenNo = 2;
                                 break;
-                            case "BFL1 Worker":
+                            case "BFL WORKER":
                                 CanteenNo = 3;
                                 break;
-                            case "Worsted1 Worker":
+                            case "WORSTED1 WORKER":
                                 CanteenNo = 4;
                                 break;
-                            case "Weaving4 Worker":
+                            case "WEAVING-4 WORKER":
                                 CanteenNo = 5;
                                 break;
-                            case "BTM Worker":
+                            case "BTM WORKER":
                                 CanteenNo = 6;
                                 break;
-                            case "BJF Worker":
+                            case "BJF WORKER":
                                 CanteenNo = 7;
                                 break;
-                            case "Mill7 Worker":
+                            case "MILL7 WORKER":
                                 CanteenNo = 8;
                                 break;
                         }
