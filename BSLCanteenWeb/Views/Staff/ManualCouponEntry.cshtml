@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "StaffDashboard";
+    ViewBag.Title = "ManualCouponEntry";
 }
 
 @{
@@ -29,7 +29,7 @@
             clsCouponReport.CanteenId = sessionStorage.getItem("CanteenId");
 
             if (input == "") {
-                Swal.fire({ title: "", text: "Please Scan QR-Code", icon: "error" });
+                Swal.fire({ title: "", text: "Please Enter QR-Code", icon: "error" });
             }
             else {
                 $.ajax({
@@ -60,7 +60,7 @@
                                 title: "",
                                 text: obj.vErrorMsg,
                                 icon: "error",
-                                timer: 3000,              // Auto close after 3 seconds
+                                timer: 1000,              // Auto close after 3 seconds
                                 timerProgressBar: true,
                                 showConfirmButton: false
                             }).then(() => {
@@ -75,7 +75,7 @@
                 });
             }
         }
-
+       
 
         function Fn_Get_Coupon_Order() {
 
@@ -125,7 +125,7 @@
                                 html += "<td>🍛 Thali <b>(₹" + obj[i].Price + ")</b></td>";
                             }
                             else if (obj[i].ItemCategory == "Mini Thali") {
-                                html += "<td>🍛 Mini Thali <b>(₹" + obj[i].Price + ")<b></td>";
+                                html += "<td>🍛 Mini Thali  <b>(₹" + obj[i].Price + ") <b></td>";
                             }
                             else {
                                 html += "<td>" + obj[i].ItemCategory + " <b>(₹" + obj[i].Price + ")</b></td>";
@@ -149,16 +149,6 @@
         function Fn_Clear_Control() {
             $("#txtCouponId").val("");
             $("#txtCouponId").focus();
-        }
-
-        let scanTimer;
-
-        function scanCompleted() {
-            clearTimeout(scanTimer);
-
-            scanTimer = setTimeout(() => {
-                Fn_ProcessCouponTransaction();
-            }, 100);
         }
 
         function Fn_Get_Count_ItemMenu() {
@@ -240,6 +230,84 @@
             });
         }
 
+        function Fn_Cancel_CouponId() {
+
+            const input = document.getElementById("txtCouponId").value.trim();
+
+            var clsCouponReport = {};
+            clsCouponReport.ModifiedBy = sessionStorage.getItem("LogInID");
+            clsCouponReport.CouponId = input;
+            clsCouponReport.CanteenId = sessionStorage.getItem("CanteenId");
+
+            if (input == "") {
+                Swal.fire({
+                    title: "",
+                    text: "Please Enter QR-Code",
+                    icon: "error"
+                });
+            }
+            else {
+
+                // Confirmation Popup
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "Do you want to cancel this coupon?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, Cancel",
+                    cancelButtonText: "No"
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/Staff/Fn_Cancel_CouponId",
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            data: JSON.stringify(clsCouponReport),
+                            success: function (data) {
+                                var obj = JSON.parse(data.message);
+
+                                if (obj.vErrorMsg == "Success") {
+                                    Swal.fire({
+                                        title: "",
+                                        text: "Coupon Cancelled Successfully",
+                                        icon: "success",
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        $("#txtCouponId").val("");
+                                        $("#txtCouponId").focus();
+                                        Fn_Get_Coupon_Order();
+                                    });
+                                }
+                                else {
+                                    Swal.fire({
+                                        title: "",
+                                        text: obj.vErrorMsg,
+                                        icon: "error",
+                                        timer: 1000,
+                                        timerProgressBar: true,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        $("#txtCouponId").val("");
+                                        $("#txtCouponId").focus();
+                                    });
+                                }
+                            },
+                            error: function (err) {
+                                alert(err);
+                            }
+                        });
+
+                    }
+
+                });
+            }
+        }
+
     </script>
 
     <style>
@@ -271,6 +339,7 @@
             box-shadow: 0 8px 15px rgba(156, 39, 176, 0.25);
         }
     </style>
+
 }
 
 
@@ -284,16 +353,23 @@
                 <div class="form-group">
                     <div style="font-size: 52px; text-align: center;">📲</div>
                     <h5>Scan QR-Code or Enter Coupon Id</h5>
-                    <input class="form-control" id="txtCouponId" placeholder="Please Scan QR-code" onkeydown="if(event.key==='Enter'){clearTimeout(scanTimer);Fn_ProcessCouponTransaction();}" oninput="scanCompleted()" />
-                    @*<input class="form-control" id="txtCouponId" placeholder="Please Scan QR-code" onkeydown="if (event.key === 'Enter') Fn_ProcessCouponTransaction();" />*@
-                    <button class="btn btn-primary mb-2 mt-2" style="width: 100%;" onclick="Fn_ProcessCouponTransaction()">✓ Process Transaction</button>
-                    <button class="btn btn-danger mb-2" style="width: 100%;" onclick="Fn_Clear_Control()">Reset</button>
+                    <input class="form-control" id="txtCouponId" placeholder="Please Enter Coupon Id" />
+                    <div class="d-flex gap-2 mt-2 mb-2">
+                        <button class="btn btn-primary flex-fill" onclick="Fn_ProcessCouponTransaction()">
+                            ✓ Process Transaction
+                        </button>
+
+                        <button class="btn btn-danger flex-fill" onclick="Fn_Cancel_CouponId()">
+                            ✖ Cancel Coupon
+                        </button>
+                    </div>
+                    <button class="btn btn-success mb-2" style="width: 100%;" onclick="Fn_Clear_Control()">Reset</button>
                 </div>
             </div>
         </div>
         <div class="col-lg-6 col-md-6">
             <div class="row" id="ItemCountRow">
-                
+
             </div>
         </div>
     </div>
@@ -323,3 +399,4 @@
         </div>
     </div>
 </div>
+

@@ -348,6 +348,7 @@
     <Content Include="Views\Admin\EditEmployeeDetails.cshtml" />
     <Content Include="Views\Admin\PrintCoupon.cshtml" />
     <Content Include="Views\Admin\ResetPassword.cshtml" />
+    <Content Include="Views\Staff\ManualCouponEntry.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
