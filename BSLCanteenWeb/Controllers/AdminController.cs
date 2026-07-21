@@ -274,7 +274,7 @@ namespace BSLCanteenWeb.Controllers
                         }
                     }
 
-                    bool EmpWorkerStatus = false;
+                    bool EmpWorkerStatus = true;
                     string SheetStatus = sheet.Cells[row, 8].Text.Trim();
 
                     if (SheetStatus.Equals("Active", StringComparison.OrdinalIgnoreCase))
