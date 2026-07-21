@@ -25,6 +25,10 @@
             data: formData,
             processData: false,
             contentType: false,
+            beforeSend: function () {
+                $("#loader").show();
+                $("#dvMain").hide();
+            },
             success: function (res) {
                 if (res.success) {
                     Swal.fire({ title: "", text: "Employee Data imported successfully", icon: "success" });
@@ -33,6 +37,10 @@
                 else {
                     Swal.fire({ title: "", text: "Employee Data import failed", icon: "error" });
                 }
+            },
+            complete: function (data) {
+                $("#loader").hide();
+                $("#dvMain").show();
             },
             error: function (err) {
                 alert(err);
@@ -71,8 +79,8 @@
 
 
 <div class="container">
-    
-    <div class="row">
+
+    <div class="row" id="dvMain">
         <div class="col-xl-12 col-xxl-12 col-sm-12">
             <div class="card">
                 <div class="card-body">
@@ -99,6 +107,10 @@
             </div>
         </div>
 
+    </div>
+
+    <div id="loader" style="margin-top: 15%; text-align: center; display: none;">
+        <img src="~/web/img/loading.gif?timestamp(~/web/ing/loading.gif)" width="8%" />
     </div>
 
 </div>
