@@ -241,6 +241,7 @@ namespace BSLCanteenWeb.Controllers
                 {
                     string CanteenName;
                     int CanteenNo = 0;
+                    
                     if (sheet.Cells[row, 6].Value is string)
                     {
                         CanteenName = sheet.Cells[row, 6].Value.ToString();
@@ -273,6 +274,26 @@ namespace BSLCanteenWeb.Controllers
                         }
                     }
 
+                    bool EmpWorkerStatus = false;
+                    string SheetStatus = sheet.Cells[row, 8].Text.Trim();
+
+                    if (SheetStatus.Equals("Active", StringComparison.OrdinalIgnoreCase))
+                    {
+                        EmpWorkerStatus = true;
+                    }
+                    else if (SheetStatus.Equals("Inactive", StringComparison.OrdinalIgnoreCase))
+                    {
+                        EmpWorkerStatus = false;
+                    }
+                    else
+                    {
+                        // Invalid value found in Excel
+                        return Json(new
+                        {
+                            success = false, message = $"Invalid Employee Status '{SheetStatus}' at Row {row}. Allowed values are Active or Inactive"
+                        });
+                    }
+
                     clsEmployee emp = new clsEmployee
                     {
                         EmpId = Convert.ToInt64(sheet.Cells[row, 1].Value),
@@ -281,7 +302,8 @@ namespace BSLCanteenWeb.Controllers
                         Department = sheet.Cells[row, 4].Text,
                         EmpRole = sheet.Cells[row, 5].Text,
                         CanteenId = CanteenNo,
-                        EmpMobile = sheet.Cells[row, 7].Text
+                        EmpMobile = sheet.Cells[row, 7].Text,
+                        EmpStatus = EmpWorkerStatus
                     };
 
                     empList.Add(emp);
