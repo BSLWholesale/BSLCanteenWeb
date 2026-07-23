@@ -60,7 +60,7 @@
                                 title: "",
                                 text: obj.vErrorMsg,
                                 icon: "error",
-                                timer: 1000,              // Auto close after 3 seconds
+                                timer: 3000,              // Auto close after 3 seconds
                                 timerProgressBar: true,
                                 showConfirmButton: false
                             }).then(() => {
@@ -288,7 +288,7 @@
                                         title: "",
                                         text: obj.vErrorMsg,
                                         icon: "error",
-                                        timer: 1000,
+                                        timer: 3000,
                                         timerProgressBar: true,
                                         showConfirmButton: false
                                     }).then(() => {
@@ -359,7 +359,7 @@
                             ✓ Process Transaction
                         </button>
 
-                        <button class="btn btn-danger flex-fill" onclick="Fn_Cancel_CouponId()">
+                        <button class="btn btn-danger flex-fill" onclick="Fn_Cancel_CouponId()" style="display: none;">
                             ✖ Cancel Coupon
                         </button>
                     </div>
