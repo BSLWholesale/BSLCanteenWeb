@@ -41,32 +41,45 @@
             }
 
             if (EmpRole == "Admin") {
-                
+
                 $("#BulkUploadPage").show();
                 $(".AdminPage").show();
                 $(".StaffPage").hide();
                 $(".EmployeePage").hide();
+                $(".SuperadminPage").hide();
                 $("#LogoutPage").show();
 
             }
             else if (EmpRole == "Staff") {
-                
+
                 $("#BulkUploadPage").hide();
                 $(".AdminPage").hide();
                 $(".StaffPage").show();
                 $(".EmployeePage").hide();
+                $(".SuperadminPage").hide();
                 $("#LogoutPage").show();
-                
+
             }
             else if (EmpRole == "Employee") {
-                
+
                 $("#BulkUploadPage").hide();
                 $(".AdminPage").hide();
                 $(".StaffPage").hide();
                 $(".EmployeePage").show();
+                $(".SuperadminPage").hide();
                 $("#LogoutPage").show();
-               
+
             }
+            else if (EmpRole == "Superadmin") {
+
+                $("#BulkUploadPage").hide();
+                $(".AdminPage").hide();
+                $(".StaffPage").hide();
+                $(".EmployeePage").hide();
+                $(".SuperadminPage").show();
+                $("#LogoutPage").show();
+            }
+
 
             //$("#dvRoleType").html(EmpRole);
             $("#dvUserName").html(UserName);
