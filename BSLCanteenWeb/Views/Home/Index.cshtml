@@ -58,7 +58,10 @@
                         }
                         if (obj.EmpRole == "Staff") {
                             window.location.href = '/Staff/StaffDashboard';
-                        }                        
+                        }
+                        if (obj.EmpRole == "Superadmin") {
+                            window.location.href = '/Staff/SuperadminReports';
+                        }
                     }
                     else {
                         Swal.fire({ title: "Login", text: obj.vErrorMsg, icon: "error", });
