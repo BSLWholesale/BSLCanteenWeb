@@ -1,0 +1,148 @@
+﻿
+@{
+    ViewBag.Title = "DailyCategorywiseReport";
+}
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        Fn_DailyReport_Canteenwise();
+        Fn_DailyReport_ItemCategorywise();
+
+    });
+
+
+    function Fn_DailyReport_Canteenwise() {
+        var clsCategoryReport = {};
+
+        var html = "";
+        $("#tbody_Canteen").html("");
+
+        $.ajax({
+            type: "POST",
+            url: "/Admin/Fn_DailyReport_Canteenwise",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(clsCategoryReport),
+            success: function (data) {
+                var obj = JSON.parse(data.message);
+                if (obj[0].vErrorMsg == "Success") {
+                    for (var i = 0; i < obj.length; i++) {
+                        html += "<tr>";
+                        html += "<td>" + obj[i].CanteenName + "</td>";
+                        html += "<td>" + obj[i].Noofworkers + "</td>";
+                        html += "<td>" + obj[i].GeneratedCoupons + "</td>";
+                        html += "<td>" + obj[i].ScannedCoupons + "</td>";
+                        html += "</tr>";
+                    }
+                }
+                else {
+                    html += "<tr><td colspan='12' class='text-center'>No Canteen records found.</td></tr>";
+                }
+                $("#tbody_Canteen").append(html);
+            },
+            error: function (err) {
+                alert(err);
+            }
+        });
+    }
+
+
+    function Fn_DailyReport_ItemCategorywise() {
+
+        var clsCategoryReport = {};
+
+        var html = "";
+        $("#tbody_Category").html("");
+
+        $.ajax({
+            type: "POST",
+            url: "/Admin/Fn_DailyReport_ItemCategorywise",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(clsCategoryReport),
+            success: function (data) {
+                var obj = JSON.parse(data.message);
+                if (obj[0].vErrorMsg == "Success") {
+                    for (var i = 0; i < obj.length; i++) {
+                        html += "<tr>";
+                        html += "<td>" + obj[i].CanteenName + "</td>";
+                        html += "<td>" + obj[i].Noofworkers + "</td>";
+                        html += "<td>" + obj[i].GeneratedCouponTea + "</td>";
+                        html += "<td>" + obj[i].QRScannedTea + "</td>";
+                        html += "<td>" + obj[i].GeneratedCouponBreakfast + "</td>";
+                        html += "<td>" + obj[i].QRScannedBreakfast + "</td>";
+                        html += "<td>" + obj[i].GeneratedCouponThali + "</td>";
+                        html += "<td>" + obj[i].QRScannedThali + "</td>";
+                        html += "<td>" + obj[i].GeneratedCouponMiniThali + "</td>";
+                        html += "<td>" + obj[i].QRScannedMiniThali + "</td>";
+                        html += "</tr>";
+                    }
+                }
+                else {
+                    html += "<tr><td colspan='12' class='text-center'>No Employee/Worker records found.</td></tr>";
+                }
+                $("#tbody_Category").append(html);
+            },
+            error: function (err) {
+                alert(err);
+            }
+        });
+    }
+
+</script>
+
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12 col-md-12 col-sm-12">
+            <h4>Daily Canteen and Category Wise Report</h4>
+            <p>Today's <span id="spnTodayDate"></span></p>                                     
+        
+            <div class="card">
+
+                <div class="table-responsive mt-3">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
+                                <th>Canteen Name</th>
+                                <th>No of Workers</th>
+                                <th>Generated Count</th>
+                                <th>Scanned Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody_Canteen">
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+                <div class="table-responsive mt-3">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
+                                <th>Canteen Name</th>
+                                <th>Workers</th>
+                                <th>Tea</th>
+                                <th>QR Tea</th>
+                                <th>Breakfast</th>
+                                <th>QR Breakfast</th>
+                                <th>Thali</th>
+                                <th>QRThali</th>
+                                <th>Mini Thali</th>
+                                <th>QR Mini Thali</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody_Category">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        
+        </div>      
+    </div>
+</div>
