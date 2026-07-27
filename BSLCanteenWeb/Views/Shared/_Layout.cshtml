@@ -57,6 +57,8 @@
                 $(".StaffPage").show();
                 $(".EmployeePage").hide();
                 $(".SuperadminPage").hide();
+                $("#DailyCategoryReport").hide();
+                //$("#ResetPassword").show();
                 $("#LogoutPage").show();
 
             }
@@ -67,6 +69,8 @@
                 $(".StaffPage").hide();
                 $(".EmployeePage").show();
                 $(".SuperadminPage").hide();
+                $("#DailyCategoryReport").hide();
+                //$("#ResetPassword").show();
                 $("#LogoutPage").show();
 
             }
@@ -77,6 +81,19 @@
                 $(".StaffPage").hide();
                 $(".EmployeePage").hide();
                 $(".SuperadminPage").show();
+                $("#DailyCategoryReport").hide();
+                //$("#ResetPassword").show();
+                $("#LogoutPage").show();
+            }
+            else if (EmpRole == "Supervisor") {
+
+                $("#BulkUploadPage").hide();
+                $(".AdminPage").hide();
+                $(".StaffPage").hide();
+                $(".EmployeePage").hide();
+                $(".SuperadminPage").hide();
+                $("#DailyCategoryReport").show();
+                //$("#ResetPassword").show();
                 $("#LogoutPage").show();
             }
 
