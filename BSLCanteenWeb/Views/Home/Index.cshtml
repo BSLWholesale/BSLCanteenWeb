@@ -53,7 +53,7 @@
                         sessionStorage.setItem("CanteenId", obj.CanteenId);
                         sessionStorage.setItem("CanteenName", obj.CanteenName);
                         sessionStorage.setItem("LoginID", obj.LoginID);
-                        if (obj.EmpRole == "Admin") {                            
+                        if (obj.EmpRole == "Admin") {
                             window.location.href = '/Admin/AdminDashboard';
                         }
                         if (obj.EmpRole == "Staff") {
@@ -61,6 +61,9 @@
                         }
                         if (obj.EmpRole == "Superadmin") {
                             window.location.href = '/Staff/SuperadminReports';
+                        }
+                        if (obj.EmpRole == "Supervisor") {
+                            window.location.href = '/Admin/DailyCategorywiseReport';
                         }
                     }
                     else {
