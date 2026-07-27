@@ -11,6 +11,20 @@
         Fn_DailyReport_Canteenwise();
         Fn_DailyReport_ItemCategorywise();
 
+        const CurrentDate = new Date();
+        const yyyy = CurrentDate.getFullYear();
+        const monthnames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+            "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+        let dd = CurrentDate.getDate();
+        if (dd < 10) dd = '0' + dd;
+
+        const mmm = monthnames[CurrentDate.getMonth()];
+
+        const dateformat = dd + '-' + mmm + '-' + yyyy;
+
+        $("#spnTodayDate").html(dateformat);
+
     });
 
 
@@ -39,7 +53,7 @@
                     }
                 }
                 else {
-                    html += "<tr><td colspan='12' class='text-center'>No Canteen records found.</td></tr>";
+                    html += "<tr><td colspan='12' class='text-center'>Canteen wise records are not found.</td></tr>";
                 }
                 $("#tbody_Canteen").append(html);
             },
@@ -70,19 +84,19 @@
                         html += "<tr>";
                         html += "<td>" + obj[i].CanteenName + "</td>";
                         html += "<td>" + obj[i].Noofworkers + "</td>";
-                        html += "<td style='background-color:lightgray;'>" + obj[i].GeneratedCouponTea + "</td>";
-                        html += "<td style='background-color:lightgray;'>" + obj[i].QRScannedTea + "</td>";
-                        html += "<td style='background-color:lightpink;'>" + obj[i].GeneratedCouponBreakfast + "</td>";
-                        html += "<td style='background-color:lightpink;'>" + obj[i].QRScannedBreakfast + "</td>";
-                        html += "<td style='background-color:lightblue;'>" + obj[i].GeneratedCouponThali + "</td>";
-                        html += "<td style='background-color:lightblue;'>" + obj[i].QRScannedThali + "</td>";
-                        html += "<td style='background-color:lightgreen;'>" + obj[i].GeneratedCouponMiniThali + "</td>";
-                        html += "<td style='background-color:lightgreen;'>" + obj[i].QRScannedMiniThali + "</td>";
+                        html += "<td style='background-color:#E1BEE7;'>" + obj[i].GeneratedCouponTea + "</td>";
+                        html += "<td style='background-color:#E1BEE7;'>" + obj[i].QRScannedTea + "</td>";
+                        html += "<td style='background-color:#FFCCBC;'>" + obj[i].GeneratedCouponBreakfast + "</td>";
+                        html += "<td style='background-color:#FFCCBC;'>" + obj[i].QRScannedBreakfast + "</td>";
+                        html += "<td style='background-color:#ADD8E6;'>" + obj[i].GeneratedCouponThali + "</td>";
+                        html += "<td style='background-color:#ADD8E6;'>" + obj[i].QRScannedThali + "</td>";
+                        html += "<td style='background-color:#C8E6C9;'>" + obj[i].GeneratedCouponMiniThali + "</td>";
+                        html += "<td style='background-color:#C8E6C9;'>" + obj[i].QRScannedMiniThali + "</td>";
                         html += "</tr>";
                     }
                 }
                 else {
-                    html += "<tr><td colspan='12' class='text-center'>No Employee/Worker records found.</td></tr>";
+                    html += "<tr><td colspan='12' class='text-center'>Item category wise records are not found.</td></tr>";
                 }
                 $("#tbody_Category").append(html);
             },
@@ -98,8 +112,8 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-12 col-md-12 col-sm-12">
-            <h4>Daily Canteen and Category Wise Report</h4>
-            <p>Today's <span id="spnTodayDate"></span></p>                                     
+            <h4>Daily Canteen and Item Category Wise Report</h4>
+            <p><b>Today's <span id="spnTodayDate"></span> Generated and Scanned Count</b></p>                                     
         
             <div class="card">
 
@@ -124,17 +138,16 @@
                     <table class="table table-bordered table-hover">
                         <thead>
                             <tr>
-                            @*<tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">*@
                                 <th>Canteen Name</th>
                                 <th>Workers</th>
-                                <th style="background-color:lightgray;">Tea</th>
-                                <th style="background-color:lightgray;">QR Tea</th>
-                                <th style="background-color:lightpink;">Breakfast</th>
-                                <th style="background-color:lightpink;">QR Breakfast</th>
-                                <th style="background-color:lightblue;">Thali</th>
-                                <th style="background-color:lightblue;">QRThali</th>
-                                <th style="background-color:lightgreen;">Mini Thali</th>
-                                <th style="background-color:lightgreen;">QR Mini Thali</th>
+                                <th style="background-color: #E1BEE7;">Tea</th>
+                                <th style="background-color: #E1BEE7;">QR Tea</th>
+                                <th style="background-color: #FFCCBC;">Breakfast</th>
+                                <th style="background-color: #FFCCBC;">QR Breakfast</th>
+                                <th style="background-color: #ADD8E6;">Thali</th>
+                                <th style="background-color: #ADD8E6;">QRThali</th>
+                                <th style="background-color: #C8E6C9;">Mini Thali</th>
+                                <th style="background-color: #C8E6C9;">QR Mini Thali</th>
                             </tr>
                         </thead>
                         <tbody id="tbody_Category">
