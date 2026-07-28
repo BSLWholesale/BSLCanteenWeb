@@ -544,7 +544,7 @@ namespace BSLCanteenWeb.Controllers
                 string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(objReq);
 
                 HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
-                HttpResponseMessage responsePost = client.PostAsync("api/Cateen/Fn_DailyReport_ItemCategorywise", content).Result;
+                HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_DailyReport_ItemCategorywise", content).Result;
                 if (responsePost.IsSuccessStatusCode)
                 {
                     return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
@@ -568,7 +568,7 @@ namespace BSLCanteenWeb.Controllers
                 string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(objReq);
 
                 HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
-                HttpResponseMessage responsePost = client.PostAsync("api/Cateen/Fn_DailyReport_Canteenwise", content).Result;
+                HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_DailyReport_Canteenwise", content).Result;
                 if (responsePost.IsSuccessStatusCode)
                 {
                     return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
