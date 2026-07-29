@@ -78,7 +78,14 @@
                         //totalGenMiniThaliCoupons += parseInt(obj[i].GeneratedCouponMiniThali) || 0;
                         totalScanMiniThaliCoupons += parseInt(obj[i].QRScannedMiniThali) || 0;
 
-                        html += "<tr>";
+                        // Check if current canteen is ending
+                        var rowStyle = "";
+                        if (i == obj.length - 1 || obj[i].CanteenName != obj[i + 1].CanteenName) {
+                            rowStyle = "style='border-bottom:2px solid #A6ABAF;'";
+                        }
+
+                        //html += "<tr>";
+                        html += "<tr " + rowStyle + ">";
                         html += "<td>" + obj[i].CanteenName + "</td>";
                         html += "<td>" + obj[i].ShiftName + "</td>";
                         html += "<td style='text-align:center;'>" + obj[i].Noofworkers + "</td>";
@@ -88,7 +95,7 @@
                         html += "<td style='text-align:center;background-color:#FFCCBC;'>" + obj[i].QRScannedBreakfast + "</td>";
                         //html += "<td style='text-align:center;'>" + obj[i].GeneratedCouponThali + "</td>";
                         html += "<td style='text-align:center;background-color:#ADD8E6;'>" + obj[i].QRScannedThali + "</td>";
-                       // html += "<td style='text-align:center;'>" + obj[i].GeneratedCouponMiniThali + "</td>";
+                        //html += "<td style='text-align:center;'>" + obj[i].GeneratedCouponMiniThali + "</td>";
                         html += "<td style='text-align:center;background-color:#C8E6C9;'>" + obj[i].QRScannedMiniThali + "</td>";
                         html += "</tr>";
                     }
