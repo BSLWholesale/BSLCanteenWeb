@@ -40,11 +40,11 @@
     function Fn_DailyReport_Shiftwise() {
 
         var clsShiftReport = {};
-        debugger
+        
         var html = "";
         $("#tbody_Shift").html("");
         clsShiftReport.CurrentDate = $("#txtCurrentDate").val();
-        debugger
+        
         $.ajax({
             type: "POST",
             url: "/Staff/Fn_DailyReport_Shiftwise",
@@ -83,13 +83,13 @@
                         html += "<td>" + obj[i].ShiftName + "</td>";
                         html += "<td style='text-align:center;'>" + obj[i].Noofworkers + "</td>";
                         //html += "<td style='text-align:center;'>" + obj[i].GeneratedCouponTea + "</td>";
-                        html += "<td style='text-align:center;'>" + obj[i].QRScannedTea + "</td>";
+                        html += "<td style='text-align:center;background-color:#E1BEE7;'>" + obj[i].QRScannedTea + "</td>";
                         //html += "<td style='text-align:center;'>" + obj[i].GeneratedCouponBreakfast + "</td>";
-                        html += "<td style='text-align:center;'>" + obj[i].QRScannedBreakfast + "</td>";
+                        html += "<td style='text-align:center;background-color:#FFCCBC;'>" + obj[i].QRScannedBreakfast + "</td>";
                         //html += "<td style='text-align:center;'>" + obj[i].GeneratedCouponThali + "</td>";
-                        html += "<td style='text-align:center;'>" + obj[i].QRScannedThali + "</td>";
+                        html += "<td style='text-align:center;background-color:#ADD8E6;'>" + obj[i].QRScannedThali + "</td>";
                        // html += "<td style='text-align:center;'>" + obj[i].GeneratedCouponMiniThali + "</td>";
-                        html += "<td style='text-align:center;'>" + obj[i].QRScannedMiniThali + "</td>";
+                        html += "<td style='text-align:center;background-color:#C8E6C9;'>" + obj[i].QRScannedMiniThali + "</td>";
                         html += "</tr>";
                     }
 
