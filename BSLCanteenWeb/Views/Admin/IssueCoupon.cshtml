@@ -92,28 +92,28 @@
                             if (obj[i].Category == "Tea") {
                                 html += "<div class='col-sm-3'>";
                                 html += "<div class='form-group'><span>☕ <strong>Tea</strong></span>";
-                                html += "<input type='number' id='txtTeaQty' min='0' class='form-control' />";
+                                html += "<input type='number' id='txtTeaQty' min='0' class='form-control' oninput='Fn_Calculate_ItemPrice();' />";
                                 html += "</div>";
                                 html += "</div>";
                             }
                             else if (obj[i].Category == "Breakfast") {
                                 html += "<div class='col-sm-3'>";
                                 html += "<div class='form-group'><span>🍽️ <strong>Breakfast</strong></span></span>";
-                                html += "<input type='number' id='txtBreakfastQty' min='0' class='form-control' />";
+                                html += "<input type='number' id='txtBreakfastQty' min='0' class='form-control' oninput='Fn_Calculate_ItemPrice();' />";
                                 html += "</div>";
                                 html += "</div>";
                             }
                             else if (obj[i].Category == "Mini Thali") {
                                 html += "<div class='col-sm-3'>";
                                 html += "<div class='form-group'><span>🍛 <strong>Mini Thali</strong></span></span>";
-                                html += "<input type='number' id='txtMiniThaliQty' min='0' class='form-control' />";
+                                html += "<input type='number' id='txtMiniThaliQty' min='0' class='form-control' oninput='Fn_Calculate_ItemPrice();' />";
                                 html += "</div>";
                                 html += "</div>";
                             }
                             else if (obj[i].Category == "Thali") {
                                 html += "<div class='col-sm-3'>";
                                 html += "<div class='form-group'><span>🍛 <strong>Thali</strong></span></span>";
-                                html += "<input type='number' id='txtThaliQty' min='0' class='form-control' />";
+                                html += "<input type='number' id='txtThaliQty' min='0' class='form-control' oninput='Fn_Calculate_ItemPrice();' />";
                                 html += "</div>";
                                 html += "</div>";
                             }
@@ -424,6 +424,32 @@
                 printWindow.print();
                 printWindow.close();
             };
+        }
+
+        function Fn_Calculate_ItemPrice() {
+
+            var TotalTeaPrice = 0;
+            var TotalBreakfastPrice = 0;
+            var TotalThaliPrice = 0;
+            var TotalMiniThaliPrice = 0;
+
+            var txtTeaQty = parseInt($("#txtTeaQty").val()) || 0;
+            TotalTeaPrice = txtTeaQty * 6;
+
+            var txtBreakfastQty = parseInt($("#txtBreakfastQty").val()) || 0;
+            TotalBreakfastPrice = txtBreakfastQty * 7;
+
+            var txtThaliQty = parseInt($("#txtThaliQty").val()) || 0;
+            TotalThaliPrice = txtThaliQty * 25;
+
+            var txtMiniThaliQty = parseInt($("#txtMiniThaliQty").val()) || 0;
+            TotalMiniThaliPrice = txtMiniThaliQty * 15;
+
+            var spnTotalCoupons = txtTeaQty + txtBreakfastQty + txtThaliQty + txtMiniThaliQty;
+            $("#spnTotalCoupons").html("Total Coupons: " + spnTotalCoupons);
+
+            var spnTotalPrice = TotalTeaPrice + TotalBreakfastPrice + TotalThaliPrice + TotalMiniThaliPrice;
+            $("#spnTotalPrice").html("Total Coupon Price: " + spnTotalPrice.toFixed(2));
         }
 
     </script>
