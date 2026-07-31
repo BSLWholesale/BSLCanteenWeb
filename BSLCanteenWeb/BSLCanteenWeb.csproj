@@ -351,6 +351,7 @@
     <Content Include="Views\Staff\ManualCouponEntry.cshtml" />
     <Content Include="Views\Staff\SuperadminReports.cshtml" />
     <Content Include="Views\Staff\DailyReport.cshtml" />
+    <Content Include="Views\Staff\DailyEmployeeReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
