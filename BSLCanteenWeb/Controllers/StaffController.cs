@@ -36,6 +36,11 @@ namespace BSLCanteenWeb.Controllers
             return View();
         }
 
+        public ActionResult DailyEmployeeReport()
+        {
+            return View();
+        }
+
         [HttpPost]
         public JsonResult Fn_ProcessCouponTransaction(clsCouponReport objReq)
         {
@@ -110,103 +115,104 @@ namespace BSLCanteenWeb.Controllers
         }
 
 
-        [HttpPost]
-        public JsonResult Fn_CanteenWise_Report(clsMonthlyReportReq cs)
-        {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(Convert.ToString(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]));
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+        //[HttpPost]
+        //public JsonResult Fn_CanteenWise_Report(clsMonthlyReportReq cs)
+        //{
+        //    using (var client = new HttpClient())
+        //    {
+        //        client.BaseAddress = new Uri(Convert.ToString(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]));
+        //        client.DefaultRequestHeaders.Accept.Clear();
+        //        client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
-                string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(cs);
+        //        string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(cs);
 
-                HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
-                HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_CanteenWise_Report", content).Result;
-                if (responsePost.IsSuccessStatusCode)
-                {
-                    return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    return Json(new { success = false, message = "No data found." }, JsonRequestBehavior.AllowGet);
-                }
-            }
-        }
-
-
-        [HttpPost]
-        public JsonResult Fn_EmployeeWise_Report(clsMonthlyReportReq cs)
-        {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(Convert.ToString(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]));
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-
-                string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(cs);
-
-                HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
-                HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_EmployeeWise_Report", content).Result;
-                if (responsePost.IsSuccessStatusCode)
-                {
-                    return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    return Json(new { success = false, message = "No data found." }, JsonRequestBehavior.AllowGet);
-                }
-            }
-        }
+        //        HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
+        //        HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_CanteenWise_Report", content).Result;
+        //        if (responsePost.IsSuccessStatusCode)
+        //        {
+        //            return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
+        //        }
+        //        else
+        //        {
+        //            return Json(new { success = false, message = "No data found." }, JsonRequestBehavior.AllowGet);
+        //        }
+        //    }
+        //}
 
 
-        [HttpPost]
-        public JsonResult Fn_EmployeeWise_Summery(clsMonthlyReportReq cs)
-        {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(Convert.ToString(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]));
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+        //[HttpPost]
+        //public JsonResult Fn_EmployeeWise_Report(clsMonthlyReportReq cs)
+        //{
+        //    using (var client = new HttpClient())
+        //    {
+        //        client.BaseAddress = new Uri(Convert.ToString(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]));
+        //        client.DefaultRequestHeaders.Accept.Clear();
+        //        client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
-                string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(cs);
+        //        string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(cs);
 
-                HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
-                HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_EmployeeWise_Summery", content).Result;
-                if (responsePost.IsSuccessStatusCode)
-                {
-                    return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    return Json(new { success = false, message = "No data found." }, JsonRequestBehavior.AllowGet);
-                }
-            }
-        }
+        //        HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
+        //        HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_EmployeeWise_Report", content).Result;
+        //        if (responsePost.IsSuccessStatusCode)
+        //        {
+        //            return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
+        //        }
+        //        else
+        //        {
+        //            return Json(new { success = false, message = "No data found." }, JsonRequestBehavior.AllowGet);
+        //        }
+        //    }
+        //}
 
-        [HttpPost]
-        public JsonResult Fn_CanteenWise_Summery(clsMonthlyReportReq cs)
-        {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(Convert.ToString(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]));
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
-                string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(cs);
+        //[HttpPost]
+        //public JsonResult Fn_EmployeeWise_Summery(clsMonthlyReportReq cs)
+        //{
+        //    using (var client = new HttpClient())
+        //    {
+        //        client.BaseAddress = new Uri(Convert.ToString(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]));
+        //        client.DefaultRequestHeaders.Accept.Clear();
+        //        client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
-                HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
-                HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_CanteenWise_Summery", content).Result;
-                if (responsePost.IsSuccessStatusCode)
-                {
-                    return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    return Json(new { success = false, message = "No data found." }, JsonRequestBehavior.AllowGet);
-                }
-            }
-        }
+        //        string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(cs);
+
+        //        HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
+        //        HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_EmployeeWise_Summery", content).Result;
+        //        if (responsePost.IsSuccessStatusCode)
+        //        {
+        //            return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
+        //        }
+        //        else
+        //        {
+        //            return Json(new { success = false, message = "No data found." }, JsonRequestBehavior.AllowGet);
+        //        }
+        //    }
+        //}
+
+
+        //[HttpPost]
+        //public JsonResult Fn_CanteenWise_Summery(clsMonthlyReportReq cs)
+        //{
+        //    using (var client = new HttpClient())
+        //    {
+        //        client.BaseAddress = new Uri(Convert.ToString(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]));
+        //        client.DefaultRequestHeaders.Accept.Clear();
+        //        client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+        //        string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(cs);
+
+        //        HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
+        //        HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_CanteenWise_Summery", content).Result;
+        //        if (responsePost.IsSuccessStatusCode)
+        //        {
+        //            return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
+        //        }
+        //        else
+        //        {
+        //            return Json(new { success = false, message = "No data found." }, JsonRequestBehavior.AllowGet);
+        //        }
+        //    }
+        //}
 
 
         [HttpPost]
@@ -284,7 +290,103 @@ namespace BSLCanteenWeb.Controllers
         }
 
 
+        [HttpPost]
+        public JsonResult Fn_CanteenWise_Report(clsMonthlyReportReq objReq)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(Convert.ToString(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]));
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
+                string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(objReq);
+
+                HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
+                HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_CanteenWise_Report", content).Result;
+                if (responsePost.IsSuccessStatusCode)
+                {
+                    return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Canteen wise report records are not found." }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+        [HttpPost]
+        public JsonResult Fn_CanteenWise_Summery(clsMonthlyReportReq objReq)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(Convert.ToString(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]));
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(objReq);
+
+                HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
+                HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_CanteenWise_Summery", content).Result;
+                if (responsePost.IsSuccessStatusCode)
+                {
+                    return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Canteen wise summary records are not found." }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+
+        [HttpPost]
+        public JsonResult Fn_EmployeeWise_Report(clsMonthlyReportReq objReq)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(Convert.ToString(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]));
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(objReq);
+
+                HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
+                HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_EmployeeWise_Report", content).Result;
+                if (responsePost.IsSuccessStatusCode)
+                {
+                    return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Employee wise report records are not found." }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+
+        [HttpPost]
+        public JsonResult Fn_EmployeeWise_Summery(clsMonthlyReportReq objReq)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(Convert.ToString(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]));
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(objReq);
+
+                HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
+                HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_EmployeeWise_Summery", content).Result;
+                if (responsePost.IsSuccessStatusCode)
+                {
+                    return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Employee wise summary records are not found." }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
 
 
     }
