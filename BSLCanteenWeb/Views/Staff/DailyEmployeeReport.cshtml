@@ -14,8 +14,8 @@
         $(document).ready(function () {
 
             var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
-            Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", "");
 
+            Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", "");
             Fn_Fill_DropdownList("ddlCanteen", "CanteenMaster", "CanteenName", "", "");
 
             Fn_EmployeeWise_Report();
@@ -364,14 +364,8 @@
         function onRadioChange() {
 
             var selectedValue = $('input[name="rb"]:checked').val();
-            if (selectedValue == "Canteenwise") {
-                Fn_CanteenWise_Report();
-            }
-            else if (selectedValue == "Employeewise") {
+            if (selectedValue == "Employeewise") {
                 Fn_EmployeeWise_Report();
-            }
-            else if (selectedValue == "CanteenwiseSummery") {
-                Fn_CanteenWise_Summery();
             }
             else if (selectedValue == "EmployeewiseSummery") {
                 Fn_EmployeeWise_Summery();
@@ -391,17 +385,9 @@
             var ddlDays = $("#ddlDays").val();
             var selectedValue = $('input[name="rb"]:checked').val();
 
-            if (selectedValue == "Canteenwise") {
-                tab = document.getElementById('tblCanteen');
-                strFileName = "Canteenwise-Detail-" + ddlDays;
-            }
-            else if (selectedValue == "Employeewise") {
+            if (selectedValue == "Employeewise") {
                 tab = document.getElementById('tblEmp');
                 strFileName = "Employeewise-Detail-" + ddlDays;
-            }
-            else if (selectedValue == "CanteenwiseSummery") {
-                tab = document.getElementById('tblSummery');
-                strFileName = "Canteenwise-Summery-" + ddlDays;
             }
             else if (selectedValue == "EmployeewiseSummery") {
                 tab = document.getElementById('tblEmpSummery');
@@ -506,7 +492,6 @@
         }
 
 
-
     </script>
 
 }
@@ -591,7 +576,6 @@
                     </table>*@
 
                     <!-- Canteen Summery Start-->
-
                     @*<table class="table table-bordered table-hover" id="tblSummery" style="display: none;">
                         <thead>
                             <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
@@ -604,7 +588,6 @@
                     </table>*@
 
                     <!-- Employee table start-->
-
                     <table class="table table-bordered table-hover" id="tblEmp" style="display: none;">
                         <thead>
                             <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
@@ -620,7 +603,7 @@
                         <tbody id="tbodyEmp"></tbody>
                     </table>
 
-                    <!-- Emp Summery Start-->
+                    <!-- Employee Summery Start-->
                     <table class="table table-bordered table-hover" id="tblEmpSummery" style="display: none;">
                         <thead>
                             <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
