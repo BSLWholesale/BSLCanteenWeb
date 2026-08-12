@@ -352,6 +352,7 @@
     <Content Include="Views\Staff\SuperadminReports.cshtml" />
     <Content Include="Views\Staff\DailyReport.cshtml" />
     <Content Include="Views\Staff\DailyEmployeeReport.cshtml" />
+    <Content Include="Views\Staff\AllEmployeeMonthlyReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
