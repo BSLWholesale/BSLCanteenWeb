@@ -3,4 +3,187 @@
     ViewBag.Title = "AllEmployeeMonthlyReport";
 }
 
-<h2>AllEmployeeMonthlyReport</h2>
+@{
+    <script src="~/Web/js/jquery-3.7.1.min.js"></script>
+    <link href="~/Web/css/select2.min.css" rel="stylesheet" />
+    <script src="~/Web/js/jquery-ui.min.js"></script>
+    <link href="~/Web/css/jquery-ui.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
+
+            Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", "");
+            Fn_Fill_DropdownList("ddlCanteen", "CanteenMaster", "CanteenName", "", "");
+
+        });
+
+
+        function Fn_Fill_DropdownList(ddlName, strTBLName, strFieldName, strValueField, strCriteria) {
+
+            var clsRequestDropdown = {};
+
+            clsRequestDropdown.vFieldName = strFieldName;
+            clsRequestDropdown.vValueField = strValueField;
+            clsRequestDropdown.vTBLName = strTBLName;
+            clsRequestDropdown.vCriteria = strCriteria;
+
+            $("#" + ddlName).html('');
+            var dropdown = ''; var dropdown1 = "";
+            dropdown1 = "<option value='0'>--Select--</option>";
+            $("#" + ddlName).append(dropdown1);
+
+            $.ajax({
+                type: "POST",
+                url: '/Home/Fn_Fill_DropdownList',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsRequestDropdown),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    for (var i = 0; i < obj.length; i++) {
+                        if (strValueField == "") {
+                            dropdown += "<option value='" + obj[i].vFieldName + "'>" + obj[i].vFieldName + "</option>";
+                        }
+                        else {
+                            dropdown += "<option value='" + obj[i].vValueField + "'>" + obj[i].vFieldName + "</option>";
+                        }
+                    }
+                    $("#" + ddlName).append(dropdown);
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
+        }
+
+
+        function formatDate(date) {
+
+            var day = String(date.getDate()).padStart(2, '0');
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = months[date.getMonth()];
+            var year = date.getFullYear();
+
+            return day + "-" + month + "-" + year;
+
+        }
+
+
+    </script>
+}
+
+
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12 col-md-12 col-sm-12">
+            <h4>Report</h4>
+            <div class="card">
+                <div class="row mt-2">
+                    <div class="col-sm-4">
+                        <label>Canteen</label>
+                        <select id="ddlCanteen" class="form-control" onchange="onRadioChange();">
+                            <option value="0">--Select--</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>Employee</label>
+                        <select id="ddlEmpName" class="form-control" onchange="onRadioChange();">
+                            <option value="0">--Select--</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <label>Days</label>
+                        <select id="ddlDays" class="form-control" onchange="onRadioChange();">
+                            @*<option value="0">--Select--</option>*@
+                            <option value="Today">Today</option>
+                            <option value="Monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-8">
+
+                        <div class="row mt-1">
+                            <!-- Detail Column -->
+                            <div class="col-md-6">
+                                <h5 style="background-color:#007bff; color:white; padding:10px; border-radius:5px;">
+                                    Detail
+                                </h5>
+
+                                <label>
+                                    <input type="radio" name="rb" value="Employeewise"
+                                           onchange="onRadioChange();" checked="checked" />
+                                    Employeewise Detail
+                                </label>
+                            </div>
+
+                            <!-- Summary Column -->
+                            <div class="col-md-6">
+                                <h5 style="background-color:#28a745; color:white; padding:10px; border-radius:5px;">
+                                    Summary
+                                </h5>
+
+                                <label>
+                                    <input type="radio" name="rb" value="EmployeewiseSummery"
+                                           onchange="onRadioChange();" />
+                                    Employeewise Summary
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-sm-4 position-relative">
+                        <div class="position-absolute bottom-0 end-0" style="padding-right: 15px;">
+                            <button id="btnSearch" class="btn btn-primary mt-4" onclick="onRadioChange();"> Search</button>
+                            <button id="btnExport" class="btn btn-primary mt-4" onclick="Fn_ExportExcel();"> Export</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive mt-3">
+                    <!-- Employee table start-->
+                    <table class="table table-bordered table-hover" id="tblEmp" style="display: none;">
+                        <thead>
+                            <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
+                                <th>Emp Id</th>
+                                <th>Emp Name</th>
+                                <th>Canteen Name</th>
+                                <th>Coupon iD</th>
+                                <th>Item Category</th>
+                                <th>Order Taken Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyEmp"></tbody>
+                    </table>
+
+                    <!-- Employee Summery Start-->
+                    <table class="table table-bordered table-hover" id="tblEmpSummery" style="display: none;">
+                        <thead>
+                            <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
+                                <th>Emp Id</th>
+                                <th>Emp Name</th>
+                                <th>Canteen Name</th>
+                                <th>TotalCoupons</th>
+                                <th>Amt</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyEmpSummery"></tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Team End -->
+
+<script src="~/Web/js/select2.min.js"></script>
+<script>
+    $(function () {
+        $("#ddlEmpName").select2();
+        $("#ddlCanteen").select2();
+        $("#ddlDays").select2();
+    });
+</script>
