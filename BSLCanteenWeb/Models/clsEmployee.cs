@@ -214,7 +214,7 @@ namespace BSLCanteenWeb.Models
     {
         public Int32 EmpId { get; set; }
         public string EmpName { get; set; }
-        public int CateenId { get; set; }
+        public int CanteenId { get; set; }
         public string CanteenName { get; set; }
         public Int64 CouponId { get; set; }
         public string ItemCatgeory { get; set; }
