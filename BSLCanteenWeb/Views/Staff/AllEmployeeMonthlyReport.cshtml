@@ -16,7 +16,9 @@
             var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
 
             Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", "");
-            Fn_Fill_DropdownList("ddlCanteen", "CanteenMaster", "CanteenName", "", "");
+            Fn_Fill_DropdownList("ddlCanteen", "CanteenMaster", "CanteenName", "CanteenId", "");
+
+            //Fn_DailyMonthlyReport_EmpDetail();
 
         });
 
@@ -45,7 +47,7 @@
                     var obj = JSON.parse(data.message);
                     for (var i = 0; i < obj.length; i++) {
                         if (strValueField == "") {
-                            dropdown += "<option value='" + obj[i].vFieldName + "'>" + obj[i].vFieldName + "</option>";
+                            dropdown += "<option value='" + obj[i].vValueField + "'>" + obj[i].vFieldName + "</option>";
                         }
                         else {
                             dropdown += "<option value='" + obj[i].vValueField + "'>" + obj[i].vFieldName + "</option>";
@@ -73,6 +75,70 @@
         }
 
 
+        function Fn_DailyMonthlyReport_EmpDetail() {
+
+            var clsDailyMonthlyAllEmpDetail = {};
+
+            var html = "";
+            $("#tbodyEmpMonthlyDetail").html("");
+            
+            clsDailyMonthlyAllEmpDetail.CurrentDate = null;
+            clsDailyMonthlyAllEmpDetail.CanteenId = $("#ddlCanteen").val();
+            if ($("#ddlEmpName").val() == "0") {
+                clsDailyMonthlyAllEmpDetail.EmpId = null;
+            }
+            else {
+                clsDailyMonthlyAllEmpDetail.EmpId = $("#ddlEmpName").val();
+            }
+            clsDailyMonthlyAllEmpDetail.PeriodType = $("#ddlDays").val();
+            
+            $.ajax({
+                type: "POST",
+                url: "/Staff/Fn_DailyMonthlyReport_EmpDetail",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsDailyMonthlyAllEmpDetail),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj[0].vErrorMsg == "Success") {
+                        for (var i = 0; i < obj.length; i++) {
+                            html += "<tr>";
+                            html += "<td>" + obj[i].EmpId + "</td>";
+                            html += "<td>" + obj[i].EmpName + "</td>";
+                            html += "<td>" + obj[i].CanteenName + "</td>";
+                            html += "<td>" + obj[i].CouponId + "</td>";
+                            html += "<td>" + obj[i].ItemCatgeory + "</td>";
+                            html += "<td>" + obj[i].OrderTakenDate + "</td>";
+                            html += "</tr>";
+                        }
+                    }
+                    else {
+                        html += "<tr><td colspan='12' class='text-center'>Employee Detail records are not found.</td></tr>";
+                    }
+                    $("#tbodyEmpMonthlyDetail").append(html);
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
+        }
+
+
+        function onRadioChange() {
+
+            var selectedValue = $('input[name="rb"]:checked').val();
+            if (selectedValue == "Employeewise") {
+                Fn_DailyMonthlyReport_EmpDetail();
+            }
+            else if (selectedValue == "EmployeewiseSummery") {
+                Fn_DailyMonthlyReport_EmpDetail();
+            }
+            else {
+            }
+
+        }
+
+
     </script>
 }
 
@@ -81,7 +147,7 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-12 col-md-12 col-sm-12">
-            <h4>Report</h4>
+            <h4>All Employee Today/Monthly Report</h4>
             <div class="card">
                 <div class="row mt-2">
                     <div class="col-sm-4">
@@ -99,9 +165,8 @@
                     <div class="col-sm-4">
                         <label>Days</label>
                         <select id="ddlDays" class="form-control" onchange="onRadioChange();">
-                            @*<option value="0">--Select--</option>*@
-                            <option value="Today">Today</option>
                             <option value="Monthly">Monthly</option>
+                            <option value="Today">Today</option>
                         </select>
                     </div>
                     <div class="col-sm-8">
@@ -138,24 +203,24 @@
                     <div class="col-sm-4 position-relative">
                         <div class="position-absolute bottom-0 end-0" style="padding-right: 15px;">
                             <button id="btnSearch" class="btn btn-primary mt-4" onclick="onRadioChange();"> Search</button>
-                            <button id="btnExport" class="btn btn-primary mt-4" onclick="Fn_ExportExcel();"> Export</button>
+                            @*<button id="btnExport" class="btn btn-primary mt-4" onclick="Fn_ExportExcel();"> Export</button>*@
                         </div>
                     </div>
                 </div>
                 <div class="table-responsive mt-3">
-                    <!-- Employee table start-->
+                    <!-- Employee Detail Table start-->
                     <table class="table table-bordered table-hover" id="tblEmp" style="display: none;">
                         <thead>
                             <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
                                 <th>Emp Id</th>
                                 <th>Emp Name</th>
                                 <th>Canteen Name</th>
-                                <th>Coupon iD</th>
+                                <th>Coupon ID</th>
                                 <th>Item Category</th>
                                 <th>Order Taken Date</th>
                             </tr>
                         </thead>
-                        <tbody id="tbodyEmp"></tbody>
+                        <tbody id="tbodyEmpMonthlyDetail"></tbody>
                     </table>
 
                     <!-- Employee Summery Start-->
@@ -179,11 +244,11 @@
 </div>
 <!-- Team End -->
 
-<script src="~/Web/js/select2.min.js"></script>
+@*<script src="~/Web/js/select2.min.js"></script>
 <script>
     $(function () {
         $("#ddlEmpName").select2();
         $("#ddlCanteen").select2();
         $("#ddlDays").select2();
     });
-</script>
+</script>*@
