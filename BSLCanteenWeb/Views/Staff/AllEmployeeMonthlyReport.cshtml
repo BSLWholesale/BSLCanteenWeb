@@ -18,7 +18,7 @@
             Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", "");
             Fn_Fill_DropdownList("ddlCanteen", "CanteenMaster", "CanteenName", "CanteenId", "");
 
-            Fn_DailyMonthlyReport_EmpDetail();
+            //Fn_DailyMonthlyReport_EmpDetail();
 
         });
 
@@ -74,51 +74,113 @@
 
         }
 
+        var currentPage = 1;
+        var pageSize = 500;
+        var isLoading = false;
+        var hasMoreData = true;
+        var rCount = 0;
 
-        function Fn_DailyMonthlyReport_EmpDetail() {
 
-            var clsDailyMonthlyAllEmpDetail = {};
+        function Fn_DailyMonthlyReport_EmpDetail(isScroll = false) {
 
-            var html = "";
-            $("#tbodyEmpMonthlyDetail").html("");
+            var clsDailyMonthlyAllEmpDetailReq = {};
+
+            if (isLoading || !hasMoreData)
+                return;
+
+            //var html = "";
+            //$("#tbodyEmpMonthlyDetail").html("");
             
-            clsDailyMonthlyAllEmpDetail.CurrentDate = null;
-            clsDailyMonthlyAllEmpDetail.CanteenId = $("#ddlCanteen").val();
-            if ($("#ddlEmpName").val() == "0") {
-                clsDailyMonthlyAllEmpDetail.EmpId = null;
+            clsDailyMonthlyAllEmpDetailReq.CurrentDate = null;
+            clsDailyMonthlyAllEmpDetailReq.CanteenId = $("#ddlCanteen").val();
+
+            var empId = $("#ddlEmpName").val();
+            if (empId === "0" || empId === 0 || empId === null || empId === "") {
+                clsDailyMonthlyAllEmpDetailReq.EmpId = null;
             }
             else {
-                clsDailyMonthlyAllEmpDetail.EmpId = $("#ddlEmpName").val();
+                clsDailyMonthlyAllEmpDetailReq.EmpId = parseInt(empId);
             }
-            clsDailyMonthlyAllEmpDetail.PeriodType = $("#ddlDays").val();
-            
+
+            clsDailyMonthlyAllEmpDetailReq.PeriodType = $("#ddlDays").val();
+            clsDailyMonthlyAllEmpDetailReq.PageNumber = currentPage;
+            clsDailyMonthlyAllEmpDetailReq.PageSize = pageSize;
+
+            // Clear only first time
+            if (!isScroll) {
+                $("#tbodyEmpMonthlyDetail").html('');
+                currentPage = 1;
+                hasMoreData = true;
+            }
+
+            isLoading = true;
+
             $.ajax({
                 type: "POST",
                 url: "/Staff/Fn_DailyMonthlyReport_EmpDetail",
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
-                data: JSON.stringify(clsDailyMonthlyAllEmpDetail),
+                data: JSON.stringify(clsDailyMonthlyAllEmpDetailReq),
+                beforeSend: function () {
+                    $("#loader").show();
+                },
                 success: function (data) {
+
                     var obj = JSON.parse(data.message);
-                    if (obj[0].vErrorMsg == "Success") {
+                    var gTotalRows = 0;
+                    var html = "";
+                    if (obj.length > 0 && obj[0].vErrorMsg == "Success") {
+                        
+                        gTotalRows = obj[0].TotalRows;
+                        
                         for (var i = 0; i < obj.length; i++) {
                             html += "<tr>";
                             html += "<td>" + obj[i].EmpId + "</td>";
                             html += "<td>" + obj[i].EmpName + "</td>";
                             html += "<td>" + obj[i].CanteenName + "</td>";
                             html += "<td>" + obj[i].CouponId + "</td>";
-                            html += "<td>" + obj[i].ItemCatgeory + "</td>";
+
+                            if (obj[i].ItemCatgeory == "Tea") {
+                                html += "<td class='clsmenu'>☕ Tea</td>";
+                            }
+                            else if (obj[i].ItemCatgeory == "Thali") {
+                                html += "<td class='clsmenu'>🍛 Thali</td>";
+                            }
+                            else if (obj[i].ItemCatgeory == "Mini Thali") {
+                                html += "<td class='clsmenu'>🍛 Mini Thali</td>";
+                            }
+                            else if (obj[i].ItemCatgeory == "Breakfast") {
+                                html += "<td class='clsmenu'>🍽️ Breakfast</td>";
+                            }
+                            else {
+                                html += "<td></td>";
+                            }
+
                             html += "<td>" + obj[i].OrderTakenDate + "</td>";
                             html += "</tr>";
+                            rCount++;
+                        }
+                        // Append data instead of replace
+                        $("#tbodyEmpMonthlyDetail").append(html);
+                        $("#spTotalRowCount").html("Total Rows: " + rCount + " / " + gTotalRows);
+                        // Next page
+                        currentPage++;
+
+                        // If less than page size => no more data
+                        if (obj.length < 30) {
+                            hasMoreData = false;
                         }
                     }
                     else {
-                        html += "<tr><td colspan='12' class='text-center'>Employee Detail records are not found.</td></tr>";
+                        hasMoreData = false;
                     }
-                    $("#tbodyEmpMonthlyDetail").append(html);
+                },
+                complete: function () {
+                    $("#loader").hide();
+                    isLoading = false;
                 },
                 error: function (err) {
-                    alert(err);
+                    Swal.fire({ title: "", text: err, icon: "error" });
                 }
             });
         }
@@ -127,17 +189,37 @@
         function onRadioChange() {
 
             var selectedValue = $('input[name="rb"]:checked').val();
+
             if (selectedValue == "Employeewise") {
                 Fn_DailyMonthlyReport_EmpDetail();
             }
-            else if (selectedValue == "EmployeewiseSummery") {
-                Fn_DailyMonthlyReport_EmpDetail();
-            }
+            //else if (selectedValue == "EmployeewiseSummery") {
+            //    Fn_DailyMonthlyReport_EmpDetail();
+            //}
             else {
             }
 
         }
 
+
+
+        $(window).scroll(function () {
+
+            if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+                var selectedValue = $('input[name="rb"]:checked').val();
+
+                if (selectedValue == "Employeewise") {
+                    Fn_DailyMonthlyReport_EmpDetail(true);
+                }
+                //else if (selectedValue == "EmployeewiseSummery") {
+                //    Fn_DailyMonthlyReport_EmpDetail(true);
+                //}
+                else {
+
+                }
+            }
+
+        });
 
     </script>
 }
@@ -148,6 +230,7 @@
     <div class="row">
         <div class="col-12 col-md-12 col-sm-12">
             <h4>All Employee Today/Monthly Report</h4>
+            <span class="pull-right" id="spTotalRowCount" style="color: black; font-weight: 800;"></span>
             <div class="card">
                 <div class="row mt-2">
                     <div class="col-sm-4">
@@ -174,22 +257,22 @@
                         <div class="row mt-1">
                             <!-- Detail Column -->
                             <div class="col-md-6">
-                                <h5 style="background-color:#007bff; color:white; padding:10px; border-radius:5px;">
-                                    Detail
-                                </h5>
+                                @*<h5 style="background-color:#007bff; color:white; padding:10px; border-radius:5px;">
+                                        Detail
+                                    </h5>*@
 
                                 <label>
                                     <input type="radio" name="rb" value="Employeewise"
-                                           onchange="onRadioChange();" checked="checked" />
+                                           onclick="onRadioChange();" checked="checked" />
                                     Employeewise Detail
                                 </label>
                             </div>
 
                             <!-- Summary Column -->
                             <div class="col-md-6">
-                                <h5 style="background-color:#28a745; color:white; padding:10px; border-radius:5px;">
-                                    Summary
-                                </h5>
+                                @*<h5 style="background-color:#28a745; color:white; padding:10px; border-radius:5px;">
+                                        Summary
+                                    </h5>*@
 
                                 <label>
                                     <input type="radio" name="rb" value="EmployeewiseSummery"
@@ -209,7 +292,7 @@
                 </div>
                 <div class="table-responsive mt-3">
                     <!-- Employee Detail Table start-->
-                    <table class="table table-bordered table-hover" id="tblEmp" style="display: none;">
+                    <table class="table table-bordered table-hover" id="tblEmp">
                         <thead>
                             <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
                                 <th>Emp Id</th>
@@ -241,14 +324,19 @@
             </div>
         </div>
     </div>
+
+    <div id="loader" style="margin-top: 15%; text-align: center; display: none;">
+        <img src="~/Web/img/loading.gif?timestamp(~/Web/img/loading.gif)" width="8%" />
+    </div>
+
 </div>
 <!-- Team End -->
 
-@*<script src="~/Web/js/select2.min.js"></script>
+<script src="~/Web/js/select2.min.js"></script>
 <script>
     $(function () {
         $("#ddlEmpName").select2();
         $("#ddlCanteen").select2();
         $("#ddlDays").select2();
     });
-</script>*@
+</script>
