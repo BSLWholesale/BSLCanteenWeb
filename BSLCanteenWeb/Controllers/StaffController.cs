@@ -295,7 +295,7 @@ namespace BSLCanteenWeb.Controllers
 
 
         [HttpPost]
-        public JsonResult Fn_DailyMonthlyReport_EmpDetail(clsDailyMonthlyAllEmpDetail objReq)
+        public JsonResult Fn_DailyMonthlyReport_EmpDetail(clsDailyMonthlyAllEmpDetailReq objReq)
         {
             using (var client = new HttpClient())
             {
