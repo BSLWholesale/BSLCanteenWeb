@@ -85,21 +85,7 @@
                             html += "<td>" + obj[i].CouponId + "</td>";
                             html += "<td>" + obj[i].EmpId + "</td>";
                             html += "<td>" + obj[i].EmpName + "</td>";
-                            if (obj[i].ItemCategory == "Tea") {
-                                html += "<td>☕ Tea</td>";
-                            }
-                            else if (obj[i].ItemCategory == "Breakfast") {
-                                html += "<td>🍽️ Breakfast</td>";
-                            }
-                            else if (obj[i].ItemCategory == "Thali") {
-                                html += "<td>🍛 Thali</td>";
-                            }
-                            else if (obj[i].ItemCategory == "Mini Thali") {
-                                html += "<td>🍛 Mini Thali</td>";
-                            }
-                            else {
-                                html += "<td>" + obj[i].ItemCategory + "</td>";
-                            }
+                            html += "<td>" + obj[i].CategoryIcon + " " + obj[i].ItemCategory + "</td>";
                             html += "<td>" + obj[i].CanteenName + "</td>";
                             html += "</tr>";
                         }
@@ -143,44 +129,16 @@
                 data: JSON.stringify(clsCountMenuItem),
                 success: function (data) {
                     var obj = JSON.parse(data.message);
+
                     if (obj[0].vErrorMsg == "Success") {
                         var rCount = 1;
                         for (var i = 0; i < obj.length; i++) {
-                            if (obj[i].ItemCategory == "Tea") {
-                                html += "<div class='col-sm-3'>";
-                                html += "<div class='card p-4 food-card" + rCount + "'>";
-                                html += "<div style='font-size: 15px; font-weight: 800'>☕ Tea - " + obj[i].CountItem + "</div>";
-                                html += "</div>";
-                                html += "</div>";
-                            }
-                            else if (obj[i].ItemCategory == "Breakfast") {
-                                html += "<div class='col-sm-3'>";
-                                html += "<div class='card p-4 food-card" + rCount + "'>";
-                                html += "<div style='font-size: 15px; font-weight: 800'>🍽️ Breakfast - " + obj[i].CountItem + "</div>";
-                                html += "</div>";
-                                html += "</div>";
-                            }
-                            else if (obj[i].ItemCategory == "Thali") {
-                                html += "<div class='col-sm-3'>";
-                                html += "<div class='card p-4 food-card" + rCount + "'>";
-                                html += "<div style='font-size: 15px; font-weight: 800'>🍛 Thali - " + obj[i].CountItem + "</div>";
-                                html += "</div>";
-                                html += "</div>";
-                            }
-                            else if (obj[i].ItemCategory == "Mini Thali") {
-                                html += "<div class='col-sm-3'>";
-                                html += "<div class='card p-4 food-card" + rCount + "'>";
-                                html += "<div style='font-size: 15px; font-weight: 800'>🍛 Mini Thali - " + obj[i].CountItem + "</div>";
-                                html += "</div>";
-                                html += "</div>";
-                            }
-                            else {
-                                html += "<div class='col-sm-3'>";
-                                html += "<div class='card p-4 food-card" + rCount + "'>";
-                                html += "<div style='font-size: 15px; font-weight: 800'>" + obj[i].ItemCategory + " - " + obj[i].CountItem + "</div>";
-                                html += "</div>";
-                                html += "</div>";
-                            }
+
+                            html += "<div class='col-sm-3'>";
+                            html += "<div class='card p-4 food-card" + rCount + "'>";
+                            html += "<div style='font-size: 15px; font-weight: 800'>" + obj[i].CategoryIcon + "  " + obj[i].ItemCategory + " - " + obj[i].CountItem + "</div>";
+                            html += "</div>";
+                            html += "</div>";
                             rCount++;
                         }
                         $("#ItemCountRow").append(html);

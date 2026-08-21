@@ -14,7 +14,7 @@
             var strCriteria = " AND EmpRole = 'Employee' ";
             var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
             Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", strCriteria);
-            Fn_Fill_DropdownList("ddlItemCategory", "MenuItems", "Category", "", "");
+            Fn_Fill_DropdownList("ddlItemCategory", "MenuItems", "ItemName", "", "");
             Fn_Fill_DropdownList("ddlOrderStatus", "vCouponOrder", "OrdStatus", "", "");
         });
         function Fn_Fill_DropdownList(ddlName, strTBLName, strFieldName, strValueField, strCriteria) {
@@ -153,6 +153,8 @@
                         $("#btnPrintA4").show();
                     }
                     else {
+                        $("#spnTotalCoupons").html("Total Coupons: 0")
+                        $("#spnTotalPrice").html("Total Coupon Price: 0");
                         Swal.fire({
                             title: "",
                             text: obj[0].vErrorMsg,

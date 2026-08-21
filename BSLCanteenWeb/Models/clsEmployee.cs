@@ -32,6 +32,7 @@ namespace BSLCanteenWeb.Models
     {
         public Int32 ItemId { get; set; }
         public string Category { get; set; }
+        public string CategoryIcon { get; set; }
         public string ItemName { get; set; }
         public decimal Price { get; set; }
         public int CreatedBy { get; set; }
@@ -54,6 +55,7 @@ namespace BSLCanteenWeb.Models
         public int CanteenId { get; set; }
         public string ItemCategory { get; set; }
         public string EmpLocation { get; set; }
+        public string CouponType { get; set; }
         public List<clsCouponItem> Items { get; set; }
         public int CreatedBy { get; set; }
         public string CreatedOn { get; set; }
@@ -104,6 +106,9 @@ namespace BSLCanteenWeb.Models
     {
         public Int64 CouponId { get; set; }
         public Int32 RowIndex { get; set; }
+        public string CouponType { get; set; }
+        public string Category { get; set; }
+        public string CategoryIcon { get; set; }
         public string ItemCategory { get; set; }
         public string CouponIssueDate { get; set; }
         public string CouponIssueTime { get; set; }

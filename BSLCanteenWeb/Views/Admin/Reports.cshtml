@@ -168,22 +168,8 @@
                             html += "<tr>";
                             html += "<td>" + obj[i].CanteenName + "</td>";
                             html += "<td>" + obj[i].OrderTakenDate + "</td>";
-
-                            if (obj[i].ItemCategory == "Tea") {
-                                html += "<td class='clsmenu'>☕ Tea</td>";
-                            }
-                            else if (obj[i].ItemCategory == "Thali") {
-                                html += "<td class='clsmenu'>🍛 Thali</td>";
-                            }
-                            else if (obj[i].ItemCategory == "Mini Thali") {
-                                html += "<td class='clsmenu'>🍛 Mini Thali</td>";
-                            }
-                            else if (obj[i].ItemCategory == "Breakfast") {
-                                html += "<td class='clsmenu'>🍽️ Breakfast</td>";
-                            }
-                            else {
-                                html += "<td>" + obj[i].ItemCategory + "</td>";
-                            }
+                            html += "<td class='clsmenu'>" + obj[i].CategoryIcon + " " + obj[i].ItemCategory + "</td>";
+                            
 
                             html += "<td style='text-align:right;'>" + obj[i].TotalCoupons + "</td>";
                             html += "<td style='text-align:right;'>" + obj[i].TotalPrice + "</td>";
@@ -340,22 +326,7 @@
                             html += "<td>" + obj[i].EmpName + "</td>";
                             html += "<td>" + obj[i].CanteenName + "</td>";
                             html += "<td>" + obj[i].OrderTakenDate + "</td>";
-
-                            if (obj[i].ItemCategory == "Tea") {
-                                html += "<td class='clsmenu'>☕ Tea</td>";
-                            }
-                            else if (obj[i].ItemCategory == "Thali") {
-                                html += "<td class='clsmenu'>🍛 Thali</td>";
-                            }
-                            else if (obj[i].ItemCategory == "Mini Thali") {
-                                html += "<td class='clsmenu'>🍛 Mini Thali</td>";
-                            }
-                            else if (obj[i].ItemCategory == "Breakfast") {
-                                html += "<td class='clsmenu'>🍽️ Breakfast</td>";
-                            }
-                            else {
-                                html += "<td>" + obj[i].ItemCategory + "</td>";
-                            }
+                            html += "<td class='clsmenu'>" + obj[i].CategoryIcon + " " + obj[i].ItemCategory + "</td>";                            
 
                             html += "<td align='right'>" + obj[i].TotalCoupons + "</td>";
                             html += "<td align='right'>" + obj[i].TotalPrice + "</td>";

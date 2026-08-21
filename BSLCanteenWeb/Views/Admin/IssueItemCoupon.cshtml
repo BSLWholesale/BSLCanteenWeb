@@ -1,0 +1,528 @@
+﻿
+@{
+    ViewBag.Title = "IssueItemCoupon";
+}
+
+@{
+    <script src="~/Web/js/jquery-3.7.1.min.js"></script>
+    <link href="~/Web/css/select2.min.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var EmpLocation = sessionStorage.getItem("EmpLocation");
+            var strCriteria = " AND EmpLocation='" + EmpLocation + "' AND EmpRole NOT IN ('Staff')";
+            var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
+            Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", strCriteria);
+            Fn_Get_All_MenuItems();
+        });
+        function Fn_Fill_DropdownList(ddlName, strTBLName, strFieldName, strValueField, strCriteria) {
+            var clsRequestDropdown = {};
+            clsRequestDropdown.vFieldName = strFieldName;
+            clsRequestDropdown.vValueField = strValueField;
+            clsRequestDropdown.vTBLName = strTBLName;
+            clsRequestDropdown.vCriteria = strCriteria;
+            $("#" + ddlName).html('');
+            var dropdown = ''; var dropdown1 = "";
+            if (ddlName == "ddlEmpName") {
+                dropdown1 = "<option value='0'>--Select--</option>";
+                $("#" + ddlName).append(dropdown1);
+            }
+            $.ajax({
+                type: "POST",
+                url: '/Home/Fn_Fill_DropdownList',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsRequestDropdown),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    for (var i = 0; i < obj.length; i++) {
+                        if (strValueField == "") {
+                            dropdown += "<option value='" + obj[i].vFieldName + "'>" + obj[i].vFieldName + "</option>";
+                        }
+                        else {
+                            dropdown += "<option value='" + obj[i].vValueField + "'>" + obj[i].vFieldName + "</option>";
+                        }
+
+                    }
+                    $("#" + ddlName).append(dropdown);
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
+        }
+
+        function Fn_OnChange_ddlEmpName() {
+            var strCriteria = "";
+            var ddlEmpName = $("#ddlEmpName").val();
+            strCriteria = " AND EmployeeId=" + ddlEmpName + "";
+            Fn_Fill_DropdownList("ddlEmpLocation", "vGetEmpDetail", "EmpLocation", "", strCriteria);
+
+            var strCriteria = "";
+            var ddlEmpName = $("#ddlEmpName").val();
+            //var ddlEmpLocation = $("#ddlEmpLocation option:selected").text();
+            //strCriteria = " AND EmployeeId=" + ddlEmpName + " OR EmpLocation='" + ddlEmpLocation + "'";
+            Fn_Fill_DropdownList("ddlCanteen", "vGetEmpDetail", "CanteenName", "CanteenId", strCriteria);
+        }
+
+        function Fn_OnChange_ddlEmpLocation() {
+            var strCriteria = "";
+            var ddlEmpName = $("#ddlEmpName").val();
+            strCriteria = " AND EmployeeId=" + ddlEmpName + " AND EmpLocation='" + $("#ddlEmpLocation").val() + "'";
+            Fn_Fill_DropdownList("ddlCanteen", "vGetEmpDetail", "CanteenName", "CanteenId", strCriteria);
+        }
+
+        function Fn_Get_All_MenuItems() {
+
+            var clMenuItems = {};
+            clMenuItems.Category = "All";
+            $("#dvMenuItem").html('');
+            var html = '';
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Fn_Get_All_MenuItems",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clMenuItems),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj[0].vErrorMsg == "Success") {
+
+                        var groupedData = {};
+
+                        // Group items by Category
+                        for (var i = 0; i < obj.length; i++) {
+
+                            var category = obj[i].Category;
+                            if (!groupedData[category]) {
+                                groupedData[category] = [];
+                            }
+                            groupedData[category].push(obj[i]);
+                        }
+
+                        // Get categories
+                        var categories = Object.keys(groupedData);
+
+                        // Start table
+                        html += "<div class='table-responsive'>";
+                        html += "<table class='table table-bordered table-hover' id='tblMenuItems'>";
+
+                        // Category Header Row
+                        html += "<thead>";
+                        html += "<tr>";
+
+                        for (var c = 0; c < categories.length; c++) {
+
+                            var category = categories[c];
+                            var icon = groupedData[category][0].CategoryIcon;
+                            html += "<th class='text-center'>";
+                            html += icon + " <strong>" + category + "</strong>";
+                            html += "</th>";
+                        }
+
+                        html += "</tr>";
+                        html += "</thead>";
+
+                        // Find maximum number of items
+                        var maxItems = 0;
+
+                        for (var c = 0; c < categories.length; c++) {
+
+                            var count = groupedData[categories[c]].length;
+
+                            if (count > maxItems) {
+                                maxItems = count;
+                            }
+                        }
+
+                        // Item Rows
+                        html += "<tbody>";
+
+                        for (var row = 0; row < maxItems; row++) {
+
+                            html += "<tr>";
+                            for (var c = 0; c < categories.length; c++) {
+
+                                var category = categories[c];
+                                var items = groupedData[category];
+
+                                html += "<td>";
+
+                                if (items[row]) {
+
+                                    var item = items[row];
+
+                                    html += "<div class='row align-items-center'>";
+
+                                    // Item Name
+                                    html += "<div class='col-sm-7'>";
+                                    html += "<label class='mb-0'>" + item.ItemName + "</label>";
+                                    html += "</div>";
+                                    // Quantity
+                                    html += "<div class='col-sm-5'>";
+                                    html += "<input type='number' id='txtQty_" + item.ItemId + "' data-itemid='" + item.ItemId + "' data-itemname='" + item.ItemName + "' min='0' value='0' class='form-control itemQty' />";
+                                    html += "</div>";
+                                    html += "</div>";
+                                }
+                                html += "</td>";
+                            }
+                            html += "</tr>";
+                        }
+
+                        html += "</tbody>";
+                        html += "</table>";
+                        html += "</div>";
+                    }
+                    else {
+                        // Error handling
+                    }
+
+                    $("#dvMenuItem").append(html);
+
+
+                },
+                error: function (err) {
+                    alert(err);
+
+                }
+            });
+        }
+        
+        function Fn_Emp_CouponGeneration() {
+
+            var today = new Date();
+
+            var day = String(today.getDate()).padStart(2, '0');
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = months[today.getMonth()];
+            var year = today.getFullYear();
+
+            var formattedDate = day + "-" + month + "-" + year;
+
+            var clsCouponOrder = {};
+            clsCouponOrder.CreatedBy = sessionStorage.getItem("LogInID");
+            clsCouponOrder.EmpId = $("#ddlEmpName").val();
+            clsCouponOrder.EmpLocation = $("#ddlEmpLocation").val();
+            clsCouponOrder.CanteenId = $("#ddlCanteen").val();
+            clsCouponOrder.CouponType = $("#ddlCouponType").val();
+            clsCouponOrder.CreatedOn = formattedDate;
+            var clsCouponItem = [];
+
+            $(".itemQty").each(function () {
+
+                var qty = parseInt($(this).val()) || 0;
+                if (qty > 0) {
+                    clsCouponItem.push({
+                       // ItemId: $(this).data("itemid"),
+                        ItemCategory: $(this).data("itemname"),
+                        Quantity: qty
+                    });
+                }
+            });
+           
+            clsCouponOrder.Items = clsCouponItem;
+            if ($("#ddlEmpName").val() == "0") {
+                Swal.fire({ title: "", text: "Please Select Employee", icon: "error" });
+            }
+            if ($("#ddlEmpLocation").val() == "0") {
+                Swal.fire({ title: "", text: "Please Select EmpLocation", icon: "error" });
+            }
+            else if ($("#ddlCanteen").val() == "0") {
+                Swal.fire({ title: "", text: "Please Select Canteen", icon: "error" });
+            }
+            else if (clsCouponOrder.Items.length == 0 || clsCouponOrder.Items.length == null) {
+                Swal.fire({ title: "", text: "Please Select Item Menu", icon: "error" });
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/Fn_Emp_CouponGeneration",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(clsCouponOrder),
+                    success: function (data) {
+                        var obj = JSON.parse(data.message);
+                        if (obj.vErrorMsg == "Success") {
+                            $("#hdnRowIndex").val(obj.RowIndex);
+                            Swal.fire({ title: "", text: "Coupons Generated Successfully", icon: "success" });
+                            $("#txtTeaQty").val("");
+                            $("#txtBreakfastQty").val("");
+                            $("#txtThaliQty").val("");
+                            $("#txtMiniThaliQty").val("");
+                            Fn_Get_A4_Coupon_Order();
+                        }
+                        else {
+                            Swal.fire({ title: "", text: obj.vErrorMsg, icon: "error" });
+                        }
+                    },
+                    error: function (err) {
+                        alert(err);
+
+                    }
+                });
+            }
+
+        }
+
+        function Fn_Get_A4_Coupon_Order() {
+
+            var today = new Date();
+
+            var day = String(today.getDate()).padStart(2, '0');
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = months[today.getMonth()];
+            var year = today.getFullYear();
+
+            var formattedDate = day + "-" + month + "-" + year;
+
+            var clsCouponReport = {};
+            clsCouponReport.CreatedBy = sessionStorage.getItem("LogInID");
+            clsCouponReport.EmpLocation = sessionStorage.getItem("EmpLocation");
+            clsCouponReport.EmpId = $("#ddlEmpName").val();
+            clsCouponReport.CouponIssueDate = formattedDate;
+            clsCouponReport.OrderStatus = "Generated";
+            clsCouponReport.RowIndex = $("#hdnRowIndex").val();
+            $("#dvA4Size").html('');
+            var html = '';
+            if ($("#ddlEmpName").val() == "0") {
+                Swal.fire({ title: "", text: "Please Select employee", icon: "error" });
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/Fn_Get_Coupon_Order",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(clsCouponReport),
+                    success: function (data) {
+                        var obj = JSON.parse(data.message);
+                        var totalPrice = 0;
+                        var totalcouponIds = 0;
+                        if (obj[0].vErrorMsg == "Success") {
+
+                            for (var i = 0; i < obj.length; i++) {
+
+                                // Add price
+                                totalPrice += parseFloat(obj[i].Price) || 0;
+                                totalcouponIds++;
+
+                                html += "<div class='col-sm-4'>";
+                                html += "<div class='card'>";
+                                html += "<div class='qr-card' id='gen-qr-card_" + i + "'>";
+                                html += "<div style='display:flex;  justify-content:space-between; gap:10px;'>";
+                                html += "<div class='lbl-text'>";
+                                html += "<div style='font-size: 15px'>Item: " + obj[i].CategoryIcon + " " + obj[i].ItemCategory + " (<strong>₹" + obj[i].Price + ")</strong></div>";                                
+                                html += "<div>CId: " + obj[i].CouponId + "</div>";
+                                html += "<div>Issued: " + obj[i].CouponIssueDate + "</div>";
+                                html += "<div>Canteen: " + obj[i].CanteenName + "</div>";
+                                html += "<div>Code: " + obj[i].EmpId + "</div>";
+                                html += "</div>";
+                                html += "<div id='gen-qr-wrap_" + i + "' style='width:90px; height:90px; display:flex; align-items:center; justify-content:center; margin-top:10px;'></div>";
+                                html += "</div>";
+                                html += "<div>Name: " + obj[i].EmpName + "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                                html += "</div>";
+                            }
+
+                            $("#dvA4Size").append(html);
+
+                            for (var i = 0; i < obj.length; i++) {
+
+                                var text = "" + obj[i].CouponId + "";
+
+                                var qrcode = new QRCode(document.getElementById("gen-qr-wrap_" + i), {
+                                    width: 90,
+                                    height: 90
+                                });
+
+                                qrcode.makeCode(text);
+                            }
+                            $("#dvA4Size").show();
+                            $("#btnPrintA4").show();
+                            $("#btnPrintCard").hide();
+                            $("#spnTotalCoupons").html("Total Coupons: " + totalcouponIds)
+                            $("#spnTotalPrice").html("Total Coupon Price: " + totalPrice);
+                        }
+                        else {
+
+                            $("#btnPrintA4").hide();
+                        }
+                    },
+                    error: function (err) {
+                        alert(err);
+
+                    }
+                });
+            }
+        }
+
+        function Print_A4_Coupon() {
+
+            var printContents = document.getElementById("dvA4Size").innerHTML;
+            var printWindow = window.open('', '', 'width=900,height=700');
+
+            printWindow.document.write(`
+                 <!DOCTYPE html>
+                 <html>
+                 <head>
+                     <title>Print Coupons</title>
+                     <style>
+                         @@page {
+                             size: A4 portrait;
+                             margin: 10mm;
+                         }
+
+                         *{
+                             box-sizing:border-box;
+                         }
+
+                         body{
+                             margin:0;
+                             padding:0;
+                             font-family:Arial,sans-serif;
+                         }
+
+                         /* 3 Coupons Per Row */
+                         #dvA4Size{
+                             display:grid;
+                             grid-template-columns:repeat(3,1fr);
+                             width:100%;
+                         }
+
+                         .col-sm-4{
+                             padding:10px;
+
+                             /* Horizontal & Vertical Dotted Cut Lines */
+                             border-right:2px dotted #000;
+                             border-bottom:2px dotted #000;
+
+                             page-break-inside:avoid;
+                             break-inside:avoid;
+                         }
+
+                         /* Remove right dotted line on last column */
+                         .col-sm-4:nth-child(3n){
+                             border-right:none;
+                         }
+
+                         .card{
+                             border:1px solid #000;
+                             padding:8px;
+                             min-height:180px;
+                         }
+
+                         .qr-card{
+                             page-break-inside:avoid;
+                             break-inside:avoid;
+                         }
+
+                         img{
+                             max-width:100%;
+                         }
+                     </style>
+                 </head>
+                 <body>
+                     <div id="dvA4Size">
+                         ${printContents}
+                     </div>
+                 </body>
+                 </html>
+                 `);
+
+            printWindow.document.close();
+
+            printWindow.onload = function () {
+                printWindow.focus();
+                printWindow.print();
+                printWindow.close();
+            };
+        }
+        
+
+    </script>
+
+
+}
+
+
+<div class="container mt-4">
+    <div class="row">
+        <h4>Issue Coupon</h4>
+        <div class="col-12">
+            <div class="card pb-2">
+                <div class="row mb-3 mt-3">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Employee No.</label>
+                            <select id="ddlEmpName" class="form-control" onchange="Fn_OnChange_ddlEmpName()" style="width: 100%;">
+                                <option value="0">--Select--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Emp Location</label>
+                            <select id="ddlEmpLocation" class="form-control" onchange="Fn_OnChange_ddlEmpLocation()" style="width: 100%;">
+                                <option value="0">--Select--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Assign Canteen</label>
+                            <select id="ddlCanteen" class="form-control" style="width: 100%;">
+                                <option value="0">--Select--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Coupon Type</label>
+                            <select id="ddlCouponType" class="form-control">
+                                <option value="Self">Self</option>
+                                <option value="Over Time">Over Time</option>
+                                <option value="Guest">Guest</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3" id="dvMenuItem">
+
+                </div>
+                <div class="row">
+                    <div class="col-12">                        
+                        <button class="btn btn-primary" style="width:100%" onclick="Fn_Emp_CouponGeneration();">Generate Coupon & QR Code</button>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <button class="btn btn-success" style="width:100%" onclick="Fn_Get_A4_Coupon_Order();">View</button>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <button id="btnPrintA4" style="display:none; width: 100%;" class="btn btn-primary" onclick="Print_A4_Coupon();">🖨 Print</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="row" id="dvA4Size">
+
+    </div>
+</div>
+<input type="hidden" id="hdnRowIndex" value="0" />
+<!-- Team End -->
+<script src="~/Web/js/select2.min.js"></script>
+<script>
+    $(function () {
+        $("#ddlEmpName").select2();
+        $("#ddlCanteen").select2();
+        $("#ddlEmpLocation").select2();
+
+    });
+
+</script>
+
