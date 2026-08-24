@@ -50,8 +50,8 @@
                     alert(err);
                 }
             });
-        }        
-
+        }
+        
         function Fn_Get_A4_Coupon_Order() {
 
             var today = new Date();
@@ -107,21 +107,7 @@
                             html += "<div class='qr-card' id='gen-qr-card_" + i + "'>";
                             html += "<div style='display:flex;  justify-content:space-between; gap:10px;'>";
                             html += "<div class='lbl-text'>";
-                            if (obj[i].ItemCategory == "Tea") {
-                                html += "<div style='font-size: 15px'>Item: ☕ Tea (<strong>₹" + obj[i].Price + ")</strong></div>";
-                            }
-                            else if (obj[i].ItemCategory == "Breakfast") {
-                                html += "<div style='font-size: 15px'>Item: 🍽️ Breakfast (<strong>₹" + obj[i].Price + ")</strong></div>";
-                            }
-                            else if (obj[i].ItemCategory == "Thali") {
-                                html += "<div style='font-size: 15px'>Item: 🍛 Thali (<strong>₹" + obj[i].Price + ")</strong></div>";
-                            }
-                            else if (obj[i].ItemCategory == "Mini Thali") {
-                                html += "<div style='font-size: 15px'>Item: 🍛 Mini Thali (<strong>₹" + obj[i].Price + ")</strong></div>";
-                            }
-                            else {
-                                html += "<div style='font-size: 15px'>Item: " + obj[i].ItemCategory + "</div>";
-                            }
+                            html += "<div style='font-size: 15px'>Item: " + obj[i].CategoryIcon + " " + obj[i].ItemCategory + " (<strong>₹" + obj[i].Price + ")</strong></div>";
                             html += "<div>CId: " + obj[i].CouponId + "</div>";
                             html += "<div>Issued: " + obj[i].CouponIssueDate + "</div>";
                             html += "<div>Canteen: " + obj[i].CanteenName + "</div>";
@@ -129,7 +115,7 @@
                             html += "</div>";
                             html += "<div id='gen-qr-wrap_" + i + "' style='width:90px; height:90px; display:flex; align-items:center; justify-content:center; margin-top:10px;'></div>";
                             html += "</div>";
-                            html += "<div>Name: " + obj[i].EmpName + "</div>";
+                            html += "<div>Name: " + obj[i].EmpName + (obj[i].CouponType != 'Self' ? " <b>for - " + obj[i].CouponType + "</b>" : "") + "</div>";
                             html += "</div>";
                             html += "</div>";
                             html += "</div>";
@@ -272,7 +258,7 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             <label>Employee No.</label>
-                            <select id="ddlEmpName" class="form-control" onchange="Fn_Get_A4_Coupon_Order();" style="width: 100%;">
+                            <select id="ddlEmpName" class="form-control" style="width: 100%;">
                                 <option value="0">--Select--</option>
                             </select>
                         </div>
@@ -280,7 +266,7 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             <label>Item Category</label>
-                            <select id="ddlItemCategory" class="form-control" onchange="Fn_Get_A4_Coupon_Order();" style="width: 100%;">
+                            <select id="ddlItemCategory" class="form-control" style="width: 100%;">
                                 <option value="0">--Select--</option>
                             </select>
                         </div>
@@ -288,7 +274,7 @@
                     <div class="col-sm-3">
                         <div class="form-group">
                             <label>Order Status</label>
-                            <select id="ddlOrderStatus" class="form-control" onchange="Fn_Get_A4_Coupon_Order();" style="width: 100%;">
+                            <select id="ddlOrderStatus" class="form-control" style="width: 100%;">
                                 <option value="0">--Select--</option>
                             </select>
                         </div>

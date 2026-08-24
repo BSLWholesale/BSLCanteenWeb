@@ -71,6 +71,11 @@ namespace BSLCanteenWeb.Controllers
             return View();
         }
 
+        public ActionResult AddMenuItem()
+        {
+            return View();
+        }
+
 
         [HttpPost]
         public JsonResult Fn_Fetch_EmployeeDetails(clsEmployee objReq)

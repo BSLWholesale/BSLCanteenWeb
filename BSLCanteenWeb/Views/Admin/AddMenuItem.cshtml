@@ -1,0 +1,187 @@
+﻿
+@{
+    ViewBag.Title = "AddMenuItem";
+}
+
+@{
+    <script src="~/Web/js/jquery-3.7.1.min.js"></script>
+    <link href="~/Web/css/select2.min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha512-QeR2VH+lsBE5LSAe1Q5EnTBbe7XTBubt8dG93Y7gidSgdMCr8nVqKcfKAMyN96SV8KDbZVTDXChatu5G2KQGzg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var EmpLocation = sessionStorage.getItem("EmpLocation");
+            Fn_Fill_DropdownList("ddlCategory", "MenuItems", "Category", "", "");
+            Fn_Get_All_MenuItems();
+
+        });
+        function Fn_Fill_DropdownList(ddlName, strTBLName, strFieldName, strValueField, strCriteria) {
+            var clsRequestDropdown = {};
+            clsRequestDropdown.vFieldName = strFieldName;
+            clsRequestDropdown.vValueField = strValueField;
+            clsRequestDropdown.vTBLName = strTBLName;
+            clsRequestDropdown.vCriteria = strCriteria;
+            $("#" + ddlName).html('');
+            var dropdown = ''; var dropdown1 = "";
+            dropdown1 = "<option value='0'>--Select--</option>";
+            $("#" + ddlName).append(dropdown1);
+            $.ajax({
+                type: "POST",
+                url: '/Home/Fn_Fill_DropdownList',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsRequestDropdown),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    for (var i = 0; i < obj.length; i++) {
+                        if (strValueField == "") {
+                            dropdown += "<option value='" + obj[i].vFieldName + "'>" + obj[i].vFieldName + "</option>";
+                        }
+                        else {
+                            dropdown += "<option value='" + obj[i].vValueField + "'>" + obj[i].vFieldName + "</option>";
+                        }
+
+                    }
+                    $("#" + ddlName).append(dropdown);
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
+        }
+
+        function Fn_Get_All_MenuItems() {
+
+            var clMenuItems = {};
+            clMenuItems.Category = "All";
+            $("#dvMenuItem").html('');
+            var html = '';
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Fn_Get_All_MenuItems",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clMenuItems),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj[0].vErrorMsg == "Success") {
+                        for (var i = 0; i < obj.length; i++) {
+
+                            html += "<tr>";
+                            html += "<td>" + obj[i].Category + "</td>";
+                            html += "<td>" + obj[i].ItemName + "</td>";
+                            html += "<td>" + obj[i].Price + "</td>";
+                            html += "<td><a href='javascript:void(0);' onclick='Fn_Edit(this, " + obj[i].ItemId + ");'><i class='fa fa-edit'></i></a>";
+                            html += " &nbsp;&nbsp; <a href='javascript:void(0);' onclick='Fn_delete(" + obj[i].ItemId + ");'><i class='fa fa-trash text-danger'></i></a></td>";
+
+                            html += "</tr>";
+
+                        }
+                    }
+                    else {
+                    }
+                    $("#tbody").append(html);
+                },
+                error: function (err) {
+                    alert(err);
+
+                }
+            });
+        }
+
+        function Fn_Edit(element, itemId) {
+            var row = $(element).closest('tr');
+
+            var td1 = row.find('td:eq(0)').text().trim();
+            var td2 = row.find('td:eq(1)').text().trim();
+            var td3 = row.find('td:eq(2)').text().trim();
+
+            /* $("#ddlCategory").select2("val", td1);*/
+            $("#ddlCategory").val(td1).trigger("change");
+
+            $("#txtItemName").val(td2);
+            $("#txtPrice").val(td3);
+            $("#btnSave").text("Update");
+        }
+
+        function Fn_Reset() {
+
+            $("#ddlCategory").select2("val", "0");
+            $("#txtItemName").val("");
+            $("#txtPrice").val("");
+            $("#btnSave").text("Save");
+        }
+
+    </script>
+
+
+}
+
+
+<div class="container mt-4">
+    <div class="row">
+        <h4>Issue Coupon</h4>
+        <div class="col-12">
+            <div class="card pb-2">
+                <div class="row mb-3 mt-3">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="ddlCategory" class="form-control" style="width: 100%;">
+                                <option value="0">--Select--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Item Name</label>
+                            <input type="text" id="txtItemName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label>Price</label>
+                            <input type="text" id="txtPrice" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <button id="btnSave" class="btn btn-primary mt-4">Save</button>
+                            <button id="btnReset" class="btn btn-primary mt-4" onclick="Fn_Reset();">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="table-responsive">
+                        <table class="table table-responsive table-hover">
+                            <thead>
+                                <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
+                                    <th>Category</th>
+                                    <th>Item</th>
+                                    <th>Price</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- Team End -->
+<script src="~/Web/js/select2.min.js"></script>
+<script>
+    $(function () {
+        $("#ddlCategory").select2();
+    });
+
+</script>
+
+

@@ -11,10 +11,23 @@
 
         $(document).ready(function () {
             var EmpLocation = sessionStorage.getItem("EmpLocation");
-            var strCriteria = " AND EmpLocation='" + EmpLocation + "' AND EmpRole NOT IN ('Staff')";
-            var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
-            Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", strCriteria);
+            var empRol = sessionStorage.getItem("EmpRole");            
             Fn_Get_All_MenuItems();
+
+            if (empRol === "Supervisor") {
+                $("#ddlCouponType option[value='Guest']").show();
+
+                var strCriteria = " AND EmpRole NOT IN ('Staff')";
+                var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
+                Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", strCriteria);
+            } else {
+                var strCriteria = " AND EmpLocation='" + EmpLocation + "' AND EmpRole NOT IN ('Staff')";
+                var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
+                Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", strCriteria);
+
+                $("#ddlCouponType option[value='Guest']").remove();
+            }
+
         });
         function Fn_Fill_DropdownList(ddlName, strTBLName, strFieldName, strValueField, strCriteria) {
             var clsRequestDropdown = {};
@@ -61,8 +74,6 @@
 
             var strCriteria = "";
             var ddlEmpName = $("#ddlEmpName").val();
-            //var ddlEmpLocation = $("#ddlEmpLocation option:selected").text();
-            //strCriteria = " AND EmployeeId=" + ddlEmpName + " OR EmpLocation='" + ddlEmpLocation + "'";
             Fn_Fill_DropdownList("ddlCanteen", "vGetEmpDetail", "CanteenName", "CanteenId", strCriteria);
         }
 
@@ -110,7 +121,7 @@
 
                         // Category Header Row
                         html += "<thead>";
-                        html += "<tr>";
+                        html += "<tr style='background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;'>";
 
                         for (var c = 0; c < categories.length; c++) {
 
@@ -161,7 +172,7 @@
                                     html += "</div>";
                                     // Quantity
                                     html += "<div class='col-sm-5'>";
-                                    html += "<input type='number' id='txtQty_" + item.ItemId + "' data-itemid='" + item.ItemId + "' data-itemname='" + item.ItemName + "' min='0' value='0' class='form-control itemQty' />";
+                                    html += "<input type='number' id='txtQty_" + item.ItemId + "' data-itemid='" + item.ItemId + "' data-itemname='" + item.ItemName + "' data-price='" + item.Price + "' min='0' value='0' class='form-control itemQty' />";
                                     html += "</div>";
                                     html += "</div>";
                                 }
@@ -188,7 +199,7 @@
                 }
             });
         }
-        
+
         function Fn_Emp_CouponGeneration() {
 
             var today = new Date();
@@ -215,13 +226,13 @@
                 var qty = parseInt($(this).val()) || 0;
                 if (qty > 0) {
                     clsCouponItem.push({
-                       // ItemId: $(this).data("itemid"),
+                        // ItemId: $(this).data("itemid"),
                         ItemCategory: $(this).data("itemname"),
                         Quantity: qty
                     });
                 }
             });
-           
+
             clsCouponOrder.Items = clsCouponItem;
             if ($("#ddlEmpName").val() == "0") {
                 Swal.fire({ title: "", text: "Please Select Employee", icon: "error" });
@@ -247,10 +258,7 @@
                         if (obj.vErrorMsg == "Success") {
                             $("#hdnRowIndex").val(obj.RowIndex);
                             Swal.fire({ title: "", text: "Coupons Generated Successfully", icon: "success" });
-                            $("#txtTeaQty").val("");
-                            $("#txtBreakfastQty").val("");
-                            $("#txtThaliQty").val("");
-                            $("#txtMiniThaliQty").val("");
+                            resetAllItems();
                             Fn_Get_A4_Coupon_Order();
                         }
                         else {
@@ -314,7 +322,7 @@
                                 html += "<div class='qr-card' id='gen-qr-card_" + i + "'>";
                                 html += "<div style='display:flex;  justify-content:space-between; gap:10px;'>";
                                 html += "<div class='lbl-text'>";
-                                html += "<div style='font-size: 15px'>Item: " + obj[i].CategoryIcon + " " + obj[i].ItemCategory + " (<strong>₹" + obj[i].Price + ")</strong></div>";                                
+                                html += "<div style='font-size: 15px'>Item: " + obj[i].CategoryIcon + " " + obj[i].ItemCategory + " (<strong>₹" + obj[i].Price + ")</strong></div>";
                                 html += "<div>CId: " + obj[i].CouponId + "</div>";
                                 html += "<div>Issued: " + obj[i].CouponIssueDate + "</div>";
                                 html += "<div>Canteen: " + obj[i].CanteenName + "</div>";
@@ -322,7 +330,9 @@
                                 html += "</div>";
                                 html += "<div id='gen-qr-wrap_" + i + "' style='width:90px; height:90px; display:flex; align-items:center; justify-content:center; margin-top:10px;'></div>";
                                 html += "</div>";
-                                html += "<div>Name: " + obj[i].EmpName + "</div>";
+                                /*html += "<div>Name: " + obj[i].EmpName + "</div>";*/
+                                html += "<div>Name: " + obj[i].EmpName + (obj[i].CouponType != 'Self' ? " <b>for - " + obj[i].CouponType + "</b>" : "") + "</div>";
+
                                 html += "</div>";
                                 html += "</div>";
                                 html += "</div>";
@@ -366,72 +376,72 @@
             var printWindow = window.open('', '', 'width=900,height=700');
 
             printWindow.document.write(`
-                 <!DOCTYPE html>
-                 <html>
-                 <head>
-                     <title>Print Coupons</title>
-                     <style>
-                         @@page {
-                             size: A4 portrait;
-                             margin: 10mm;
-                         }
+                     <!DOCTYPE html>
+                     <html>
+                     <head>
+                         <title>Print Coupons</title>
+                         <style>
+                             @@page {
+                                 size: A4 portrait;
+                                 margin: 10mm;
+                             }
 
-                         *{
-                             box-sizing:border-box;
-                         }
+                             *{
+                                 box-sizing:border-box;
+                             }
 
-                         body{
-                             margin:0;
-                             padding:0;
-                             font-family:Arial,sans-serif;
-                         }
+                             body{
+                                 margin:0;
+                                 padding:0;
+                                 font-family:Arial,sans-serif;
+                             }
 
-                         /* 3 Coupons Per Row */
-                         #dvA4Size{
-                             display:grid;
-                             grid-template-columns:repeat(3,1fr);
-                             width:100%;
-                         }
+                             /* 3 Coupons Per Row */
+                             #dvA4Size{
+                                 display:grid;
+                                 grid-template-columns:repeat(3,1fr);
+                                 width:100%;
+                             }
 
-                         .col-sm-4{
-                             padding:10px;
+                             .col-sm-4{
+                                 padding:10px;
 
-                             /* Horizontal & Vertical Dotted Cut Lines */
-                             border-right:2px dotted #000;
-                             border-bottom:2px dotted #000;
+                                 /* Horizontal & Vertical Dotted Cut Lines */
+                                 border-right:2px dotted #000;
+                                 border-bottom:2px dotted #000;
 
-                             page-break-inside:avoid;
-                             break-inside:avoid;
-                         }
+                                 page-break-inside:avoid;
+                                 break-inside:avoid;
+                             }
 
-                         /* Remove right dotted line on last column */
-                         .col-sm-4:nth-child(3n){
-                             border-right:none;
-                         }
+                             /* Remove right dotted line on last column */
+                             .col-sm-4:nth-child(3n){
+                                 border-right:none;
+                             }
 
-                         .card{
-                             border:1px solid #000;
-                             padding:8px;
-                             min-height:180px;
-                         }
+                             .card{
+                                 border:1px solid #000;
+                                 padding:8px;
+                                 min-height:180px;
+                             }
 
-                         .qr-card{
-                             page-break-inside:avoid;
-                             break-inside:avoid;
-                         }
+                             .qr-card{
+                                 page-break-inside:avoid;
+                                 break-inside:avoid;
+                             }
 
-                         img{
-                             max-width:100%;
-                         }
-                     </style>
-                 </head>
-                 <body>
-                     <div id="dvA4Size">
-                         ${printContents}
-                     </div>
-                 </body>
-                 </html>
-                 `);
+                             img{
+                                 max-width:100%;
+                             }
+                         </style>
+                     </head>
+                     <body>
+                         <div id="dvA4Size">
+                             ${printContents}
+                         </div>
+                     </body>
+                     </html>
+                     `);
 
             printWindow.document.close();
 
@@ -442,6 +452,30 @@
             };
         }
         
+
+        function calculateGrandTotal() {
+
+            var grandTotal = 0;
+            $(".itemQty").each(function () {
+
+                var qty = parseFloat($(this).val()) || 0;
+                var price = parseFloat($(this).data("price")) || 0;
+                grandTotal += qty * price;
+            });
+            $("#spnTotlaPrice").html("Total Price : " + grandTotal.toFixed(2));
+            return grandTotal;
+        }
+
+        $(document).on("input change", ".itemQty", function () {
+            calculateGrandTotal();
+        });
+
+        function resetAllItems() {
+
+            $(".itemQty").val(0);
+            $("#spnTotlaPrice").html('');
+        }
+
 
     </script>
 
@@ -493,8 +527,9 @@
                 <div class="row mb-3" id="dvMenuItem">
 
                 </div>
+                <span id="spnTotlaPrice" class="text-end" style="margin-top: -25px; color: black; font-weight:700"></span>
                 <div class="row">
-                    <div class="col-12">                        
+                    <div class="col-12">
                         <button class="btn btn-primary" style="width:100%" onclick="Fn_Emp_CouponGeneration();">Generate Coupon & QR Code</button>
                     </div>
                     <div class="col-12 mt-2">
@@ -506,7 +541,7 @@
                 </div>
             </div>
         </div>
-        
+
     </div>
 
     <div class="row" id="dvA4Size">
