@@ -6,7 +6,7 @@
 @{
     <script src="~/Web/js/jquery-3.7.1.min.js"></script>
     <link href="~/Web/css/select2.min.css" rel="stylesheet" />
-    <link href="~/Web/css/font-awesome-all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" />
     
     <script type="text/javascript">
 
@@ -72,8 +72,8 @@
                             html += "<td>" + obj[i].Category + "</td>";
                             html += "<td>" + obj[i].ItemName + "</td>";
                             html += "<td>" + obj[i].Price + "</td>";
-                            html += "<td><a href='javascript:void(0);' onclick='Fn_Edit(this, " + obj[i].ItemId + ");'><i class='fa fa-edit'></i></a>";
-                            html += " &nbsp;&nbsp; <a href='javascript:void(0);' onclick='Fn_Delete_ItemMenu(" + obj[i].ItemId + ");'><i class='fa fa-trash text-danger'></i></a></td>";
+                            html += "<td><a href='javascript:void(0);' onclick='Fn_Edit(this, " + obj[i].ItemId + ");' title='Edit Item'><i class='fa fa-edit'></i></a>";
+                            html += " &nbsp;&nbsp; <a href='javascript:void(0);' onclick='Fn_Delete_ItemMenu(" + obj[i].ItemId + ");' title='Delete Item'><i class='fa fa-trash text-danger'></i></a></td>";
 
                             html += "</tr>";
 
