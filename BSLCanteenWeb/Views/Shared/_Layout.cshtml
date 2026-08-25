@@ -48,7 +48,7 @@
                 $(".EmployeePage").hide();
                 $(".SuperadminPage").hide();
                 $("#LogoutPage").show();
-
+                $("#AddMenuItem").hide();
             }
             else if (EmpRole == "Staff") {
 
@@ -62,6 +62,7 @@
                 $("#AllEmpMonthlyReport").hide();
                 //$("#ResetPassword").show();
                 $("#LogoutPage").show();
+                $("#AddMenuItem").hide();
 
             }
             else if (EmpRole == "Employee") {
@@ -76,6 +77,7 @@
                 $("#AllEmpMonthlyReport").hide();
                 //$("#ResetPassword").show();
                 $("#LogoutPage").show();
+                $("#AddMenuItem").hide();
 
             }
             else if (EmpRole == "Superadmin") {
@@ -90,6 +92,7 @@
                 $("#AllEmpMonthlyReport").hide();
                 //$("#ResetPassword").show();
                 $("#LogoutPage").show();
+                $("#AddMenuItem").hide();
             }
             else if (EmpRole == "Supervisor") {
 
@@ -104,6 +107,7 @@
                 //$("#ResetPassword").show();
                 $("#LogoutPage").show();
                 $("#IssueCouponPage").show();
+                $("#AddMenuItem").show();
             }
 
 
