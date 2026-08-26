@@ -119,6 +119,7 @@ namespace BSLCanteenWeb.Models
         public string CanteenName { get; set; }
         public Int32 EmpId { get; set; }
         public string EmpName { get; set; }
+        public string EmpDepartment { get; set; }
         public string EmpLocation { get; set; }
         public decimal Price { get; set; }
         public int CreatedBy { get; set; }
@@ -148,6 +149,8 @@ namespace BSLCanteenWeb.Models
         public string CanteenName { get; set; }
         public Int32 EmpId { get; set; }
         public string EmpName { get; set; }
+        public string EmpDepartment { get; set; }
+        public string CouponType { get; set; }
         public string ItemCategory { get; set; }
         public string OrderTakenDate { get; set; }
         public int TotalCoupons { get; set; }

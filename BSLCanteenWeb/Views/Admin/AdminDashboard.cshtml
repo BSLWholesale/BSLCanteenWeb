@@ -84,7 +84,8 @@
                             html += "<td>" + obj[i].OrderTakenTime + "</td>";
                             html += "<td>" + obj[i].CouponId + "</td>";
                             html += "<td>" + obj[i].EmpId + "</td>";
-                            html += "<td>" + obj[i].EmpName + "</td>";
+                            html += "<td>" + obj[i].EmpName + (obj[i].CouponType != 'Self' ? " <b>(" + obj[i].CouponType + ")</b>" : "") + "</td>";
+                            html += "<td>" + obj[i].EmpDepartment + "</td>";
                             html += "<td>" + obj[i].CategoryIcon + " " + obj[i].ItemCategory + "</td>";
                             html += "<td>" + obj[i].CanteenName + "</td>";
                             html += "</tr>";
@@ -92,7 +93,7 @@
                     }
                     else {
                         html += "<tr>";
-                        html += "<td colspan='6' class='text-center'>" + obj[0].vErrorMsg + "</td>";
+                        html += "<td colspan='7' class='text-center'>" + obj[0].vErrorMsg + "</td>";
                         html += "<tr>";
                     }
                     $("#tbodyRecent_TNX").append(html);
@@ -207,6 +208,7 @@
                                 <th>Coupon</th>
                                 <th>Emp No</th>
                                 <th>Name</th>
+                                <th>Department</th>
                                 <th>Item</th>
                                 <th>Canteen</th>
                             </tr>
