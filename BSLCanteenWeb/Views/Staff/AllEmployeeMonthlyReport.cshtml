@@ -186,6 +186,109 @@
         }
 
 
+        function Fn_DailyMonthlyReport_EmpSummary(isScroll = false) {
+
+            var clsDailyMonthlyAllEmpSummaryReq = {};
+
+            if (isLoading || !hasMoreData)
+                return;
+
+            clsDailyMonthlyAllEmpSummaryReq.CurrentDate = null;
+            clsDailyMonthlyAllEmpSummaryReq.CanteenId = $("ddlCanteen").val();
+
+            var empId = $("#ddlEmpName").val();
+            if (empId === "0" || empId === 0 || empId === null || empId === "") {
+                clsDailyMonthlyAllEmpSummaryReq.EmpId = null;
+            }
+            else {
+                clsDailyMonthlyAllEmpSummaryReq.EmpId = parseInt(empId);
+            }
+
+            clsDailyMonthlyAllEmpSummaryReq.PeriodType = $("#ddlDays").val();
+            clsDailyMonthlyAllEmpSummaryReq.PageNumber = currentPage;
+            clsDailyMonthlyAllEmpSummaryReq.PageSize = pageSize;
+
+
+            // Clear only first time
+            if (!isScroll) {
+                $("#tbodyEmpSummery").html('');
+                currentPage = 1;
+                hasMoreData = true;
+            }
+
+            isLoading = true;
+
+            $.ajax({
+                type: "POST",
+                url: "/Staff/Fn_DailyMonthlyReport_EmpSummary",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsDailyMonthlyAllEmpSummaryReq),
+                beforeSend: function () {
+                    $("#loader").show();
+                },
+                success: function (data) {
+
+                    var obj = JSON.parse(data.message);
+                    var gTotalRows = 0;
+                    var html = "";
+                    if (obj.length > 0 && obj[0].vErrorMsg == "") {
+
+                        gTotalRows = obj[0].TotalRows;
+
+                        for (var i = 0; i < obj.length; i++) {
+                            html += "<tr>";
+                            html += "<td>" + obj[i].EmpId + "</td>";
+                            html += "<td>" + obj[i].EmpName + "</td>";
+                            html += "<td>" + obj[i].CanteenName + "</td>";
+                            html += "<td>" + obj[i].CouponId + "</td>";
+
+                            if (obj[i].ItemCatgeory == "Tea") {
+                                html += "<td class='clsmenu'>☕ Tea</td>";
+                            }
+                            else if (obj[i].ItemCatgeory == "Thali") {
+                                html += "<td class='clsmenu'>🍛 Thali</td>";
+                            }
+                            else if (obj[i].ItemCatgeory == "Mini Thali") {
+                                html += "<td class='clsmenu'>🍛 Mini Thali</td>";
+                            }
+                            else if (obj[i].ItemCatgeory == "Breakfast") {
+                                html += "<td class='clsmenu'>🍽️ Breakfast</td>";
+                            }
+                            else {
+                                html += "<td></td>";
+                            }
+
+                            html += "<td>" + obj[i].OrderTakenDate + "</td>";
+                            html += "</tr>";
+                            rCount++;
+                        }
+                        // Append data instead of replace
+                        $("#tbodyEmpSummery").append(html);
+                        $("#spTotalRowCount").html("Total Rows: " + rCount + " / " + gTotalRows);
+                        // Next page
+                        currentPage++;
+
+                        // If less than page size => no more data
+                        if (obj.length < 30) {
+                            hasMoreData = false;
+                        }
+                    }
+                    else {
+                        hasMoreData = false;
+                    }
+                },
+                complete: function () {
+                    $("#loader").hide();
+                    isLoading = false;
+                },
+                error: function (err) {
+                    Swal.fire({ title: "", text: err, icon: "error" });
+                }
+            });
+        }
+
+
         function onRadioChange() {
 
             var selectedValue = $('input[name="rb"]:checked').val();
@@ -193,9 +296,9 @@
             if (selectedValue == "Employeewise") {
                 Fn_DailyMonthlyReport_EmpDetail();
             }
-            //else if (selectedValue == "EmployeewiseSummery") {
-            //    Fn_DailyMonthlyReport_EmpDetail();
-            //}
+            else if (selectedValue == "EmployeewiseSummery") {
+                Fn_DailyMonthlyReport_EmpSummary();
+            }
             else {
             }
 
@@ -211,9 +314,9 @@
                 if (selectedValue == "Employeewise") {
                     Fn_DailyMonthlyReport_EmpDetail(true);
                 }
-                //else if (selectedValue == "EmployeewiseSummery") {
-                //    Fn_DailyMonthlyReport_EmpDetail(true);
-                //}
+                else if (selectedValue == "EmployeewiseSummery") {
+                    Fn_DailyMonthlyReport_EmpSummary(true);
+                }
                 else {
 
                 }
@@ -313,12 +416,13 @@
                                 <th>Emp Id</th>
                                 <th>Emp Name</th>
                                 <th>Canteen Name</th>
-                                <th>TotalCoupons</th>
+                                <th>Total Coupons</th>
                                 <th>Amt</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyEmpSummery"></tbody>
                     </table>
+
                 </div>
 
             </div>
