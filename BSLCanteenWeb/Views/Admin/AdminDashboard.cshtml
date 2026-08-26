@@ -86,7 +86,7 @@
                             html += "<td>" + obj[i].EmpId + "</td>";
                             html += "<td>" + obj[i].EmpName + (obj[i].CouponType != 'Self' ? " <b>(" + obj[i].CouponType + ")</b>" : "") + "</td>";
                             html += "<td>" + obj[i].EmpDepartment + "</td>";
-                            html += "<td>" + obj[i].CategoryIcon + " " + obj[i].ItemCategory + "</td>";
+                            html += "<td>" + obj[i].CategoryIcon + " " + obj[i].ItemCategory + " <b>(₹" + obj[i].Price + ")</b></td>";
                             html += "<td>" + obj[i].CanteenName + "</td>";
                             html += "</tr>";
                         }

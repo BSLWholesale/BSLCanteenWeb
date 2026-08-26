@@ -233,6 +233,9 @@
             if ($("#ddlCanteen").val() != "0") {
                 clsMonthlyReportReq.CanteenName = $("#ddlCanteen").val();
             }
+            if ($("#ddlEmpName") != "0") {
+                clsMonthlyReportReq.EmpId = $("#ddlEmpName").val();
+            }
             if ($("#txtFromDate").val() != "") {
                 clsMonthlyReportReq.FromDate = $("#txtFromDate").val();
             } if ($("#txtToDate").val() != "0") {
@@ -446,6 +449,9 @@
 
             if ($("#ddlCanteen").val() != "0") {
                 clsMonthlyReportReq.CanteenName = $("#ddlCanteen").val();
+            }
+            if ($("#ddlEmpName") != "0") {
+                clsMonthlyReportReq.EmpId = $("#ddlEmpName").val();
             }
             if ($("#txtFromDate").val() != "") {
                 clsMonthlyReportReq.FromDate = $("#txtFromDate").val();
