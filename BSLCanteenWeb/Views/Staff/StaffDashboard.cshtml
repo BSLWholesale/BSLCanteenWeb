@@ -117,12 +117,13 @@
                             html += "<td>" + obj[i].EmpName + (obj[i].CouponType != 'Self' ? " <b>(" + obj[i].CouponType + ")</b>" : "") + "</td>";
                             html += "<td>" + obj[i].EmpDepartment + "</td>";
                             html += "<td>" + obj[i].CategoryIcon + " " + obj[i].ItemCategory + " <b>(₹" + obj[i].Price + ")</b></td>";
+                            html += "<td>" + obj[i].Category + "</td>";
                             html += "</tr>";
                         }
                     }
                     else {
                         html += "<tr>";
-                        html += "<td colspan='6' class='text-center'>" + obj[0].vErrorMsg + "</td>";
+                        html += "<td colspan='7' class='text-center'>" + obj[0].vErrorMsg + "</td>";
                         html += "</tr>";
                     }
                     $("#tbody").append(html);
@@ -272,6 +273,7 @@
                                 <th>Name</th>
                                 <th>Department</th>
                                 <th>Item</th>
+                                <th>Item Category</th>
                             </tr>
                         </thead>
                         <tbody id="tbody">
