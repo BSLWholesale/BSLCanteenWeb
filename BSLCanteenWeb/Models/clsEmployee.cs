@@ -122,6 +122,7 @@ namespace BSLCanteenWeb.Models
         public string EmpDepartment { get; set; }
         public string EmpLocation { get; set; }
         public decimal Price { get; set; }
+        public string ItemId { get; set; }
         public int CreatedBy { get; set; }
         public string CreatedOn { get; set; }
         public int ModifiedBy { get; set; }
