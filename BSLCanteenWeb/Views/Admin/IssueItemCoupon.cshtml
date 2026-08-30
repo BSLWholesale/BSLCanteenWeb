@@ -11,8 +11,7 @@
 
         $(document).ready(function () {
             var EmpLocation = sessionStorage.getItem("EmpLocation");
-            var empRol = sessionStorage.getItem("EmpRole");            
-            Fn_Get_All_MenuItems();
+            var empRol = sessionStorage.getItem("EmpRole");
 
             if (empRol === "Supervisor") {
                 $("#ddlCouponType option[value='Guest']").show();
@@ -28,7 +27,15 @@
                 $("#ddlCouponType option[value='Guest']").remove();
             }
 
+            Fn_Get_All_MenuItems();
+
+            $("#ddlCouponType").change(function () {
+                Fn_EnableDisableMenuItems();
+            });
+
         });
+
+
         function Fn_Fill_DropdownList(ddlName, strTBLName, strFieldName, strValueField, strCriteria) {
             var clsRequestDropdown = {};
             clsRequestDropdown.vFieldName = strFieldName;
@@ -66,6 +73,7 @@
             });
         }
 
+
         function Fn_OnChange_ddlEmpName() {
             var strCriteria = "";
             var ddlEmpName = $("#ddlEmpName").val();
@@ -77,6 +85,7 @@
             Fn_Fill_DropdownList("ddlCanteen", "vGetEmpDetail", "CanteenName", "CanteenId", strCriteria);
         }
 
+
         function Fn_OnChange_ddlEmpLocation() {
             var strCriteria = "";
             var ddlEmpName = $("#ddlEmpName").val();
@@ -84,11 +93,13 @@
             Fn_Fill_DropdownList("ddlCanteen", "vGetEmpDetail", "CanteenName", "CanteenId", strCriteria);
         }
 
+
         function Fn_Get_All_MenuItems() {
 
             var clMenuItems = {};
             clMenuItems.Category = "All";
             $("#dvMenuItem").html('');
+
             var html = '';
             $.ajax({
                 type: "POST",
@@ -190,12 +201,11 @@
                     }
 
                     $("#dvMenuItem").append(html);
-
+                    Fn_EnableDisableMenuItems();
 
                 },
                 error: function (err) {
                     alert(err);
-
                 }
             });
         }
@@ -377,72 +387,72 @@
             var printWindow = window.open('', '', 'width=900,height=700');
 
             printWindow.document.write(`
-                     <!DOCTYPE html>
-                     <html>
-                     <head>
-                         <title>Print Coupons</title>
-                         <style>
-                             @@page {
-                                 size: A4 portrait;
-                                 margin: 10mm;
-                             }
+                         <!DOCTYPE html>
+                         <html>
+                         <head>
+                             <title>Print Coupons</title>
+                             <style>
+                                 @@page {
+                                     size: A4 portrait;
+                                     margin: 10mm;
+                                 }
 
-                             *{
-                                 box-sizing:border-box;
-                             }
+                                 *{
+                                     box-sizing:border-box;
+                                 }
 
-                             body{
-                                 margin:0;
-                                 padding:0;
-                                 font-family:Arial,sans-serif;
-                             }
+                                 body{
+                                     margin:0;
+                                     padding:0;
+                                     font-family:Arial,sans-serif;
+                                 }
 
-                             /* 3 Coupons Per Row */
-                             #dvA4Size{
-                                 display:grid;
-                                 grid-template-columns:repeat(3,1fr);
-                                 width:100%;
-                             }
+                                 /* 3 Coupons Per Row */
+                                 #dvA4Size{
+                                     display:grid;
+                                     grid-template-columns:repeat(3,1fr);
+                                     width:100%;
+                                 }
 
-                             .col-sm-4{
-                                 padding:10px;
+                                 .col-sm-4{
+                                     padding:10px;
 
-                                 /* Horizontal & Vertical Dotted Cut Lines */
-                                 border-right:2px dotted #000;
-                                 border-bottom:2px dotted #000;
+                                     /* Horizontal & Vertical Dotted Cut Lines */
+                                     border-right:2px dotted #000;
+                                     border-bottom:2px dotted #000;
 
-                                 page-break-inside:avoid;
-                                 break-inside:avoid;
-                             }
+                                     page-break-inside:avoid;
+                                     break-inside:avoid;
+                                 }
 
-                             /* Remove right dotted line on last column */
-                             .col-sm-4:nth-child(3n){
-                                 border-right:none;
-                             }
+                                 /* Remove right dotted line on last column */
+                                 .col-sm-4:nth-child(3n){
+                                     border-right:none;
+                                 }
 
-                             .card{
-                                 border:1px solid #000;
-                                 padding:8px;
-                                 min-height:180px;
-                             }
+                                 .card{
+                                     border:1px solid #000;
+                                     padding:8px;
+                                     min-height:180px;
+                                 }
 
-                             .qr-card{
-                                 page-break-inside:avoid;
-                                 break-inside:avoid;
-                             }
+                                 .qr-card{
+                                     page-break-inside:avoid;
+                                     break-inside:avoid;
+                                 }
 
-                             img{
-                                 max-width:100%;
-                             }
-                         </style>
-                     </head>
-                     <body>
-                         <div id="dvA4Size">
-                             ${printContents}
-                         </div>
-                     </body>
-                     </html>
-                     `);
+                                 img{
+                                     max-width:100%;
+                                 }
+                             </style>
+                         </head>
+                         <body>
+                             <div id="dvA4Size">
+                                 ${printContents}
+                             </div>
+                         </body>
+                         </html>
+                         `);
 
             printWindow.document.close();
 
@@ -452,7 +462,7 @@
                 printWindow.close();
             };
         }
-        
+
 
         function calculateGrandTotal() {
 
@@ -475,6 +485,54 @@
 
             $(".itemQty").val(0);
             $("#spnTotlaPrice").html('');
+        }
+
+
+        var couponMenuRules = {
+            "Self": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+            "New Joinee": [1, 6],
+            "Over Time": [6],
+            "Guest": [13]
+        };
+
+        function Fn_EnableDisableMenuItems() {
+
+            var couponType = $("#ddlCouponType").val();
+
+            var allowedItems = couponMenuRules[couponType] || [];
+
+            $(".itemQty").each(function () {
+
+                var itemId = parseInt($(this).attr("data-itemid"));
+
+                if (allowedItems.indexOf(itemId) !== -1) {
+
+                    // Enable field
+                    $(this).prop("disabled", false);
+
+                    // Remove gray styling
+                    $(this).css({
+                        "background-color": "",
+                        "color": ""
+                    });
+
+                }
+                else {
+
+                    // Disable field
+                    $(this).prop("disabled", true);
+
+                    // Reset quantity
+                    $(this).val(0);
+
+                    // Apply gray styling
+                    $(this).css({
+                        "background-color": "#e9ecef",
+                        "color": "#6c757d",
+                        //"cursor": "not-allowed"
+                    });
+                }
+            });
         }
 
 
@@ -562,4 +620,3 @@
     });
 
 </script>
-
