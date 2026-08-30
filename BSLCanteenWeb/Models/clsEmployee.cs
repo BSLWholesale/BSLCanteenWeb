@@ -143,7 +143,10 @@ namespace BSLCanteenWeb.Models
         public string ItemCategory { get; set; }
         public string ReportType { get; set; }
         public string EmpLocation { get; set; }
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
     }
+
     public class clsMonthlyReportResp
     {
         public int CanteenId { get; set; }
@@ -156,6 +159,7 @@ namespace BSLCanteenWeb.Models
         public string OrderTakenDate { get; set; }
         public int TotalCoupons { get; set; }
         public decimal TotalPrice { get; set; }
+        public Int64 TotalRows { get; set; }
         public string vErrorMsg { get; set; }
         public int vErrorCode { get; set; }
     }
@@ -254,6 +258,7 @@ namespace BSLCanteenWeb.Models
         public int PageSize { get; set; }
         public Int64 TotalRows { get; set; }
         public string EmpDepartment { get; set; }
+        public string ItemName { get; set; }
         public int vErrorCode { get; set; }
         public string vErrorMsg { get; set; }
     }
