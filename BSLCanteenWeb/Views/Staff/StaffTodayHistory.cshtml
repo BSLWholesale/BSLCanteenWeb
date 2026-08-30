@@ -64,17 +64,19 @@
                     if (obj[0].vErrorMsg == "Success") {
                         for (var i = 0; i < obj.length; i++) {
                             html += "<tr>";
-                            html += "<td>" + obj[i].OrderTakenDate + " " + obj[i].OrderTakenTime + "</td>";
+                            html += "<td>" + obj[i].OrderTakenTime + "</td>";
                             html += "<td>" + obj[i].CouponId + "</td>";
                             html += "<td>" + obj[i].EmpId + "</td>";
-                            html += "<td>" + obj[i].EmpName + "</td>";
-                            html += "<td>" + obj[i].CategoryIcon + " " + obj[i].ItemCategory + " <b>(₹" + obj[i].Price + ")</b></td>";                            
+                            html += "<td>" + obj[i].EmpName + (obj[i].CouponType != 'Self' ? " <b>(" + obj[i].CouponType + ")</b>" : "") + "</td>";
+                            html += "<td>" + obj[i].EmpDepartment + "</td>";
+                            html += "<td>" + obj[i].CategoryIcon + " " + obj[i].ItemCategory + " <b>(₹" + obj[i].Price + ")</b></td>";
+                            html += "<td>" + obj[i].Category + "</td>";
                             html += "</tr>";
                         }
                     }
                     else {
                         html += "<tr>";
-                        html += "<td colspan='5' class='text-center'>" + obj[0].vErrorMsg + "</td>";
+                        html += "<td colspan='7' class='text-center'>" + obj[0].vErrorMsg + "</td>";
                         html += "</tr>";
                     }
                     $("#tbody").append(html);
@@ -187,7 +189,9 @@
                                 <th>Coupon ID</th>
                                 <th>Emp ID</th>
                                 <th>Name</th>
+                                <th>Department</th>
                                 <th>Item</th>
+                                <th>Item Category</th>
                             </tr>
                         </thead>
                         <tbody id="tbody">

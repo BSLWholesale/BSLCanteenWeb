@@ -226,8 +226,9 @@
                 var qty = parseInt($(this).val()) || 0;
                 if (qty > 0) {
                     clsCouponItem.push({
-                        // ItemId: $(this).data("itemid"),
+                        ItemId: $(this).data("itemid"),
                         ItemCategory: $(this).data("itemname"),
+                        Price: $(this).data("price"),
                         Quantity: qty
                     });
                 }
