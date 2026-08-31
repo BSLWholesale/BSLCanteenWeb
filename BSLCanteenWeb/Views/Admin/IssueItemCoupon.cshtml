@@ -245,6 +245,7 @@
             });
 
             clsCouponOrder.Items = clsCouponItem;
+
             if ($("#ddlEmpName").val() == "0") {
                 Swal.fire({ title: "", text: "Please Select Employee", icon: "error" });
             }
@@ -333,7 +334,14 @@
                                 html += "<div class='qr-card' id='gen-qr-card_" + i + "'>";
                                 html += "<div style='display:flex;  justify-content:space-between; gap:10px;'>";
                                 html += "<div class='lbl-text'>";
-                                html += "<div style='font-size: 15px'>Item: " + obj[i].CategoryIcon + " " + obj[i].ItemCategory + " (<strong>₹" + obj[i].Price + ")</strong></div>";
+
+                                if (obj[i].CouponType == "Guest" && obj[i].ItemCategory == "Special Thali") {
+                                    html += "<div style='font-size: 15px'>Item: " + obj[i].CategoryIcon + " " + obj[i].ItemCategory + "</div>";
+                                }
+                                else {
+                                    html += "<div style='font-size: 15px'>Item: " + obj[i].CategoryIcon + " " + obj[i].ItemCategory + " (<strong>₹" + obj[i].Price + ")</strong></div>";
+                                }
+
                                 html += "<div>CId: " + obj[i].CouponId + "</div>";
                                 html += "<div>Issued: " + obj[i].CouponIssueDate + "</div>";
                                 html += "<div>Canteen: " + obj[i].CanteenName + "</div>";
@@ -507,8 +515,7 @@
 
                 if (allowedItems.indexOf(itemId) !== -1) {
 
-                    // Enable field
-                    $(this).prop("disabled", false);
+                    $(this).prop("disabled", false);    // Enable field
 
                     // Remove gray styling
                     $(this).css({
@@ -518,12 +525,10 @@
 
                 }
                 else {
-
-                    // Disable field
-                    $(this).prop("disabled", true);
-
-                    // Reset quantity
-                    $(this).val(0);
+               
+                    $(this).prop("disabled", true);     // Disable field
+                    
+                    $(this).val(0);     // Reset quantity
 
                     // Apply gray styling
                     $(this).css({
@@ -613,6 +618,8 @@
 <script src="~/Web/js/select2.min.js"></script>
 <script>
     $(function () {
+
+        $("#ddlCouponType").select2();
         $("#ddlEmpName").select2();
         $("#ddlCanteen").select2();
         $("#ddlEmpLocation").select2();
