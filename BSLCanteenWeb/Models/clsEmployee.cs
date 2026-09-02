@@ -325,8 +325,6 @@ namespace BSLCanteenWeb.Models
 
     public class clsItemWiseReport
     {
-        public int CanteenId { get; set; }
-        public string CanteenName { get; set; }
         public string CurrentDate { get; set; }
         public string FromDate { get; set; }
         public string ToDate { get; set; }
@@ -342,17 +340,6 @@ namespace BSLCanteenWeb.Models
         public string Weaving4Worker { get; set; }
         public string Worsted1Worker { get; set; }
         public string ItemName { get; set; }
-        public string Breakfast { get; set; }
-        public string FullThali { get; set; }
-        public string Kachodi { get; set; }
-        public string MiniThali { get; set; }
-        public string Poha { get; set; }
-        public string Sabji { get; set; }
-        public string Samosa { get; set; }
-        public string SpecialThali { get; set; }
-        public string Tea { get; set; }
-        public string Thali { get; set; }
-        public string ThumpsUp { get; set; }
         public string TotalCount { get; set; }
         public string vErrorMsg { get; set; }
     }
