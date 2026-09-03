@@ -183,6 +183,8 @@ namespace BSLCanteenWeb.Models
         public int CanteenId { get; set; }
         public string CanteenName { get; set; }
         public string CurrentDate { get; set; }
+        public string FromDate { get; set; }
+        public string ToDate { get; set; }
         public Int32 EmpId { get; set; }
         public string Noofworkers { get; set; }
         public string GeneratedCoupons { get; set; }
@@ -208,6 +210,8 @@ namespace BSLCanteenWeb.Models
         public string CanteenName { get; set; }
         public string ShiftName { get; set; }
         public string CurrentDate { get; set; }
+        public string FromDate { get; set; }
+        public string ToDate { get; set; }
         public Int32 EmpId { get; set; }
         public string Noofworkers { get; set; }
         public string GeneratedCouponTea { get; set; }
@@ -340,6 +344,27 @@ namespace BSLCanteenWeb.Models
         public string Weaving4Worker { get; set; }
         public string Worsted1Worker { get; set; }
         public string ItemName { get; set; }
+        public string TotalCount { get; set; }
+        public string vErrorMsg { get; set; }
+    }
+
+
+    public class clsCouponTypeReport
+    {
+        public string CurrentDate { get; set; }
+        public string FromDate { get; set; }
+        public string ToDate { get; set; }
+        public string CouponType { get; set; }
+        public Int32 EmpId { get; set; }
+        public string BFLWorker { get; set; }
+        public string BSLWorker { get; set; }
+        public string BTMWorker { get; set; }
+        public string BJFWorker { get; set; }
+        public string FoodTruckWorker { get; set; }
+        public string Mill7Worker { get; set; }
+        public string TPPWorker { get; set; }
+        public string Weaving4Worker { get; set; }
+        public string Worsted1Worker { get; set; }
         public string TotalCount { get; set; }
         public string vErrorMsg { get; set; }
     }
