@@ -8,7 +8,6 @@
     <link href="~/Web/css/select2.min.css" rel="stylesheet" />
     <script src="~/Web/js/jquery-ui.min.js"></script>
     <link href="~/Web/css/jquery-ui.css" rel="stylesheet" />
-
     <script type="text/javascript">
 
         $(document).ready(function () {
@@ -38,29 +37,22 @@
 
 
             var strFieldName = " CONCAT(EmpName, ' (', EmployeeId, ')') AS EmpName ";
-
             Fn_Fill_DropdownList("ddlEmpName", "EmployeeMaster", strFieldName, "EmployeeId", "");
             Fn_Fill_DropdownList("ddlCanteen", "CanteenMaster", "CanteenName", "", "");
 
             Fn_CanteenWise_Report();
 
         });
-
-
         function Fn_Fill_DropdownList(ddlName, strTBLName, strFieldName, strValueField, strCriteria) {
-
             var clsRequestDropdown = {};
-
             clsRequestDropdown.vFieldName = strFieldName;
             clsRequestDropdown.vValueField = strValueField;
             clsRequestDropdown.vTBLName = strTBLName;
             clsRequestDropdown.vCriteria = strCriteria;
-
             $("#" + ddlName).html('');
             var dropdown = ''; var dropdown1 = "";
             dropdown1 = "<option value='0'>--Select--</option>";
             $("#" + ddlName).append(dropdown1);
-
             $.ajax({
                 type: "POST",
                 url: '/Home/Fn_Fill_DropdownList',
@@ -76,6 +68,7 @@
                         else {
                             dropdown += "<option value='" + obj[i].vValueField + "'>" + obj[i].vFieldName + "</option>";
                         }
+
                     }
                     $("#" + ddlName).append(dropdown);
                 },
@@ -95,17 +88,9 @@
             var year = date.getFullYear();
 
             return day + "-" + month + "-" + year;
-
         }
 
-        var currentPage = 1;
-        var pageSize = 500;
-        var isLoading = false;
-        var hasMoreData = true;
-        var rCount = 0;
-
-
-        function Fn_CanteenWise_Report(isScroll = false) {
+        function Fn_CanteenWise_Report() {
 
             var clsMonthlyReportReq = {};
             clsMonthlyReportReq.OrderStatus = "Scanned";
@@ -121,34 +106,16 @@
                 clsMonthlyReportReq.ToDate = $("#txtToDate").val();
             }
 
-            clsMonthlyReportReq.PageNumber = currentPage;
-            clsMonthlyReportReq.PageSize = pageSize;
-
-            if (!isScroll) {
-                $("#tbodyCanteen").html('');
-                currentPage = 1;
-                hasMoreData = true;
-            }
-
-            isLoading = true;
-
-            //$("#tbodyCanteen").html('');
-            //var html = '';
+            $("#tbodyCanteen").html('');
+            var html = '';
             $.ajax({
                 type: "POST",
                 url: "/Staff/Fn_CanteenWise_Report",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 data: JSON.stringify(clsMonthlyReportReq),
-                beforeSend: function () {
-                    $("#loader").show();
-                },
                 success: function (data) {
-
                     var obj = JSON.parse(data.message);
-                    var CDTotalRows = 0;
-                    var html = "";
-
                     if (obj[0].vErrorMsg == "Success") {
 
                         var previousCanteen = "";
@@ -157,8 +124,6 @@
 
                         var grandTotalCoupons = 0;
                         var grandTotalPrice = 0;
-
-                        CDTotalRows = obj[0].TotalRows;
 
                         for (var i = 0; i < obj.length; i++) {
 
@@ -225,7 +190,7 @@
                         html += "<th style='text-align:right;'>" + grandTotalCoupons + "</th>";
                         html += "<th style='text-align:right;'>" + grandTotalPrice.toFixed(2) + "</th>";
                         html += "</tr>";
-                        rCount++;
+
 
                         $("#tbodySummery").html('');
                         $("#tblSummery").hide();
@@ -250,19 +215,7 @@
                     }
 
                     $("#tbodyCanteen").append(html);
-                    $("#spTotalRowCount").html("Total Rows: " + rCount + " / " + CDTotalRows);
                     $("#tblCanteen").show();
-                    // Next Page
-                    currentPage++;
-
-                    // If less than page size => no more data
-                    if (obj.length < 30) {
-                        hasMoreData = false;
-                    }
-                },
-                complete: function () {
-                    $("#loader").hide();
-                    isLoading = false;
                 },
                 error: function (err) {
                     alert(err);
@@ -488,7 +441,7 @@
             });
         }
 
-        function Fn_EmployeeWise_Summery(isScroll = false) {
+        function Fn_EmployeeWise_Summery() {
 
             var clsMonthlyReportReq = {};
             clsMonthlyReportReq.OrderStatus = "Scanned";
@@ -507,41 +460,21 @@
                 clsMonthlyReportReq.ToDate = $("#txtToDate").val();
             }
 
-            clsMonthlyReportReq.PageNumber = currentPage;
-            clsMonthlyReportReq.PageSize = pageSize;
-
-            if (!isScroll) {
-                $("#tbodyEmpSummery").html('');
-                currentPage = 1;
-                hasMoreData = true;
-            }
-
-            isLoading = true;
-
-            //$("#tbodyEmpSummery").html('');
-            //var html = '';
+            $("#tbodyEmpSummery").html('');
+            var html = '';
             $.ajax({
                 type: "POST",
                 url: "/Staff/Fn_EmployeeWise_Summery",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 data: JSON.stringify(clsMonthlyReportReq),
-                beforeSend: function () {
-                    $("#loader").show();
-                },
                 success: function (data) {
-
                     var obj = JSON.parse(data.message);
-                    var ESTotalRows = 0;
-                    var html = "";
-
                     if (obj[0].vErrorMsg == "Success") {
 
                         var html = "";
                         var totalCoupons = 0;
                         var totalPrice = 0;
-
-                        ESTotalRows = obj[0].TotalRows;
 
                         for (var i = 0; i < obj.length; i++) {
 
@@ -588,25 +521,12 @@
                         $("#tbodyEmp").html('');
                         $("#tblEmp").hide();
                     }
-
-                    //$("#tbodyEmpSummery").html(html);
-                    $("#tbodyEmpSummery").append(html);
-                    $("#spTotalRowCount").html("Total Rows: " + rCount + " / " + ESTotalRows);
+                    $("#tbodyEmpSummery").html(html);
                     $("#tblEmpSummery").show();
-                    // Next Page
-                    currentPage++;
-
-                    // If  less than page size => no more data
-                    if (obj.length < 30) {
-                        hasMoreData = false;
-                    }
-                },
-                complete: function () {
-                    $("#loader").hide();
-                    isLoading = false;
                 },
                 error: function (err) {
                     alert(err);
+
                 }
             });
         }
@@ -761,7 +681,6 @@
     <div class="row">
         <div class="col-12 col-md-12 col-sm-12">
             <h4>Report</h4>
-            <span class="pull-right" id="spTotalRowCount" style="color: black; font-weight: 800;"></span>
             <div class="card">
                 <div class="row mt-2">
                     <div class="col-sm-3">
@@ -903,12 +822,6 @@
             </div>
         </div>
     </div>
-
-    <div id="loader" style="margin-top: 15%; text-align: center; display: none;">
-        <img src="~/Web/img/loading.gif?timestamp(~/Web/img/loading.gif)" width="8%" />
-    </div>
-
-
 </div>
 <!-- Team End -->
 <script src="~/Web/js/select2.min.js"></script>
