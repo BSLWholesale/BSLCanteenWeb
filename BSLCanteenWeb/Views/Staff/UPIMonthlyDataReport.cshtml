@@ -3,8 +3,6 @@
     ViewBag.Title = "UPIMonthlyDataReport";
 }
 
-@*<h2>UPIMonthlyDataReport</h2>*@
-
 <script src="~/Web/js/jquery-3.7.1.min.js"></script>
 <link href="~/Web/css/select2.min.css" rel="stylesheet" />
 <script src="~/Web/js/jquery-ui.min.js"></script>
@@ -20,7 +18,6 @@
             defaultDate: new Date()
         }).datepicker("setDate", new Date());
 
-
         $("#txtToDate").datepicker({
             dateFormat: "dd-M-yy",
             defaultDate: new Date()
@@ -29,18 +26,304 @@
     });
 
 
+    //function Fn_MonthlyReport_UPIDataCanteenWise() {
+
+    //    try {
+
+    //        var clsUPIMonthlyReportRequest = {};
+    //        clsUPIMonthlyReportRequest.FromDate = $("#txtFromDate").val();
+    //        clsUPIMonthlyReportRequest.ToDate = $("#txtToDate").val();
+    //        if (!clsUPIMonthlyReportRequest.FromDate || !clsUPIMonthlyReportRequest.ToDate)
+    //        {
+    //            alert("Please select From Date and To Date.");
+    //            return;
+    //        }
+
+    //        $.ajax({
+    //            type: "POST",
+    //            url: "/Staff/Fn_MonthlyReport_UPIDataCanteenWise",
+    //            contentType: "application/json; charset=utf-8",
+    //            dataType: "json",
+    //            data: JSON.stringify(clsUPIMonthlyReportRequest),
+    //            success: function (data) {
+    //                try {
+    //                    console.log("API Response:", data);
+    //                    if (!data || data.message === undefined || data.message === null) {
+
+    //                        $("#dvUPIMonthlyData").html(
+    //                            "<tr>" +
+    //                            "<td colspan='100%' class='text-center text-danger'>" +
+    //                            "No data returned from server." +
+    //                            "</td>" +
+    //                            "</tr>"
+    //                        );
+    //                        return;
+    //                    }
+                        
+    //                    var obj = data.message;
+    //                    if (typeof obj === "string") {
+    //                        if ($.trim(obj) === "") {
+    //                            $("#dvUPIMonthlyData").html(
+    //                                "<tr>" +
+    //                                "<td colspan='100%' class='text-center'>" +
+    //                                "No data found." +
+    //                                "</td>" +
+    //                                "</tr>"
+    //                            );
+
+    //                            return;
+    //                        }
+
+    //                        try {
+    //                            obj = JSON.parse(obj);
+    //                        }
+    //                        catch (jsonError) {
+
+    //                            console.error("JSON Parse Error:", jsonError);
+    //                            console.error("data.message:", data.message);
+
+    //                            $("#dvUPIMonthlyData").html(
+    //                                "<tr>" +
+    //                                "<td colspan='100%' class='text-center text-danger'>" +
+    //                                "Invalid data returned from server." +
+    //                                "</td>" +
+    //                                "</tr>"
+    //                            );
+    //                            return;
+    //                        }
+    //                    }
+
+    //                    if (!Array.isArray(obj)) {
+
+    //                        console.error("Expected array but received:", obj);
+
+    //                        $("#dvUPIMonthlyData").html(
+    //                            "<tr>" +
+    //                            "<td colspan='100%' class='text-center text-danger'>" +
+    //                            "Invalid report data format." +
+    //                            "</td>" +
+    //                            "</tr>"
+    //                        );
+
+    //                        return;
+    //                    }
+
+    //                    if (obj.length === 0) {
+
+    //                        $("#dvUPIMonthlyData").html(
+    //                            "<tr>" +
+    //                            "<td colspan='100%' class='text-center'>" +
+    //                            "No data found." +
+    //                            "</td>" +
+    //                            "</tr>"
+    //                        );
+    //                        return;
+    //                    }
+
+                        
+    //                    var fromDate = parseReportDate(
+    //                        clsUPIMonthlyReportRequest.FromDate
+    //                    );
+
+    //                    var toDate = parseReportDate(
+    //                        clsUPIMonthlyReportRequest.ToDate
+    //                    );
+
+    //                    if (!fromDate || !toDate) {
+    //                        alert("Invalid From Date or To Date.");
+    //                        return;
+    //                    }
+
+    //                    // Remove time portion
+    //                    fromDate.setHours(0, 0, 0, 0);
+    //                    toDate.setHours(0, 0, 0, 0);
+
+    //                    if (fromDate > toDate) {
+    //                        alert("From Date cannot be greater than To Date.");
+    //                        return;
+    //                    }
+                       
+    //                    var dateColumns = [];
+
+    //                    var currentDate = new Date(
+    //                        fromDate.getFullYear(),
+    //                        fromDate.getMonth(),
+    //                        fromDate.getDate()
+    //                    );
+
+    //                    while (currentDate <= toDate) {
+    //                        dateColumns.push({
+    //                            date: new Date(currentDate),
+    //                            display: formatReportDate(currentDate)
+    //                        });
+
+    //                        currentDate.setDate(currentDate.getDate() + 1);
+    //                    }
+
+    //                    console.log("Date Columns:", dateColumns);
+                        
+    //                    var html = "";
+
+    //                    html += "<thead>";
+    //                    html += "<tr>";
+
+    //                    html += "<th style='text-align:center; white-space:nowrap;'>Location ID</th>";
+    //                    html += "<th style='text-align:center; white-space:nowrap;'>Rate</th>";
+                       
+    //                    for (var d = 0; d < dateColumns.length; d++) {
+    //                        html += "<th style='text-align:center; white-space:nowrap;'>" +
+    //                            escapeHtml(dateColumns[d].display) +
+    //                            "</th>";
+    //                    }
+
+    //                    html += "<th style='text-align:center; white-space:nowrap;'>Total Qty</th>";
+    //                    html += "<th style='text-align:center; white-space:nowrap;'>Total Amount</th>";
+
+    //                    html += "</tr>";
+    //                    html += "</thead>";
+    //                    html += "<tbody>";
+
+    //                    for (var i = 0; i < obj.length; i++) {
+    //                        var row = obj[i];
+    //                        var locationID = row.LocationID;
+
+    //                        if (locationID === null || locationID === undefined || locationID === "") {
+    //                            locationID = "";
+    //                        }
+
+    //                        var rate = row.Rate;
+
+    //                        if (rate === null || rate === undefined || rate === "") {
+    //                            rate = 0;
+    //                        }
+    //                        rate = parseFloat(rate);
+
+    //                        if (isNaN(rate)) {
+    //                            rate = 0;
+    //                        }
+                            
+    //                        var dateWiseQty = row.DateWiseQty;
+    //                        console.log("Location:", locationID, "DateWiseQty:", dateWiseQty);
+
+    //                        if (typeof dateWiseQty === "string") {
+
+    //                            if ($.trim(dateWiseQty) !== "") {
+
+    //                                try {
+    //                                    dateWiseQty = JSON.parse(dateWiseQty);
+    //                                }
+    //                                catch (dateJsonError) {
+    //                                    console.error("Invalid DateWiseQty JSON:", dateJsonError);
+    //                                    console.error("DateWiseQty:", dateWiseQty);
+    //                                    dateWiseQty = {};
+    //                                }
+    //                            }
+    //                            else {
+    //                                dateWiseQty = {};
+    //                            }
+    //                        }
+                            
+    //                        if (!dateWiseQty) {
+    //                            dateWiseQty = {};
+    //                        }
+                           
+    //                        html += "<tr>";
+    //                        html += "<td style='text-align:center;'>" + escapeHtml(locationID) + "</td>";
+    //                        html += "<td style='text-align:center;'>" + rate.toFixed(2) + "</td>";
+
+    //                        var totalQty = 0;
+    //                        for (var d = 0; d < dateColumns.length; d++) {
+
+    //                            var requestedDate =  dateColumns[d].display;
+    //                            var qty = getDateWiseQuantity(dateWiseQty, requestedDate);
+
+    //                            // Empty quantity = 0
+    //                            if (qty === null || qty === undefined || qty === "") {
+    //                                qty = 0;
+    //                            }
+
+    //                            // Convert quantity to number
+    //                            qty = parseFloat(qty);
+
+    //                            if (isNaN(qty)) {
+    //                                qty = 0;
+    //                            }
+
+    //                            totalQty += qty;
+
+    //                            html += "<td style='text-align:center;'>" + qty + "</td>";
+    //                        }
+
+    //                        var totalAmount = totalQty * rate;
+    //                        // -----------------------------------------
+    //                        html += "<td style='text-align:center; font-weight:bold;'>" + totalQty + "</td>";
+    //                        html += "<td style='text-align:center; font-weight:bold;'>" + totalAmount.toFixed(2) + "</td>";
+
+    //                        html += "</tr>";
+    //                    }
+
+    //                    html += "</tbody>";
+
+    //                    // DISPLAY TABLE
+    //                    $("#tblUPIMonthlyData").html(html);
+
+    //                }
+    //                catch (e) {
+    //                    console.error("UPI Monthly Report Processing Error:", e);
+    //                    console.error("Error Message:", e.message);
+    //                    console.error("Error Stack:", e.stack);
+
+    //                    $("#dvUPIMonthlyData").html(
+    //                        "<tr>" +
+    //                        "<td colspan='100%' class='text-center text-danger'>" +
+    //                        "Error: " + escapeHtml(e.message || "Unknown error") +
+    //                        "</td>" +
+    //                        "</tr>"
+    //                    );
+    //                }
+    //            },
+
+    //            error: function (xhr, status, error) {
+    //                console.error("AJAX Error:", error);
+    //                console.error("Status:", status);
+    //                console.error("Response:", xhr.responseText);
+
+    //                var errorMessage = "Unable to load UPI Monthly Data.";
+
+    //                if (xhr.responseJSON && xhr.responseJSON.message) {
+    //                    errorMessage = xhr.responseJSON.message;
+    //                }
+
+    //                $("#dvUPIMonthlyData").html(
+    //                    "<tr>" +
+    //                    "<td colspan='100%' class='text-center text-danger'>" +
+    //                    escapeHtml(errorMessage) +
+    //                    "</td>" +
+    //                    "</tr>"
+    //                );
+    //            }
+    //        });
+
+    //    }
+    //    catch (e) {
+    //        console.error("Outer Error:", e);
+    //        alert("Error while processing UPI Monthly Data.\n\n" + e.message);
+    //    }
+    //}
 
 
+    // New JS Code Solution
     function Fn_MonthlyReport_UPIDataCanteenWise() {
 
         try {
 
             var clsUPIMonthlyReportRequest = {};
+
             clsUPIMonthlyReportRequest.FromDate = $("#txtFromDate").val();
             clsUPIMonthlyReportRequest.ToDate = $("#txtToDate").val();
+
             if (!clsUPIMonthlyReportRequest.FromDate ||
                 !clsUPIMonthlyReportRequest.ToDate) {
-
                 alert("Please select From Date and To Date.");
                 return;
             }
@@ -57,6 +340,7 @@
                     try {
 
                         console.log("API Response:", data);
+
                         if (!data || data.message === undefined || data.message === null) {
 
                             $("#dvUPIMonthlyData").html(
@@ -66,12 +350,12 @@
                                 "</td>" +
                                 "</tr>"
                             );
-
                             return;
                         }
 
-                        
                         var obj = data.message;
+
+                        // Parse main response
                         if (typeof obj === "string") {
 
                             if ($.trim(obj) === "") {
@@ -93,7 +377,6 @@
                             catch (jsonError) {
 
                                 console.error("JSON Parse Error:", jsonError);
-                                console.error("data.message:", data.message);
 
                                 $("#dvUPIMonthlyData").html(
                                     "<tr>" +
@@ -109,7 +392,10 @@
 
                         if (!Array.isArray(obj)) {
 
-                            console.error("Expected array but received:", obj);
+                            console.error(
+                                "Expected array but received:",
+                                obj
+                            );
 
                             $("#dvUPIMonthlyData").html(
                                 "<tr>" +
@@ -135,7 +421,7 @@
                             return;
                         }
 
-                        
+                        // Date validation
                         var fromDate = parseReportDate(
                             clsUPIMonthlyReportRequest.FromDate
                         );
@@ -145,22 +431,19 @@
                         );
 
                         if (!fromDate || !toDate) {
-
                             alert("Invalid From Date or To Date.");
                             return;
                         }
 
-                        // Remove time portion
                         fromDate.setHours(0, 0, 0, 0);
                         toDate.setHours(0, 0, 0, 0);
 
                         if (fromDate > toDate) {
-
                             alert("From Date cannot be greater than To Date.");
                             return;
                         }
 
-                       
+                        // Create date columns
                         var dateColumns = [];
 
                         var currentDate = new Date(
@@ -176,129 +459,143 @@
                                 display: formatReportDate(currentDate)
                             });
 
-                            currentDate.setDate(
-                                currentDate.getDate() + 1
-                            );
+                            currentDate.setDate(currentDate.getDate() + 1);
                         }
 
-                        console.log("Date Columns:", dateColumns);
-
-                        
+                        // Create table
                         var html = "";
 
                         html += "<thead>";
                         html += "<tr>";
 
-                        html += "<th style='text-align:center; white-space:nowrap;'>Location ID</th>";
-                        html += "<th style='text-align:center; white-space:nowrap;'>Rate</th>";
+                        html +=
+                            "<th style='text-align:center; white-space:nowrap;'>Location ID</th>";
 
-                       
+                        html +=
+                            "<th style='text-align:center; white-space:nowrap;'>Rate</th>";
+
                         for (var d = 0; d < dateColumns.length; d++) {
 
-                            html += "<th style='text-align:center; white-space:nowrap;'>" +
+                            html +=
+                                "<th style='text-align:center; white-space:nowrap;'>" +
                                 escapeHtml(dateColumns[d].display) +
                                 "</th>";
                         }
 
-                        html += "<th style='text-align:center; white-space:nowrap;'>Total Qty</th>";
-                        html += "<th style='text-align:center; white-space:nowrap;'>Total Amount</th>";
+                        html +=
+                            "<th style='text-align:center; white-space:nowrap;'>Total Qty</th>";
+
+                        html +=
+                            "<th style='text-align:center; white-space:nowrap;'>Total Amount</th>";
 
                         html += "</tr>";
                         html += "</thead>";
+
                         html += "<tbody>";
+
+                        // LOCATION ID TRACKING
+                        var previousLocationID = null;
 
                         for (var i = 0; i < obj.length; i++) {
 
                             var row = obj[i];
+
+                            // GET LOCATION ID
                             var locationID = row.LocationID;
 
-                            if (locationID === null ||
-                                locationID === undefined ||
-                                locationID === "") {
-
+                            if (locationID === null || locationID === undefined || locationID === "") {
                                 locationID = "";
                             }
 
+                            // Convert to string for safe comparison
+                            locationID = String(locationID);
+
+                            // SHOW LOCATION ID ONLY WHEN IT CHANGES
+                            var displayLocationID = "";
+
+                            if (i === 0 ||
+                                locationID !== previousLocationID) {
+
+                                displayLocationID = locationID;
+                            }
+
+                            // Save current Location ID
+                            previousLocationID = locationID;
+
+                            // GET RATE
                             var rate = row.Rate;
 
-                            if (rate === null ||
-                                rate === undefined ||
-                                rate === "") {
-
+                            if (rate === null || rate === undefined || rate === "") {
                                 rate = 0;
                             }
+
                             rate = parseFloat(rate);
 
                             if (isNaN(rate)) {
                                 rate = 0;
                             }
 
-                            
+                            // GET DATE WISE QUANTITY
                             var dateWiseQty = row.DateWiseQty;
-                            console.log(
-                                "Location:",
-                                locationID,
-                                "DateWiseQty:",
-                                dateWiseQty
+
+                            console.log("Location ID:", locationID,
+                                "Display:", displayLocationID,
+                                "DateWiseQty:", dateWiseQty
                             );
 
+                            // Parse DateWiseQty if string
                             if (typeof dateWiseQty === "string") {
 
                                 if ($.trim(dateWiseQty) !== "") {
 
                                     try {
-
-                                        dateWiseQty = JSON.parse(
-                                            dateWiseQty
-                                        );
-
+                                        dateWiseQty = JSON.parse(dateWiseQty);
                                     }
                                     catch (dateJsonError) {
 
-                                        console.error(
-                                            "Invalid DateWiseQty JSON:",
-                                            dateJsonError
-                                        );
-
-                                        console.error(
-                                            "DateWiseQty:",
-                                            dateWiseQty
-                                        );
+                                        console.error("Invalid DateWiseQty JSON:", dateJsonError);
 
                                         dateWiseQty = {};
                                     }
-
                                 }
                                 else {
-
                                     dateWiseQty = {};
                                 }
                             }
 
-                            
                             if (!dateWiseQty) {
-
                                 dateWiseQty = {};
                             }
 
-                           
+                            // CREATE ROW
                             html += "<tr>";
 
-                            html += "<td style='text-align:center;'>" + escapeHtml(locationID) + "</td>";
-                            html += "<td style='text-align:right;'>" + rate.toFixed(2) + "</td>";
+                            // Location ID
+                            html +=
+                                "<td style='text-align:center;'>" +
+                                escapeHtml(displayLocationID) +
+                                "</td>";
 
+                            // Rate
+                            html +=
+                                "<td style='text-align:center;'>" +
+                                rate.toFixed(2) +
+                                "</td>";
+
+                            // DATE WISE QUANTITY
                             var totalQty = 0;
+
                             for (var d = 0; d < dateColumns.length; d++) {
 
-                                var requestedDate =  dateColumns[d].display;
-                                var qty = getDateWiseQuantity(dateWiseQty, requestedDate);
+                                var requestedDate = dateColumns[d].display;
 
-                                // Empty quantity = 0
+                                var qty =
+                                    getDateWiseQuantity(dateWiseQty, requestedDate);
+
                                 if (qty === null || qty === undefined || qty === "") {
                                     qty = 0;
                                 }
 
-                                // Convert quantity to number
                                 qty = parseFloat(qty);
 
                                 if (isNaN(qty)) {
@@ -307,42 +604,37 @@
 
                                 totalQty += qty;
 
-                                html += "<td style='text-align:right;'>" + qty + "</td>";
+                                html +=
+                                    "<td style='text-align:center;'>" +
+                                    qty +
+                                    "</td>";
                             }
 
-                           
+                            // TOTAL AMOUNT
                             var totalAmount = totalQty * rate;
-                            // -----------------------------------------
-                            html += "<td style='text-align:right; font-weight:bold;'>" + totalQty + "</td>";
-                            html += "<td style='text-align:right; font-weight:bold;'>" + totalAmount.toFixed(2) + "</td>";
+
+                            html +=
+                                "<td style='text-align:center; font-weight:bold;'>" +
+                                totalQty +
+                                "</td>";
+
+                            html +=
+                                "<td style='text-align:center; font-weight:bold;'>" +
+                                totalAmount.toFixed(2) +
+                                "</td>";
 
                             html += "</tr>";
                         }
 
                         html += "</tbody>";
 
-                        // -----------------------------------------
-                        // DISPLAY TABLE
-                        // -----------------------------------------
+                        // Display table
                         $("#tblUPIMonthlyData").html(html);
 
                     }
                     catch (e) {
 
-                        console.error(
-                            "UPI Monthly Report Processing Error:",
-                            e
-                        );
-
-                        console.error(
-                            "Error Message:",
-                            e.message
-                        );
-
-                        console.error(
-                            "Error Stack:",
-                            e.stack
-                        );
+                        console.error("UPI Monthly Report Processing Error:", e);
 
                         $("#dvUPIMonthlyData").html(
                             "<tr>" +
@@ -363,13 +655,11 @@
                     console.error("Status:", status);
                     console.error("Response:", xhr.responseText);
 
-                    var errorMessage = "Unable to load UPI Monthly Data.";
+                    var errorMessage =
+                        "Unable to load UPI Monthly Data.";
 
-                    if (xhr.responseJSON &&
-                        xhr.responseJSON.message) {
-
-                        errorMessage =
-                            xhr.responseJSON.message;
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
                     }
 
                     $("#dvUPIMonthlyData").html(
@@ -384,12 +674,12 @@
 
         }
         catch (e) {
-
             console.error("Outer Error:", e);
-
             alert("Error while processing UPI Monthly Data.\n\n" + e.message);
         }
     }
+    // New JS Code Solution
+
 
 
     // PARSE DATE
@@ -399,7 +689,6 @@
         if (!value) {
             return null;
         }
-
         
         if (value instanceof Date) {
             if (isNaN(value.getTime())) {
@@ -411,9 +700,7 @@
 
         value = $.trim(value.toString());
         
-        var match = value.match(
-            /^(\d{4})-(\d{1,2})-(\d{1,2})$/
-        );
+        var match = value.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
 
         if (match) {
 
@@ -421,24 +708,15 @@
             var month = parseInt(match[2], 10) - 1;
             var day = parseInt(match[3], 10);
 
-            var date = new Date(
-                year,
-                month,
-                day
-            );
+            var date = new Date(year, month, day);
 
-            if (
-                date.getFullYear() === year &&
-                date.getMonth() === month &&
-                date.getDate() === day
-            ) {
+            if (date.getFullYear() === year && date.getMonth() === month && date.getDate() === day)
+            {
                 return date;
             }
         }
         
-        match = value.match(
-            /^(\d{1,2})-(\d{1,2})-(\d{4})$/
-        );
+        match = value.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
 
         if (match) {
 
@@ -446,11 +724,7 @@
             var month2 = parseInt(match[2], 10) - 1;
             var year2 = parseInt(match[3], 10);
 
-            var date2 = new Date(
-                year2,
-                month2,
-                day2
-            );
+            var date2 = new Date(year2, month2, day2);
 
             if (
                 date2.getFullYear() === year2 &&
@@ -471,11 +745,7 @@
             var day3 = parseInt(match[2], 10);
             var year3 = parseInt(match[3], 10);
 
-            var date3 = new Date(
-                year3,
-                month3,
-                day3
-            );
+            var date3 = new Date(year3, month3, day3);
 
             if (
                 date3.getFullYear() === year3 &&
@@ -521,16 +791,11 @@
         ];
 
         var month = months[date.getMonth()];
-
         var year = date.getFullYear();
-
         return day + "-" + month + "-" + year;
     }
 
-    function getDateWiseQuantity(
-        dateWiseQty,
-        requestedDate
-    ) {
+    function getDateWiseQuantity(dateWiseQty, requestedDate) {
 
         if (!dateWiseQty) {
             return 0;
@@ -546,29 +811,14 @@
                     continue;
                 }
 
-                var itemDate =
-                    item.Date ||
-                    item.DateValue ||
-                    item.ReportDate;
-
-                var itemQty =
-                    item.Qty ||
-                    item.Quantity ||
-                    item.TotalQty ||
-                    0;
+                var itemDate = item.Date || item.DateValue || item.ReportDate;
+                var itemQty = item.Qty || item.Quantity || item.TotalQty || 0;
 
                 if (itemDate) {
 
-                    var formattedItemDate =
-                        formatReportDate(
-                            parseReportDate(itemDate)
-                        );
-
-                    if (
-                        normalizeReportDate(formattedItemDate) ===
-                        normalizeReportDate(requestedDate)
-                    ) {
-
+                    var formattedItemDate = formatReportDate(parseReportDate(itemDate));
+                    if (normalizeReportDate(formattedItemDate) === normalizeReportDate(requestedDate))
+                    {
                         return itemQty;
                     }
                 }
@@ -580,36 +830,20 @@
         if (typeof dateWiseQty === "object") {
 
             // Direct key
-            if (
-                Object.prototype.hasOwnProperty.call(
-                    dateWiseQty,
-                    requestedDate
-                )
-            ) {
-
+            if (Object.prototype.hasOwnProperty.call(dateWiseQty, requestedDate))
+            {
                 return dateWiseQty[requestedDate];
             }
 
             // Normalized key comparison
-            var requestedNormalized =
-                normalizeReportDate(requestedDate);
+            var requestedNormalized = normalizeReportDate(requestedDate);
 
             for (var key in dateWiseQty) {
+                if (Object.prototype.hasOwnProperty.call(dateWiseQty, key)) {
 
-                if (
-                    Object.prototype.hasOwnProperty.call(
-                        dateWiseQty,
-                        key
-                    )
-                ) {
+                    var keyNormalized = normalizeReportDate(key);
 
-                    var keyNormalized =
-                        normalizeReportDate(key);
-
-                    if (
-                        keyNormalized === requestedNormalized
-                    ) {
-
+                    if (keyNormalized === requestedNormalized) {
                         return dateWiseQty[key];
                     }
                 }
@@ -656,38 +890,40 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-12 col-md-12 col-sm-12">
-            <h5>UPI Monthly Data Day Wise</h5>
+            <h4>UPI Data Day Wise</h4>
 
             <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-3 mt-3">
+                            <b>From Date</b><input type="text" id="txtFromDate" name="txtFromDate" class="form-control" />
+                        </div>
 
-                <div class="row">
-                    <div class="col-sm-3 mt-3">
-                        <b>From Date</b><input type="text" id="txtFromDate" name="txtFromDate" class="form-control" />
-                    </div>
+                        <div class="col-sm-3 mt-3">
+                            <b>To Date</b><input type="text" id="txtToDate" name="txtToDate" class="form-control" />
+                        </div>
 
-                    <div class="col-sm-3 mt-3">
-                        <b>To Date</b><input type="text" id="txtToDate" name="txtToDate" class="form-control" />
-                    </div>
-
-                    <div class="col-sm-3 mt-3">
-                        <button id="btnSubmit" name="btnSubmit" class="btn btn-primary" style="margin-top:9%;" onclick="Fn_MonthlyReport_UPIDataCanteenWise();">Submit</button>
+                        <div class="col-sm-3 mt-3">
+                            <button id="btnSubmit" name="btnSubmit" class="btn btn-primary" style="margin-top:9%;" onclick="Fn_MonthlyReport_UPIDataCanteenWise();">Submit</button>
+                        </div>
                     </div>
                 </div>
-
             </div>
 
 
             <div class="card-body">
-                <div class="table-responsive">
-                    <table id="tblUPIMonthlyData" class="table table-bordered table-striped table-hover">
+                <div class="row">
+                    <div class="table-responsive">
+                        <table id="tblUPIMonthlyData" class="table table-bordered table-striped table-hover">
 
-                        <thead id="tblUPIMonthlyDataHead">
-                        </thead>
+                            <thead id="tblUPIMonthlyDataHead">
+                            </thead>
 
-                        <tbody id="dvUPIMonthlyData">
-                        </tbody>
+                            <tbody id="dvUPIMonthlyData">
+                            </tbody>
 
-                    </table>
+                        </table>
+                    </div>
                 </div>
             </div>
 
