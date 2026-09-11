@@ -8,6 +8,7 @@
     <link href="~/Web/css/jquery-ui.css" rel="stylesheet" />
     <script src="~/Web/js/jquery-3.7.1.min.js"></script>
     <script src="~/Web/js/jquery-ui.min.js"></script>
+    <script src="~/Web/js/xlsx.full.min.js"></script>
 
     <script type="text/javascript">
 
@@ -15,13 +16,13 @@
 
             var clsUPIDataUpload = {};
             clsUPIDataUpload.CreatedBy = sessionStorage.getItem("LogInID");
-            
+
             let formData = new FormData();
             let file = $("#fileUPIDataExcel").get(0).files[0];
 
             formData.append("file", file);
             //formData.append("CreatedBy", clsUPIDataUpload.CreatedBy);
-            
+
             if (!file) {
                 Swal.fire({ title: "", text: "Please Upload the UPI Data file", icon: "error" });
             }
@@ -70,7 +71,7 @@
 
             var headers = [
                 "TransactionDate", "TransactionID", "Amount",
-                "Rate", "QTY", "LocationID"                				
+                "Rate", "QTY", "LocationID"
             ]
 
             var excelData = [];
