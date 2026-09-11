@@ -27,6 +27,7 @@
         Fn_DailyReport_ItemCategorywise();
         Fn_DailyReport_ItemWise();
         Fn_DailyReport_CouponTypeWise();
+        Fn_DailyReport_UPIDataCanteenWise();
         Fn_DailyReport_Canteenwise();
 
         const CurrentDate = new Date();
@@ -39,20 +40,19 @@
         const mmm = monthnames[CurrentDate.getMonth()];
         const dateformat = dd + '-' + mmm + '-' + yyyy;
         $("#spnTodayDate").html(dateformat);
-        
-    });
 
+    });
 
 
     function Fn_DailyReport_Shiftwise() {
 
         var clsShiftReport = {};
-        
+
         var html = "";
         $("#tbody_Shift").html("");
         clsShiftReport.FromDate = $("#txtCurrentDate").val();
         clsShiftReport.ToDate = $("#txtToDate").val();
-        
+
         $.ajax({
             type: "POST",
             url: "/Staff/Fn_DailyReport_Shiftwise",
@@ -233,12 +233,12 @@
     function Fn_DailyReport_ItemWise() {
 
         var clsItemWiseReport = {};
-        
+
         var html = "";
         $("#tbody_Items").html("");
         clsItemWiseReport.FromDate = $("#txtCurrentDate").val();
         clsItemWiseReport.ToDate = $("#txtToDate").val();
-        
+
         $.ajax({
             type: "POST",
             url: "/Staff/Fn_DailyReport_ItemWise",
@@ -322,6 +322,54 @@
             }
         });
     }
+
+
+    function Fn_DailyReport_UPIDataCanteenWise() {
+
+        var clsUPIDataReport = {};
+
+        var html = "";
+        $("#tbody_UPIData").html("");
+        clsUPIDataReport.FromDate = $("#txtCurrentDate").val();
+        clsUPIDataReport.ToDate = $("#txtToDate").val();
+
+        $.ajax({
+            type: "POST",
+            url: "/Staff/Fn_DailyReport_UPIDataCanteenWise",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(clsUPIDataReport),
+            success: function (data) {
+                var obj = JSON.parse(data.message);
+
+                if (obj[0].vErrorMsg == "Success") {
+
+                    for (var i = 0; i < obj.length; i++) {
+                        html += "<tr>";
+                        html += "<td style='text-align:center;'>" + obj[i].Rate + "</td>";
+                        html += "<td style='text-align:center;background-color:#E1BEE7;'>" + obj[i].BFL + "</td>";
+                        html += "<td style='text-align:center;background-color:#FFCCBC;'>" + obj[i].BSL + "</td>";
+                        html += "<td style='text-align:center;background-color:#ADD8E6;'>" + obj[i].BTM + "</td>";
+                        html += "<td style='text-align:center;background-color:#C8E6C9;'>" + obj[i].CKDININGBANSWARA + "</td>";
+                        html += "<td style='text-align:center;background-color:#FFDAB4;'>" + obj[i].TPPDyeHouse + "</td>";
+                        html += "<td style='text-align:center;background-color:#FFCBE1;'>" + obj[i].W04 + "</td>";
+                        html += "<td style='text-align:center;background-color:#DCCCEC;'>" + obj[i].WEAVING7 + "</td>";
+                        html += "<td style='text-align:center;background-color:#F7E5B7;'>" + obj[i].WorstedVan + "</td>";
+                        html += "<td style='text-align:center;background-color:#F2F2F2; font-weight:bold;'>" + obj[i].TotalQty + "</td>";
+                        html += "</tr>";
+                    }
+                }
+                else {
+                    html += "<tr><td colspan='12' class='text-center'>UPI Data wise records are not found.</td></tr>";
+                }
+                $("#tbody_UPIData").append(html);
+            },
+            error: function (err) {
+                alert(err);
+            }
+        });
+    }
+
 
 
     function Fn_DailyReport_Canteenwise() {
@@ -478,6 +526,31 @@
     }
 
 
+    function Fn_ExportExcelUPITypeWise() {
+
+        var strFileName = "UPITypeWiseReport";
+        var tableData = document.getElementById('tblUPIDataTypeWiseReport');
+
+        var tab_text = "<table border='2px'><tr bgcolor='#87AFC6'>";
+        var textRange; var i = 0;
+
+        for (i = 0; i < tableData.rows.length; i++) {
+            tab_text = tab_text + tableData.rows[i].innerHTML + "</tr>";
+        }
+
+        tab_text = tab_text + "</table>";
+        tab_text = tab_text.replace(/<A[^>]*>|<\/A>/g, "");
+        tab_text = tab_text.replace(/<img[^>]*>/gi, "");
+        tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, "");
+
+        let a = document.createElement('a');
+        a.href = `data:application/vnd.ms-excel, ${encodeURIComponent(tab_text)}`
+        a.download = strFileName + '.xls'
+        a.click()
+    }
+
+
+
     function Fn_ExportExcelCanteenWise() {
 
         var strFileName = "DailyCanteenWiseReport";
@@ -502,6 +575,15 @@
     }
 
 
+    function Fn_NavigateToUPIMonthlyDataPage() {
+
+        var NavigateUPIMonthlyDataPage = $("#btnNavigateUPIMonthlyDataPage").val();
+        NavigateUPIMonthlyDataPage = window.location.replace("@Url.Action("UPIMonthlyDataReport", "Staff")");
+        return true;
+
+    }
+
+
 </script>
 
 
@@ -523,7 +605,7 @@
                     </div>
 
                     <div class="col-sm-3 mt-3">
-                        <button id="btnSubmit" name="btnSubmit" class="btn btn-primary" style="margin-top:9%;" onclick="Fn_DailyReport_Shiftwise(); Fn_DailyReport_ItemCategorywise(); Fn_DailyReport_ItemWise(); Fn_DailyReport_CouponTypeWise(); Fn_DailyReport_Canteenwise();">Submit</button>
+                        <button id="btnSubmit" name="btnSubmit" class="btn btn-primary" style="margin-top:9%;" onclick="Fn_DailyReport_Shiftwise(); Fn_DailyReport_ItemCategorywise(); Fn_DailyReport_ItemWise(); Fn_DailyReport_CouponTypeWise(); Fn_DailyReport_UPIDataCanteenWise(); Fn_DailyReport_Canteenwise();">Submit</button>
                     </div>
                 </div>
 
@@ -646,7 +728,34 @@
                     </table>
                 </div>
 
+                <div class="col-sm-12 mt-3 position-relative">
+                    <h5>Daily UPI Wise Report</h5>
+                    <div class="position-absolute bottom-0 end-0" style="padding-right: 15px;">
+                        <button id="btnNavigateUPIMonthlyDataPage" class="btn btn-primary mt-4" onclick="Fn_NavigateToUPIMonthlyDataPage();">UPI Monthly Data</button>
+                        <button id="btnExportUPIWiseData" class="btn btn-primary mt-4" onclick="Fn_ExportExcelUPITypeWise();">Export UPI Wise</button>
+                    </div>
+                </div>
 
+                <div class="table-responsive mt-3">
+                    <table class="table table-bordered table-hover" id="tblUPIDataTypeWiseReport" onchange="Fn_DailyReport_UPIDataCanteenWise();">
+                        <thead>
+                            <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
+                                <th style="text-align:center;">Item Rate</th>
+                                <th style="text-align:center;">BFL</th>
+                                <th style="text-align:center;">BSL</th>
+                                <th style="text-align:center;">BTM</th>
+                                <th style="text-align:center;">CK DINING</th>
+                                <th style="text-align:center;">TPP</th>
+                                <th style="text-align:center;">W04</th>
+                                <th style="text-align:center;">WEAVING7</th>
+                                <th style="text-align:center;">Worsted</th>
+                                <th style="text-align:center;">Total Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody_UPIData">
+                        </tbody>
+                    </table>
+                </div>
 
                 <div class="col-sm-12 mt-3 position-relative">
                     <h5>Daily Canteen Wise Report</h5>
