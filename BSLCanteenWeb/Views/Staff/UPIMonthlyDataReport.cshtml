@@ -312,7 +312,7 @@
     //}
 
 
-    // New JS Code Solution
+    // Start of New JS Code Solution
     function Fn_MonthlyReport_UPIDataCanteenWise() {
 
         try {
@@ -334,13 +334,9 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 data: JSON.stringify(clsUPIMonthlyReportRequest),
-
                 success: function (data) {
-
                     try {
-
                         console.log("API Response:", data);
-
                         if (!data || data.message === undefined || data.message === null) {
 
                             $("#dvUPIMonthlyData").html(
@@ -392,10 +388,7 @@
 
                         if (!Array.isArray(obj)) {
 
-                            console.error(
-                                "Expected array but received:",
-                                obj
-                            );
+                            console.error("Expected array but received:", obj);
 
                             $("#dvUPIMonthlyData").html(
                                 "<tr>" +
@@ -513,9 +506,7 @@
                             // SHOW LOCATION ID ONLY WHEN IT CHANGES
                             var displayLocationID = "";
 
-                            if (i === 0 ||
-                                locationID !== previousLocationID) {
-
+                            if (i === 0 || locationID !== previousLocationID) {
                                 displayLocationID = locationID;
                             }
 
@@ -552,9 +543,7 @@
                                         dateWiseQty = JSON.parse(dateWiseQty);
                                     }
                                     catch (dateJsonError) {
-
                                         console.error("Invalid DateWiseQty JSON:", dateJsonError);
-
                                         dateWiseQty = {};
                                     }
                                 }
@@ -589,8 +578,7 @@
 
                                 var requestedDate = dateColumns[d].display;
 
-                                var qty =
-                                    getDateWiseQuantity(dateWiseQty, requestedDate);
+                                var qty = getDateWiseQuantity(dateWiseQty, requestedDate);
 
                                 if (qty === null || qty === undefined || qty === "") {
                                     qty = 0;
@@ -655,8 +643,7 @@
                     console.error("Status:", status);
                     console.error("Response:", xhr.responseText);
 
-                    var errorMessage =
-                        "Unable to load UPI Monthly Data.";
+                    var errorMessage = "Unable to load UPI Monthly Data.";
 
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         errorMessage = xhr.responseJSON.message;
@@ -678,7 +665,7 @@
             alert("Error while processing UPI Monthly Data.\n\n" + e.message);
         }
     }
-    // New JS Code Solution
+    // End of New JS Code Solution
 
 
 
@@ -694,7 +681,6 @@
             if (isNaN(value.getTime())) {
                 return null;
             }
-
             return new Date(value);
         }
 
@@ -726,18 +712,13 @@
 
             var date2 = new Date(year2, month2, day2);
 
-            if (
-                date2.getFullYear() === year2 &&
-                date2.getMonth() === month2 &&
-                date2.getDate() === day2
-            ) {
+            if (date2.getFullYear() === year2 && date2.getMonth() === month2 && date2.getDate() === day2)
+            {
                 return date2;
             }
         }
        
-        match = value.match(
-            /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
-        );
+        match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
 
         if (match) {
 
@@ -747,11 +728,8 @@
 
             var date3 = new Date(year3, month3, day3);
 
-            if (
-                date3.getFullYear() === year3 &&
-                date3.getMonth() === month3 &&
-                date3.getDate() === day3
-            ) {
+            if (date3.getFullYear() === year3 && date3.getMonth() === month3 && date3.getDate() === day3)
+            {
                 return date3;
             }
         }
@@ -767,9 +745,7 @@
    
     function formatReportDate(date) {
 
-        if (!(date instanceof Date) ||
-            isNaN(date.getTime())) {
-
+        if (!(date instanceof Date) || isNaN(date.getTime())) {
             return "";
         }
 
@@ -804,9 +780,7 @@
         if (Array.isArray(dateWiseQty)) {
 
             for (var i = 0; i < dateWiseQty.length; i++) {
-
                 var item = dateWiseQty[i];
-
                 if (!item) {
                     continue;
                 }
@@ -815,7 +789,6 @@
                 var itemQty = item.Qty || item.Quantity || item.TotalQty || 0;
 
                 if (itemDate) {
-
                     var formattedItemDate = formatReportDate(parseReportDate(itemDate));
                     if (normalizeReportDate(formattedItemDate) === normalizeReportDate(requestedDate))
                     {
@@ -880,7 +853,6 @@
         if (value === null || value === undefined ) {
             return "";
         }
-
         return $("<div>").text(value).html();
     }
 
