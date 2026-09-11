@@ -415,13 +415,9 @@
                         }
 
                         // Date validation
-                        var fromDate = parseReportDate(
-                            clsUPIMonthlyReportRequest.FromDate
-                        );
+                        var fromDate = parseReportDate(clsUPIMonthlyReportRequest.FromDate);
 
-                        var toDate = parseReportDate(
-                            clsUPIMonthlyReportRequest.ToDate
-                        );
+                        var toDate = parseReportDate(clsUPIMonthlyReportRequest.ToDate);
 
                         if (!fromDate || !toDate) {
                             alert("Invalid From Date or To Date.");
