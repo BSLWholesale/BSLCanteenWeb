@@ -63,6 +63,27 @@
             UPIDataExcelFile.value = '';
         }
 
+
+        function Fn_UPIDataExcelFileFormatDownload() {
+
+            var fileName = "UPIDataExcelFormat.xlsx";
+
+            var headers = [
+                "TransactionDate", "TransactionID", "Amount",
+                "Rate", "QTY", "LocationID"                				
+            ]
+
+            var excelData = [];
+            excelData.push(headers);
+
+            var worksheet = XLSX.utils.aoa_to_sheet(excelData);
+
+            var workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "UPIData");
+
+            XLSX.writeFile(workbook, fileName);
+        }
+
     </script>
 }
 
@@ -85,11 +106,11 @@
                             <button type="submit" id="btnReset" name="btnReset" class="btn btn-success pull-right" onclick="Fn_ResetFields();" style="margin-right:0.5%;">Reset</button>
                         </div>
 
-                        @*<div class="col-sm-4" style="margin-top: 3%;">
+                        <div class="col-sm-4" style="margin-top: 3%;">
                             <div class="form-group">
-                                <button type="submit" id="btnExcelSheetFormat" name="btnExcelSheetFormat" class="btn btn-primary pull-right" onclick="">UPI Data Format Download</button>
+                                <button type="submit" id="btnExcelSheetFormat" name="btnExcelSheetFormat" class="btn btn-primary pull-right" onclick="Fn_UPIDataExcelFileFormatDownload();">UPI Data Format Download</button>
                             </div>
-                        </div>*@
+                        </div>
                     </div>
                 </div>
             </div>
