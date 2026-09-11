@@ -1,0 +1,104 @@
+﻿
+@{
+    ViewBag.Title = "UPIDataUpload";
+}
+
+@{
+
+    <link href="~/Web/css/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Web/js/jquery-3.7.1.min.js"></script>
+    <script src="~/Web/js/jquery-ui.min.js"></script>
+
+    <script type="text/javascript">
+
+        function Fn_Upload_UPIDataFile() {
+
+            var clsUPIDataUpload = {};
+            clsUPIDataUpload.CreatedBy = sessionStorage.getItem("LogInID");
+            
+            let formData = new FormData();
+            let file = $("#fileUPIDataExcel").get(0).files[0];
+
+            formData.append("file", file);
+            //formData.append("CreatedBy", clsUPIDataUpload.CreatedBy);
+            
+            if (!file) {
+                Swal.fire({ title: "", text: "Please Upload the UPI Data file", icon: "error" });
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Staff/Fn_Upload_UPIDataFile",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function () {
+                        $("#loader").show();
+                        $("#dvMain").hide();
+                    },
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire({ title: "", text: "UPI Data uploaded successfully", icon: "success" });
+                            const UPIDataExcelFile = document.getElementById('fileUPIDataExcel');
+                            UPIDataExcelFile.value = '';
+                        }
+                        else {
+                            Swal.fire({ title: "", text: "UPI Data import failed", icon: "error" });
+                        }
+                    },
+                    complete: function (data) {
+                        $("#loader").hide();
+                        $("#dvMain").show();
+                    },
+                    error: function (err) {
+                        alert(err);
+                    }
+                });
+            }
+        }
+
+
+        function Fn_ResetFields() {
+            const UPIDataExcelFile = document.getElementById('fileUPIDataExcel');
+            UPIDataExcelFile.value = '';
+        }
+
+    </script>
+}
+
+<div class="container mt-4">
+
+    <div class="row" id="dvMain">
+        <div class="col-xl-12 col-xxl-12 col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="form-label"> <b>Upload UPI Data Excel File</b></label>
+                                <input type="file" id="fileUPIDataExcel" name="fileUPIDataExcel" accept=".xlsx,.xls" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4" style="margin-top: 3%;">
+                            <button type="submit" id="btnUpload" name="btnUpload" class="btn btn-primary pull-right" onclick="Fn_Upload_UPIDataFile();">Upload File</button>
+                            <button type="submit" id="btnReset" name="btnReset" class="btn btn-success pull-right" onclick="Fn_ResetFields();" style="margin-right:0.5%;">Reset</button>
+                        </div>
+
+                        @*<div class="col-sm-4" style="margin-top: 3%;">
+                            <div class="form-group">
+                                <button type="submit" id="btnExcelSheetFormat" name="btnExcelSheetFormat" class="btn btn-primary pull-right" onclick="">UPI Data Format Download</button>
+                            </div>
+                        </div>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="loader" style="margin-top: 15%; text-align: center; display: none;">
+        <img src="~/Web/img/loading.gif?timestamp(~/web/ing/loading.gif)" width="8%" />
+    </div>
+
+</div>
