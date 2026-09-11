@@ -1,0 +1,239 @@
+﻿
+@{
+    ViewBag.Title = "UPIMonthlyDataReport";
+}
+
+@*<h2>UPIMonthlyDataReport</h2>*@
+
+<script src="~/Web/js/jquery-3.7.1.min.js"></script>
+<link href="~/Web/css/select2.min.css" rel="stylesheet" />
+<script src="~/Web/js/jquery-ui.min.js"></script>
+<link href="~/Web/css/jquery-ui.css" rel="stylesheet" />
+<script src="~/Web/js/xlsx.full.min.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#txtFromDate").datepicker({
+            dateFormat: "dd-M-yy",
+            defaultDate: new Date()
+        }).datepicker("setDate", new Date());
+
+
+        $("#txtToDate").datepicker({
+            dateFormat: "dd-M-yy",
+            defaultDate: new Date()
+        }).datepicker("setDate", new Date());
+
+    });
+
+
+    function Fn_MonthlyReport_UPIDataCanteenWise() {
+
+        var clsUPIMonthlyReportRequest = {};
+
+        clsUPIMonthlyReportRequest.FromDate = $("#txtFromDate").val();
+        clsUPIMonthlyReportRequest.ToDate = $("#txtToDate").val();
+
+        $("#tblUPIMonthlyDataHead").html("");
+        $("#dvUPIMonthlyData").html("");
+
+        $.ajax({
+            type: "POST",
+            url: "/Staff/Fn_MonthlyReport_UPIDataCanteenWise",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(clsUPIMonthlyReportRequest),
+            success: function (data) {
+
+                var obj = JSON.parse(data.message);
+
+                if (!obj || obj.length === 0) {
+                    $("#dvUPIMonthlyData").html(
+                        "<tr><td colspan='100%' class='text-center'>" +
+                        "UPI Monthly Data records are not found." +
+                        "</td></tr>"
+                    );
+                    return;
+                }
+
+                if (obj[0].vErrorMsg != "Success") {
+
+                    $("#dvUPIMonthlyData").html(
+                        "<tr><td colspan='100%' class='text-center'>" +
+                        (obj[0].vErrorMsg || "UPI Monthly Data records are not found.") +
+                        "</td></tr>"
+                    );
+
+                    return;
+                }
+
+                // Get all columns dynamically from first object
+                var columns = Object.keys(obj[0]);
+
+                // Remove API status/error properties
+                columns = columns.filter(function (column) {
+                    return column !== "vErrorMsg" &&
+                        column !== "vErrorCode";
+                });
+
+                // Fixed columns
+                var fixedColumns = [
+                    "LocationID",
+                    "Rate"
+                ];
+
+                // Total columns
+                var totalColumns = [
+                    "TotalQty",
+                    "TotalAmount"
+                ];
+
+                // Date columns = everything between Rate and TotalQty/TotalAmount
+                var dateColumns = columns.filter(function (column) {
+
+                    return fixedColumns.indexOf(column) === -1 &&
+                        totalColumns.indexOf(column) === -1;
+                });
+
+                // Create table header
+                var headerHtml = "<tr>";
+
+                headerHtml +=
+                    "<th style='text-align:center;'>Location ID</th>";
+
+                headerHtml +=
+                    "<th style='text-align:center;background-color:#E1BEE7;'>Rate</th>";
+
+                // Dynamic date headers
+                for (var d = 0; d < dateColumns.length; d++) {
+
+                    headerHtml +=
+                        "<th style='text-align:center;background-color:#DDEBF7;'>" +
+                        dateColumns[d] +
+                        "</th>";
+                }
+
+                headerHtml +=
+                    "<th style='text-align:center;background-color:#FFF2CC;'>Total Qty</th>";
+
+                headerHtml +=
+                    "<th style='text-align:center;background-color:#F2F2F2;'>Total Amount</th>";
+
+                headerHtml += "</tr>";
+
+                $("#tblUPIMonthlyDataHead").html(headerHtml);
+
+                // Create table rows
+                var html = "";
+
+                for (var i = 0; i < obj.length; i++) {
+
+                    html += "<tr>";
+
+                    // Location
+                    html +=
+                        "<td style='text-align:center;'>" +
+                        (obj[i].LocationID || "") +
+                        "</td>";
+
+                    // Rate
+                    html +=
+                        "<td style='text-align:center;background-color:#E1BEE7;'>" +
+                        (obj[i].Rate || 0) +
+                        "</td>";
+
+                    // Dynamic date quantities
+                    for (var d = 0; d < dateColumns.length; d++) {
+
+                        var dateColumn = dateColumns[d];
+
+                        var qty = obj[i][dateColumn];
+
+                        if (qty === null || qty === undefined || qty === "") {
+                            qty = 0;
+                        }
+
+                        html +=
+                            "<td style='text-align:center;background-color:#DDEBF7;'>" +
+                            qty +
+                            "</td>";
+                    }
+
+                    // Total Qty
+                    html +=
+                        "<td style='text-align:center;background-color:#FFF2CC;font-weight:bold;'>" +
+                        (obj[i].TotalQty || 0) +
+                        "</td>";
+
+                    // Total Amount
+                    html +=
+                        "<td style='text-align:center;background-color:#F2F2F2;font-weight:bold;'>" +
+                        (obj[i].TotalAmount || 0) +
+                        "</td>";
+
+                    html += "</tr>";
+                }
+
+                $("#dvUPIMonthlyData").html(html);
+            },
+
+            error: function (err) {
+
+                console.log(err);
+
+                $("#dvUPIMonthlyData").html(
+                    "<tr><td colspan='100%' class='text-center text-danger'>" +
+                    "Error while fetching UPI Monthly Data." +
+                    "</td></tr>"
+                );
+            }
+        });
+    }
+
+
+</script>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12 col-md-12 col-sm-12">
+            <h5>UPI Monthly Data Day Wise</h5>
+
+            <div class="card">
+
+                <div class="row">
+                    <div class="col-sm-3 mt-3">
+                        <b>From Date</b><input type="text" id="txtFromDate" name="txtFromDate" class="form-control" />
+                    </div>
+
+                    <div class="col-sm-3 mt-3">
+                        <b>To Date</b><input type="text" id="txtToDate" name="txtToDate" class="form-control" />
+                    </div>
+
+                    <div class="col-sm-3 mt-3">
+                        <button id="btnSubmit" name="btnSubmit" class="btn btn-primary" style="margin-top:9%;" onclick="Fn_MonthlyReport_UPIDataCanteenWise();">Submit</button>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tblUPIMonthlyData" class="table table-bordered table-striped table-hover">
+                        
+                        <thead id="tblUPIMonthlyDataHead">
+                        </thead>
+
+                        <tbody id="dvUPIMonthlyData">
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
