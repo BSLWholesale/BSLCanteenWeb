@@ -61,6 +61,11 @@ namespace BSLCanteenWeb.Controllers
         }
 
 
+        public ActionResult CanteenWiseReport()
+        {
+            return View();
+        }
+
         [HttpPost]
         public JsonResult Fn_ProcessCouponTransaction(clsCouponReport objReq)
         {
@@ -409,81 +414,167 @@ namespace BSLCanteenWeb.Controllers
         }
 
 
+
         [HttpPost]
         public JsonResult Fn_Upload_UPIDataFile(clsUPIDataUpload objReq)
         {
-            objReq.vErrorMsg = "";
-            HttpPostedFileBase file = Request.Files[0];
-
-            if (file == null || file.ContentLength == 0)
+            try
             {
-                return Json(new { status = "error", message = "Please Select Excel file" });
-            }
+                objReq.vErrorMsg = "";
 
-            string fileExtension = Path.GetExtension(file.FileName).ToLower();
-
-            if (fileExtension != ".xls" && fileExtension != ".xlsx")
-            {
-                return Json(new { success = false, message = "Invalid file format. Only .xls or .xlsx are allowed." }, JsonRequestBehavior.AllowGet);
-            }
-
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-            List<clsUPIDataUpload> UPIDataList = new List<clsUPIDataUpload>();
-
-            using (ExcelPackage package = new ExcelPackage(file.InputStream))
-            {
-                ExcelWorksheet sheet = package.Workbook.Worksheets[0];
-                int rowCount = sheet.Dimension.End.Row;
-
-                for (int row = 2; row <= rowCount; row++)
+                if (Request.Files.Count == 0)
                 {
-                    string Transdate;
+                    return Json(new { success = false, message = "Please Select Excel file"}, JsonRequestBehavior.AllowGet);
+                }
 
-                    if (sheet.Cells[row, 1].Value is DateTime)
+                HttpPostedFileBase file = Request.Files[0];
+
+                if (file == null || file.ContentLength == 0)
+                {
+                    return Json(new { success = false, message = "Please Select Excel file"}, JsonRequestBehavior.AllowGet);
+                }
+
+                string fileExtension = Path.GetExtension(file.FileName).ToLower();
+
+                if (fileExtension != ".xls" && fileExtension != ".xlsx")
+                {
+                    return Json(new { success = false, message = "Invalid file format. Only .xls or .xlsx are allowed." }, JsonRequestBehavior.AllowGet);
+                }
+
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+                List<clsUPIDataUpload> UPIDataList = new List<clsUPIDataUpload>();
+
+                using (ExcelPackage package = new ExcelPackage(file.InputStream))
+                {
+                    ExcelWorksheet sheet = package.Workbook.Worksheets[0];
+
+                    if (sheet == null || sheet.Dimension == null)
                     {
-                        Transdate = ((DateTime)sheet.Cells[row, 1].Value).ToString("dd-MM-yyyy HH:mm:ss");
+                        return Json(new { success = false, message = "Excel file is empty."}, JsonRequestBehavior.AllowGet);
                     }
-                    else
+
+                    int rowCount = sheet.Dimension.End.Row;
+
+                    for (int row = 2; row <= rowCount; row++)
                     {
-                        Transdate = DateTime.ParseExact(sheet.Cells[row, 1].Text, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture).ToString("dd-MM-yyyy HH:mm:ss");
+                        try
+                        {
+                            // Transaction Date
+                            string transDate = sheet.Cells[row, 1].Text.Trim();
+
+                            DateTime transactionDate;
+
+                            if (sheet.Cells[row, 1].Value is DateTime)
+                            {
+                                transactionDate = (DateTime)sheet.Cells[row, 1].Value;
+                            }
+                            else
+                            {
+                                string[] dateFormats =
+                                {
+                                    "M-d-yy H:mm:ss",
+                                    "MM-dd-yy H:mm:ss",
+                                    "M-d-yyyy H:mm:ss",
+                                    "MM-dd-yyyy H:mm:ss",
+                                    "M/d/yy H:mm:ss",
+                                    "MM/dd/yy H:mm:ss",
+                                    "M/d/yyyy H:mm:ss",
+                                    "MM/dd/yyyy H:mm:ss",
+                                    "yyyy-MM-dd HH:mm:ss",
+                                    "yyyy-MM-dd H:mm:ss",
+                                    "dd-MM-yyyy HH:mm:ss",
+                                    "dd-MMM-yyyy HH:mm:ss",
+                                    "dd/MM/yyyy HH:mm:ss"
+                                };
+
+                                if (!DateTime.TryParseExact(transDate, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out transactionDate))
+                                {
+                                    return Json(new { success = false, message = $"Invalid date '{transDate}' at Excel row {row}" }, JsonRequestBehavior.AllowGet);
+                                }
+                            }
+
+                            // Rate
+                            decimal rate = 0;
+
+                            if (!string.IsNullOrWhiteSpace(sheet.Cells[row, 4].Text))
+                            {
+                                if (!decimal.TryParse(sheet.Cells[row, 4].Text.Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out rate))
+                                {
+                                    return Json(new { success = false, message = $"Invalid Rate at Excel row {row}" }, JsonRequestBehavior.AllowGet);
+                                }
+                            }
+
+                            // Create object
+                            clsUPIDataUpload UPIData = new clsUPIDataUpload
+                            {
+                                TransactionDate = transactionDate.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
+                                TransactionID = Convert.ToString(sheet.Cells[row, 2].Value),
+                                Amount = Convert.ToDecimal(sheet.Cells[row, 3].Value),
+                                Rate = rate,
+                                Qty = Convert.ToInt32(sheet.Cells[row, 5].Value),
+                                LocationID = Convert.ToString(sheet.Cells[row, 6].Value)
+                            };
+
+                            UPIDataList.Add(UPIData);
+                        }
+                        catch (Exception ex)
+                        {
+                            return Json(new { success = false, message = $"Error processing Excel row {row}: {ex.Message}" }, JsonRequestBehavior.AllowGet);
+                        }
                     }
+                }
 
-                    clsUPIDataUpload UPIData = new clsUPIDataUpload
+                // Validate list
+                if (UPIDataList.Count == 0)
+                {
+                    return Json(new { success = false, message = "No records found in Excel file." }, JsonRequestBehavior.AllowGet);
+                }
+
+                // Send to API in batches
+                int batchSize = 1000;
+                int totalRecords = UPIDataList.Count;
+                int totalSuccess = 0;
+
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                    for (int start = 0; start < totalRecords; start += batchSize)
                     {
-                        TransactionDate = Transdate,
-                        TransactionID = Convert.ToString(sheet.Cells[row, 2].Value),
-                        Amount = Convert.ToDecimal(sheet.Cells[row, 3].Value),
-                        Rate = Convert.ToDecimal(sheet.Cells[row, 4].Value),
-                        Qty = Convert.ToInt32(sheet.Cells[row, 5].Value),
-                        LocationID = Convert.ToString(sheet.Cells[row, 6].Value)
-                    };
+                        List<clsUPIDataUpload> batch = UPIDataList.Skip(start).Take(batchSize).ToList();
 
-                    UPIDataList.Add(UPIData);
+                        string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(batch);
+
+                        HttpContent content = new StringContent(DATA, Encoding.UTF8, "application/json");
+                        HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_Upload_UPIDataFile", content).Result;
+                        string responseMessage = responsePost.Content.ReadAsStringAsync().Result;
+
+                        if (!responsePost.IsSuccessStatusCode)
+                        {
+                            return Json(new { success = false, message = $"API failed at batch {(start / batchSize) + 1}. " + responseMessage }, JsonRequestBehavior.AllowGet);
+                        }
+
+                        // API currently returns List<clsUPIDataUpload>
+                        List<clsUPIDataUpload> result = Newtonsoft.Json.JsonConvert.DeserializeObject<List<clsUPIDataUpload>>(responseMessage);
+
+                        if (result != null)
+                        {
+                            totalSuccess += result.Count;
+                        }
+                    }
                 }
+
+                // Final return
+                return Json(new { success = true, totalRecords = totalRecords, successCount = totalSuccess, message = "UPI data uploaded successfully." }, JsonRequestBehavior.AllowGet);
             }
-
-            using (var client = new HttpClient())
+            catch (Exception ex)
             {
-                client.BaseAddress = new Uri(ConfigurationManager.AppSettings["BSLCANTEENAPIURL"]);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-
-                string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(UPIDataList);
-                HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
-
-                HttpResponseMessage responsePost = client.PostAsync("api/Canteen/Fn_Upload_UPIDataFile", content).Result;
-                if (responsePost.IsSuccessStatusCode)
-                {
-                    return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    return Json(new { success = false, message = "UPI Data Import Failed" }, JsonRequestBehavior.AllowGet);
-                }
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
-
 
         [HttpPost]
         public JsonResult Fn_DailyReport_UPIDataCanteenWise(clsUPIDataReport objReq)
