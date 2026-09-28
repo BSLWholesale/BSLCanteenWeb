@@ -853,6 +853,47 @@
     }
 
 
+    function Fn_ExportExcelUPIMonthlyData() {
+
+        const date = new Date();
+        const yyyy = date.getFullYear();
+        const monthNames = [
+            "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+            "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+        ];
+
+        let dd = date.getDate();
+
+        if (dd < 10) {
+            dd = "0" + dd;
+        }
+
+        const mmm = monthNames[date.getMonth()];
+        const DateFormat = dd + "-" + mmm + "-" + yyyy;
+
+        var strFileName = "UPIDataReport_" + DateFormat;
+        var tableData = document.getElementById('tblUPIMonthlyData');
+
+        var tab_text = "<table border='2px'><tr bgcolor='#87AFC6'>";
+        var textRange; var i = 0;
+
+        for (i = 0; i < tableData.rows.length; i++) {
+            tab_text = tab_text + tableData.rows[i].innerHTML + "</tr>";
+        }
+
+        tab_text = tab_text + "</table>";
+        tab_text = tab_text.replace(/<A[^>]*>|<\/A>/g, "");
+        tab_text = tab_text.replace(/<img[^>]*>/gi, "");
+        tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, "");
+
+        let a = document.createElement('a');
+        a.href = `data:application/vnd.ms-excel, ${encodeURIComponent(tab_text)}`
+        a.download = strFileName + '.xls'
+        a.click()
+
+    }
+
+
 </script>
 
 <div class="container mt-4">
@@ -863,16 +904,17 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-sm-3 mt-3">
+                        <div class="col-sm-3">
                             <b>From Date</b><input type="text" id="txtFromDate" name="txtFromDate" class="form-control" />
                         </div>
 
-                        <div class="col-sm-3 mt-3">
+                        <div class="col-sm-3">
                             <b>To Date</b><input type="text" id="txtToDate" name="txtToDate" class="form-control" />
                         </div>
 
-                        <div class="col-sm-3 mt-3">
-                            <button id="btnSubmit" name="btnSubmit" class="btn btn-primary" style="margin-top:9%;" onclick="Fn_MonthlyReport_UPIDataCanteenWise();">Submit</button>
+                        <div class="col-sm-3">
+                            <button id="btnSubmit" name="btnSubmit" class="btn btn-primary mt-4" onclick="Fn_MonthlyReport_UPIDataCanteenWise();">Submit</button>
+                            <button id="btnExport" name="btnExport" class="btn btn-success mt-4" onclick="Fn_ExportExcelUPIMonthlyData();">Export</button>
                         </div>
                     </div>
                 </div>
