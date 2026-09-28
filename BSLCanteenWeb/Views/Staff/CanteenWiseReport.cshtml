@@ -1,0 +1,647 @@
+﻿
+@{
+    ViewBag.Title = "CanteenWiseReport";
+}
+
+@{
+
+    <script src="~/Web/js/jquery-3.7.1.min.js"></script>
+    <link href="~/Web/css/select2.min.css" rel="stylesheet" />
+    <script src="~/Web/js/jquery-ui.min.js"></script>
+    <link href="~/Web/css/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Web/js/xlsx.full.min.js"></script>
+
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var today = new Date();
+
+            var twoMonthsAgo = new Date();
+            twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
+
+            $("#txtFromDate").datepicker({
+                dateFormat: "d-M-yy",
+                minDate: twoMonthsAgo,
+                maxDate: today,
+                defaultDate: today
+            });
+
+            $("#txtFromDate").datepicker("setDate", today);
+
+            $("#txtToDate").datepicker({
+                dateFormat: "d-M-yy",
+                minDate: twoMonthsAgo,
+                maxDate: today,
+                defaultDate: today
+            });
+
+            $("#txtToDate").datepicker("setDate", today);
+
+
+            Fn_Fill_DropdownList("ddlCanteen", "CanteenMaster", "CanteenName", "CanteenId", "");
+
+        });
+
+
+        function Fn_Fill_DropdownList(ddlName, strTBLName, strFieldName, strValueField, strCriteria) {
+
+            var clsRequestDropdown = {};
+
+            clsRequestDropdown.vFieldName = strFieldName;
+            clsRequestDropdown.vValueField = strValueField;
+            clsRequestDropdown.vTBLName = strTBLName;
+            clsRequestDropdown.vCriteria = strCriteria;
+
+            $("#" + ddlName).html('');
+            var dropdown = ''; var dropdown1 = "";
+            dropdown1 = "<option value='0'>--Select--</option>";
+            $("#" + ddlName).append(dropdown1);
+
+            $.ajax({
+                type: "POST",
+                url: '/Home/Fn_Fill_DropdownList',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsRequestDropdown),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    for (var i = 0; i < obj.length; i++) {
+                        if (strValueField == "") {
+                            dropdown += "<option value='" + obj[i].vFieldName + "'>" + obj[i].vFieldName + "</option>";
+                        }
+                        else {
+                            dropdown += "<option value='" + obj[i].vValueField + "'>" + obj[i].vFieldName + "</option>";
+                        }
+                    }
+                    $("#" + ddlName).append(dropdown);
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
+        }
+
+
+        //function Fn_Fetch_CanteenWiseReport(isScroll = false) {
+
+        //    // If this is first page/search
+        //    if (!isScroll) {
+
+        //        // Generate a new search ID
+        //        searchRequestId++;
+
+        //        // Reset everything
+        //        Fn_ClearTableCanteenData();
+        //    }
+
+
+        //    if (isLoading || !hasMoreData) {
+        //        return;
+        //    }
+
+        //    if (!isScroll) {
+        //        currentPage = 1;
+        //        hasMoreData = true;
+        //        rCount = 0;
+        //        totalRows = 0;
+
+        //        $("#tbodyCanteen").empty();
+        //        $("#spTotalRowCount").html("Total Rows: 0");
+        //    }
+
+        //    if ($("#ddlCanteen").val() == "0") {
+        //        Swal.fire({ title: "", text: "Please Select the Canteen", icon: "error" });
+        //        return;
+        //    }
+
+        //    var clsCanteenWiseReport = {};
+
+        //    clsCanteenWiseReport.PageNumber = currentPage;
+        //    clsCanteenWiseReport.PageSize = pageSize;
+        //    clsCanteenWiseReport.FromDate = $("#txtFromDate").val();
+        //    clsCanteenWiseReport.ToDate = $("#txtToDate").val();
+        //    clsCanteenWiseReport.CanteenId = $("#ddlCanteen").val();
+
+        //    isLoading = true;
+
+        //    $.ajax({
+        //        type: "POST",
+        //        url: "/Staff/Fn_Fetch_CanteenWiseReport",
+        //        contentType: "application/json;charset=utf-8",
+        //        dataType: "json",
+        //        data: JSON.stringify(clsCanteenWiseReport),
+        //        beforeSend: function () {
+        //            $("#loader").show();
+        //        },
+        //        success: function (data) {
+        //            var obj = JSON.parse(data.message);
+        //            if (obj.length > 0 && obj[0].vErrorMsg == "Success") {
+        //                // Total records from server
+        //                totalRows = parseInt(obj[0].TotalRows) || 0;
+        //                var html = "";
+        //                for (var i = 0; i < obj.length; i++) {
+
+        //                    html += "<tr>";
+        //                    html += "<td>" + obj[i].OrderTakenDate + "</td>";
+        //                    html += "<td>" + obj[i].CouponId + "</td>";
+        //                    html += "<td>" + obj[i].EmpId + "</td>";
+        //                    html += "<td>" + obj[i].EmpName + "</td>";
+        //                    html += "<td>" + obj[i].CanteenName + "</td>";
+        //                    html += "<td>" + obj[i].EmpDepartment + "</td>";
+        //                    html += "<td>" + obj[i].Item + "</td>";
+        //                    html += "<td>" + obj[i].Category + "</td>";
+        //                    html += "<td>" + obj[i].Price + "</td>";
+        //                    html += "</tr>";
+
+        //                    rCount++;
+        //                }
+
+        //                // Add the new records
+        //                $("#tbodyCanteen").append(html);
+        //                // Update count
+        //                $("#spTotalRowCount").html("Total Rows: " + rCount + " / " + totalRows);
+        //                // Move to next page
+        //                currentPage++;
+
+        //                if (rCount >= totalRows) {
+        //                    hasMoreData = false;
+        //                }
+
+        //                if (obj.length < pageSize) {
+        //                    hasMoreData = false;
+        //                }
+        //            }
+        //            else {
+        //                hasMoreData = false;
+        //                if (!isScroll) {
+        //                    $("#spTotalRowCount").html("Total Rows: 0");
+        //                }
+        //            }
+        //        },
+        //        complete: function () {
+        //            $("#loader").hide();
+        //            isLoading = false;
+        //        },
+        //        error: function (err) {
+        //            isLoading = false;
+        //            Swal.fire({ title: "", text: "Error while fetching data.", icon: "error" });
+        //        }
+        //    });
+        //}
+
+
+        var currentPage = 1;
+        var pageSize = 500;
+        var isLoading = false;
+        var hasMoreData = true;
+        var rCount = 0;
+        var totalRows = 0;
+
+        // Used to identify the latest search.
+        // If user changes ABC -> LMN while ABC AJAX is still running,
+        // the old ABC response will be ignored.
+        var searchRequestId = 0;
+
+        // Reset / Clear Grid
+        function Fn_ClearTableCanteenData() {
+
+            $("#tbodyCanteen").empty();
+            $("#spTotalRowCount").html("Total Rows: 0");
+
+            // Reset pagination
+            currentPage = 1;
+            hasMoreData = true;
+            rCount = 0;
+            totalRows = 0;
+        }
+
+
+        // Fetch Canteen Wise Report
+        function Fn_Fetch_CanteenWiseReport(isScroll = false) {
+
+            // If this is first page/search
+            if (!isScroll) {
+
+                // Generate a new search ID
+                searchRequestId++;
+                // Reset everything
+                Fn_ClearTableCanteenData();
+            }
+
+            // Don't make duplicate requests
+            if (isLoading || !hasMoreData) {
+                return;
+            }
+
+            var canteenId = $("#ddlCanteen").val();
+            if (canteenId == "0" || canteenId == "" || canteenId == null) {
+
+                Fn_ClearTableCanteenData();
+                Swal.fire({ title: "", text: "Please Select the Canteen", icon: "error" });
+                return;
+
+            }
+
+            // Store current search ID
+            var thisSearchId = searchRequestId;
+
+            var clsCanteenWiseReport = {};
+
+            clsCanteenWiseReport.PageNumber = currentPage;
+            clsCanteenWiseReport.PageSize = pageSize;
+            clsCanteenWiseReport.FromDate = $("#txtFromDate").val();
+            clsCanteenWiseReport.ToDate = $("#txtToDate").val();
+            clsCanteenWiseReport.CanteenId = canteenId;
+
+            isLoading = true;
+
+            $.ajax({
+                type: "POST",
+                url: "/Staff/Fn_Fetch_CanteenWiseReport",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsCanteenWiseReport),
+                beforeSend: function () {
+                    $("#loader").show();
+                },
+                success: function (data) {
+                    // If another search was started after this AJAX
+                    // request, ignore this old response.
+                    if (thisSearchId !== searchRequestId) {
+                        return;
+                    }
+
+                    if (thisSearchId)
+
+                    var obj = JSON.parse(data.message);
+
+                    if (obj.length > 0 && obj[0].vErrorMsg == "Success") {
+
+                        totalRows = parseInt(obj[0].TotalRows) || 0;
+                        var html = "";
+                        for (var i = 0; i < obj.length; i++) {
+
+                            html += "<tr>";
+                            html += "<td>" + (obj[i].OrderTakenDate || "") + "</td>";
+                            html += "<td>" + (obj[i].CouponId || "") + "</td>";
+                            html += "<td>" + (obj[i].EmpId || "") + "</td>";
+                            html += "<td>" + (obj[i].EmpName || "") + "</td>";
+                            html += "<td>" + (obj[i].CanteenName || "") + "</td>";
+                            html += "<td>" + (obj[i].EmpDepartment || "") + "</td>";
+                            html += "<td>" + (obj[i].Item || "") + "</td>";
+                            html += "<td>" + (obj[i].Category || "") + "</td>";
+                            html += "<td>" + (obj[i].Price || "") + "</td>";
+                            html += "</tr>";
+
+                            rCount++;
+                        }
+
+                        // Add records to current canteen
+                        $("#tbodyCanteen").append(html);
+                        // Update row count
+                        $("#spTotalRowCount").html("Total Rows: " + rCount + " / " + totalRows);
+                        // Next page
+                        currentPage++;
+
+                        // Check whether all records have been loaded
+                        if (rCount >= totalRows) {
+                            hasMoreData = false;
+                        }
+
+                        if (obj.length < pageSize) {
+                            hasMoreData = false;
+                        }
+                    }
+                    else {
+                        hasMoreData = false;
+                        if (!isScroll) {
+                            $("#tbodyCanteen").empty();
+                            rCount = 0;
+                            totalRows = 0;
+                            $("#spTotalRowCount").html("Total Rows: 0");
+                        }
+                    }
+                },
+                complete: function () {
+                    $("#loader").hide();
+                    isLoading = false;
+                },
+                error: function (err) {
+                    isLoading = false;
+                    Swal.fire({ title: "", text: "Error while fetching data.", icon: "error" });
+                }
+            });
+        }
+
+
+        // Scroll - Load next 500 records
+        $(window).on("scroll", function () {
+
+            if (isLoading || !hasMoreData) {
+                return;
+            }
+
+            var scrollTop = $(window).scrollTop();
+            var windowHeight = $(window).height();
+            var documentHeight = $(document).height();
+
+            // Load next page when user reaches near bottom
+            if (scrollTop + windowHeight >= documentHeight - 200) {
+                Fn_Fetch_CanteenWiseReport(true);
+            }
+        });
+
+
+        // Canteen Change
+        $("#ddlCanteen").on("change", function () {
+            Fn_ClearTableCanteenData();
+            searchRequestId++;
+        });
+
+
+        //function Fn_ExportExcelCanteenWiseReport() {
+
+        //    const date = new Date();
+        //    const yyyy = date.getFullYear();
+        //    const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+        //        "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+        //    let dd = date.getDate();
+        //    if (dd < 10) dd = '0' + dd;
+
+        //    const mmm = monthNames[date.getMonth()];
+        //    const DateFormat = dd + '-' + mmm + '-' + yyyy;
+
+        //    var strFileName = "CanteenWiseReport"+"_"+DateFormat;
+        //    var tableData = document.getElementById('tblCanteenWiseReport');
+
+        //    var tab_text = "<table border='2px'><tr bgcolor='#87AFC6'>";
+        //    var textRange; var i = 0;
+
+        //    for (i = 0; i < tableData.rows.length; i++) {
+        //        tab_text = tab_text + tableData.rows[i].innerHTML + "</tr>";
+        //    }
+
+        //    tab_text = tab_text + "</table>";
+        //    tab_text = tab_text.replace(/<A[^>]*>|<\/A>/g, "");
+        //    tab_text = tab_text.replace(/<img[^>]*>/gi, "");
+        //    tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, "");
+
+        //    let a = document.createElement('a');
+        //    a.href = `data:application/vnd.ms-excel, ${encodeURIComponent(tab_text)}`
+        //    a.download = strFileName + '.xls'
+        //    a.click()
+
+        //}
+
+        function Fn_ExportExcelCanteenWiseReport() {
+
+            var canteenId = $("#ddlCanteen").val();
+            if (canteenId == "0" || canteenId == "" || canteenId == null) {
+                Swal.fire({ title: "", text: "Please Select the Canteen", icon: "error" });
+                return;
+            }
+
+            // Prevent export while another fetch is running
+            if (isLoading) {
+                Swal.fire({ title: "", text: "Please wait until the current data loading is completed.", icon: "info" });
+                return;
+            }
+
+            $("#btnExport").prop("disabled", true);
+            $("#loader").show();
+            // Start exporting from page 1
+            Fn_FetchAllDataForExport(1, []);
+        }
+
+
+        function Fn_FetchAllDataForExport(pageNumber, allData) {
+
+            var canteenId = $("#ddlCanteen").val();
+
+            var clsCanteenWiseReport = {};
+
+            clsCanteenWiseReport.PageNumber = pageNumber;
+            clsCanteenWiseReport.PageSize = pageSize;
+            clsCanteenWiseReport.FromDate = $("#txtFromDate").val();
+            clsCanteenWiseReport.ToDate = $("#txtToDate").val();
+            clsCanteenWiseReport.CanteenId = canteenId;
+
+            $.ajax({
+                type: "POST",
+                url: "/Staff/Fn_Fetch_CanteenWiseReport",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsCanteenWiseReport),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj.length > 0 && obj[0].vErrorMsg == "Success") {
+
+                        // Add current page records to allData
+                        for (var i = 0; i < obj.length; i++) {
+                            allData.push(obj[i]);
+                        }
+
+                        // Get total rows from server [API Side]
+                        var serverTotalRows = parseInt(obj[0].TotalRows) || 0;
+
+                        //Update export progress
+                        $("#spTotalRowCount").html("Preparing Export: " + allData.length + " / " + serverTotalRows);
+
+                        // Check whether all records have been fetched
+                        if (allData.length < serverTotalRows && obj.length == pageSize) {
+                            // Fetch next page
+                            Fn_FetchAllDataForExport(pageNumber + 1, allData);
+                        }
+                        else {
+                            // All records fetched
+                            Fn_CreateExcelFromData(allData);
+                        }
+                    }
+                    else {
+                        $("#btnExport").prop("disabled", false);
+                        $("#loader").hide();
+
+                        Swal.fire({ title: "", text: "No records found for export.", icon: "warning" });
+                    }
+                },
+                error: function () {
+                    $("#btnExport").prop("disabled", false);
+                    $("#loader").hide();
+                    Swal.fire({ title: "", text: "Error while fetching data for export.", icon: "error" });
+                }
+            });
+        }
+
+
+        function Fn_CreateExcelFromData(data) {
+
+            if (!data || data.length === 0) {
+                $("#btnExport").prop("disabled", false);
+                $("#loader").hide();
+                Swal.fire({ title: "", text: "No records are available for export.", icon: "warning" });
+                return;
+            }
+
+            // Create table
+            var tab_text = "";
+            tab_text += "<table border='1'>";
+            // Header
+            tab_text += "<tr style='background-color:#87AFC6;font-weight:bold;'>";
+            tab_text += "<th>Date Time</th>";
+            tab_text += "<th>Coupon ID</th>";
+            tab_text += "<th>Emp ID</th>";
+            tab_text += "<th>Name</th>";
+            tab_text += "<th>Canteen Name</th>";
+            tab_text += "<th>Department</th>";
+            tab_text += "<th>Item</th>";
+            tab_text += "<th>Item Category</th>";
+            tab_text += "<th>Amt</th>";
+            tab_text += "</tr>";
+
+            // Data
+            for (var i = 0; i < data.length; i++) {
+                tab_text += "<tr>";
+                tab_text += "<td>" + (data[i].OrderTakenDate || "") + "</td>";
+                tab_text += "<td>" + (data[i].CouponId || "") + "</td>";
+                tab_text += "<td>" + (data[i].EmpId || "") + "</td>";
+                tab_text += "<td>" + (data[i].EmpName || "") + "</td>";
+                tab_text += "<td>" + (data[i].CanteenName || "") + "</td>";
+                tab_text += "<td>" + (data[i].EmpDepartment || "") + "</td>";
+                tab_text += "<td>" + (data[i].Item || "") + "</td>";
+                tab_text += "<td>" + (data[i].Category || "") + "</td>";
+                tab_text += "<td>" + (data[i].Price || "") + "</td>";
+                tab_text += "</tr>";
+            }
+
+            tab_text += "</table>";
+
+            // Remove unnecessary HTML
+            tab_text = tab_text.replace(/<A[^>]*>|<\/A>/g, "");
+            tab_text = tab_text.replace(/<img[^>]*>/gi, "");
+            tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, "");
+
+            // File Name
+            const date = new Date();
+            const yyyy = date.getFullYear();
+            const monthNames = [
+                "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+                "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+            ];
+
+            let dd = date.getDate();
+
+            if (dd < 10) {
+                dd = "0" + dd;
+            }
+
+            const mmm = monthNames[date.getMonth()];
+            const DateFormat = dd + "-" + mmm + "-" + yyyy;
+            var strFileName = "CanteenWiseReport_" + DateFormat;
+
+            // Download Excel
+            var blob = new Blob(
+                ["\ufeff", tab_text], { type: "application/vnd.ms-excel;charset=utf-8" }
+            );
+
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = strFileName + ".xls";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+            // Reset Export
+            $("#loader").hide();
+            $("#btnExport").prop("disabled", false);
+            $("#spTotalRowCount").html("Total Rows: " + data.length);
+            Swal.fire({ title: "", text: data.length + " records exported successfully", icon: "success" });
+            
+        }
+
+    </script>
+
+}
+
+
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-12 col-md-12 col-sm-12">
+            <h4>Canteen Wise Report</h4>
+            <div class="card">
+                <div class="row mt-2">
+
+                    <div class="col-sm-3">
+                        <label><b>From Date</b></label>
+                        <input type="text" id="txtFromDate" class="form-control" />
+                    </div>
+
+                    <div class="col-sm-3">
+                        <label><b>To Date</b></label>
+                        <input type="text" id="txtToDate" class="form-control" />
+                    </div>
+
+                    <div class="col-sm-3">
+                        <label><b>Canteen</b></label>
+                        <select id="ddlCanteen" class="form-control">
+                            <option value="0">--Select--</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <button id="btnSearch" class="btn btn-primary mt-4" onclick="Fn_Fetch_CanteenWiseReport();">Search</button>
+                        <button id="btnExport" class="btn btn-primary mt-4" onclick="Fn_ExportExcelCanteenWiseReport();">Export</button>
+                    </div>
+
+                </div>
+
+                <div class="row mt-3">
+                    <span class="pull-left" id="spTotalRowCount" style="color: black; font-weight: 800;"></span>
+                </div>
+
+                <div class="table-responsive mt-3">
+                    <table class="table table-bordered table-hover" id="tblCanteenWiseReport">
+                        <thead>
+                            <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
+                                <th>Date Time</th>
+                                <th>Coupon ID</th>
+                                <th>Emp ID</th>
+                                <th>Name</th>
+                                <th>Canteen Name</th>
+                                <th>Department</th>
+                                <th>Item</th>
+                                <th>Item Category</th>
+                                @*<th>Total Coupons</th>*@
+                                <th>Amt</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyCanteen">
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div id="loader" style="margin-top: 15%; text-align: center; display: none;">
+    <img src="~/Web/img/loading.gif?timestamp(~/Web/img/loading.gif)" width="8%" />
+</div>
+
+
+<script src="~/Web/js/select2.min.js"></script>
+@*<script>
+
+    $(function () {
+        $("#ddlCanteen").select2();
+    });
+
+</script>*@
