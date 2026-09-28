@@ -84,114 +84,6 @@
         }
 
 
-        //function Fn_Fetch_CanteenWiseReport(isScroll = false) {
-
-        //    // If this is first page/search
-        //    if (!isScroll) {
-
-        //        // Generate a new search ID
-        //        searchRequestId++;
-
-        //        // Reset everything
-        //        Fn_ClearTableCanteenData();
-        //    }
-
-
-        //    if (isLoading || !hasMoreData) {
-        //        return;
-        //    }
-
-        //    if (!isScroll) {
-        //        currentPage = 1;
-        //        hasMoreData = true;
-        //        rCount = 0;
-        //        totalRows = 0;
-
-        //        $("#tbodyCanteen").empty();
-        //        $("#spTotalRowCount").html("Total Rows: 0");
-        //    }
-
-        //    if ($("#ddlCanteen").val() == "0") {
-        //        Swal.fire({ title: "", text: "Please Select the Canteen", icon: "error" });
-        //        return;
-        //    }
-
-        //    var clsCanteenWiseReport = {};
-
-        //    clsCanteenWiseReport.PageNumber = currentPage;
-        //    clsCanteenWiseReport.PageSize = pageSize;
-        //    clsCanteenWiseReport.FromDate = $("#txtFromDate").val();
-        //    clsCanteenWiseReport.ToDate = $("#txtToDate").val();
-        //    clsCanteenWiseReport.CanteenId = $("#ddlCanteen").val();
-
-        //    isLoading = true;
-
-        //    $.ajax({
-        //        type: "POST",
-        //        url: "/Staff/Fn_Fetch_CanteenWiseReport",
-        //        contentType: "application/json;charset=utf-8",
-        //        dataType: "json",
-        //        data: JSON.stringify(clsCanteenWiseReport),
-        //        beforeSend: function () {
-        //            $("#loader").show();
-        //        },
-        //        success: function (data) {
-        //            var obj = JSON.parse(data.message);
-        //            if (obj.length > 0 && obj[0].vErrorMsg == "Success") {
-        //                // Total records from server
-        //                totalRows = parseInt(obj[0].TotalRows) || 0;
-        //                var html = "";
-        //                for (var i = 0; i < obj.length; i++) {
-
-        //                    html += "<tr>";
-        //                    html += "<td>" + obj[i].OrderTakenDate + "</td>";
-        //                    html += "<td>" + obj[i].CouponId + "</td>";
-        //                    html += "<td>" + obj[i].EmpId + "</td>";
-        //                    html += "<td>" + obj[i].EmpName + "</td>";
-        //                    html += "<td>" + obj[i].CanteenName + "</td>";
-        //                    html += "<td>" + obj[i].EmpDepartment + "</td>";
-        //                    html += "<td>" + obj[i].Item + "</td>";
-        //                    html += "<td>" + obj[i].Category + "</td>";
-        //                    html += "<td>" + obj[i].Price + "</td>";
-        //                    html += "</tr>";
-
-        //                    rCount++;
-        //                }
-
-        //                // Add the new records
-        //                $("#tbodyCanteen").append(html);
-        //                // Update count
-        //                $("#spTotalRowCount").html("Total Rows: " + rCount + " / " + totalRows);
-        //                // Move to next page
-        //                currentPage++;
-
-        //                if (rCount >= totalRows) {
-        //                    hasMoreData = false;
-        //                }
-
-        //                if (obj.length < pageSize) {
-        //                    hasMoreData = false;
-        //                }
-        //            }
-        //            else {
-        //                hasMoreData = false;
-        //                if (!isScroll) {
-        //                    $("#spTotalRowCount").html("Total Rows: 0");
-        //                }
-        //            }
-        //        },
-        //        complete: function () {
-        //            $("#loader").hide();
-        //            isLoading = false;
-        //        },
-        //        error: function (err) {
-        //            isLoading = false;
-        //            Swal.fire({ title: "", text: "Error while fetching data.", icon: "error" });
-        //        }
-        //    });
-        //}
-
-
         var currentPage = 1;
         var pageSize = 500;
         var isLoading = false;
@@ -360,41 +252,6 @@
             searchRequestId++;
         });
 
-
-        //function Fn_ExportExcelCanteenWiseReport() {
-
-        //    const date = new Date();
-        //    const yyyy = date.getFullYear();
-        //    const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-        //        "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-
-        //    let dd = date.getDate();
-        //    if (dd < 10) dd = '0' + dd;
-
-        //    const mmm = monthNames[date.getMonth()];
-        //    const DateFormat = dd + '-' + mmm + '-' + yyyy;
-
-        //    var strFileName = "CanteenWiseReport"+"_"+DateFormat;
-        //    var tableData = document.getElementById('tblCanteenWiseReport');
-
-        //    var tab_text = "<table border='2px'><tr bgcolor='#87AFC6'>";
-        //    var textRange; var i = 0;
-
-        //    for (i = 0; i < tableData.rows.length; i++) {
-        //        tab_text = tab_text + tableData.rows[i].innerHTML + "</tr>";
-        //    }
-
-        //    tab_text = tab_text + "</table>";
-        //    tab_text = tab_text.replace(/<A[^>]*>|<\/A>/g, "");
-        //    tab_text = tab_text.replace(/<img[^>]*>/gi, "");
-        //    tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, "");
-
-        //    let a = document.createElement('a');
-        //    a.href = `data:application/vnd.ms-excel, ${encodeURIComponent(tab_text)}`
-        //    a.download = strFileName + '.xls'
-        //    a.click()
-
-        //}
 
         function Fn_ExportExcelCanteenWiseReport() {
 
@@ -615,7 +472,6 @@
                                 <th>Department</th>
                                 <th>Item</th>
                                 <th>Item Category</th>
-                                @*<th>Total Coupons</th>*@
                                 <th>Amt</th>
                             </tr>
                         </thead>
