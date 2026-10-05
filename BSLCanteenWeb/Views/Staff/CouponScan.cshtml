@@ -1,0 +1,286 @@
+﻿
+@{
+    ViewBag.Title = "CouponScan";
+}
+
+@{
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Web/css/select2.min.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var spnCanteen = sessionStorage.getItem("CanteenName");
+            $("#spCanteen").html(spnCanteen);
+            $("#txtCouponId").focus();
+            Fn_Get_Coupon_Order();
+            Fn_Get_Count_ItemMenu();
+        });
+
+
+        function Fn_ScanCouponTransaction() {
+
+            const input = document.getElementById("txtCouponId").value.trim();
+
+            var clsCouponReport = {};
+            clsCouponReport.ModifiedBy = sessionStorage.getItem("LogInID");
+            clsCouponReport.CouponId = input;
+            clsCouponReport.CanteenId = sessionStorage.getItem("CanteenId");
+
+            if (input == "") {
+                Swal.fire({ title: "", text: "Please Scan QR-Code", icon: "error" });
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Staff/Fn_ScanCouponTransaction",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(clsCouponReport),
+                    success: function (data) {
+                        var obj = JSON.parse(data.message);
+                        if (obj.vErrorMsg == "Success") {
+                            Swal.fire({
+                                title: "",
+                                text: "Coupon Scanned Successfully",
+                                icon: "success",
+                                timer: 1000,              // Auto close after 1 seconds
+                                timerProgressBar: true,   // Optional progress bar
+                                showConfirmButton: false
+                            }).then(() => {
+                                $("#txtCouponId").val("");
+                                $("#txtCouponId").focus();
+                                Fn_Get_Coupon_Order();
+                                Fn_Get_Count_ItemMenu();
+                            });
+                        }
+                        else {
+                            Swal.fire({
+                                title: "",
+                                text: obj.vErrorMsg,
+                                icon: "error",
+                                timer: 1000,              // Auto close after 1 seconds
+                                timerProgressBar: true,
+                                showConfirmButton: false
+                            }).then(() => {
+                                $("#txtCouponId").val("");
+                                $("#txtCouponId").focus();
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        alert(err);
+                    }
+                });
+            }
+        }
+
+
+        function Fn_Get_Coupon_Order() {
+
+            var CurrentDate = new Date();
+
+            var day = String(CurrentDate.getDate()).padStart(2, '0');
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = months[CurrentDate.getMonth()];
+            var year = CurrentDate.getFullYear();
+
+            var formattedDate = day + "-" + month + "-" + year;
+
+            $("#spnTodays").html(formattedDate);
+
+
+            var clsCouponReport = {};
+            clsCouponReport.ModifiedBy = sessionStorage.getItem("LogInID");
+            clsCouponReport.OrderStatus = "Scanned";
+            clsCouponReport.OrderTakenDate = formattedDate;
+            clsCouponReport.CanteenId = sessionStorage.getItem("CanteenId");
+            $("#tbody").html('');
+            var html = '';
+
+            $.ajax({
+                type: "POST",
+                url: "/Staff/Fn_Get_Coupon_Order",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsCouponReport),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj[0].vErrorMsg == "Success") {
+                        for (var i = 0; i < obj.length; i++) {
+                            html += "<tr>";
+                            html += "<td>" + obj[i].OrderTakenTime + "</td>";
+                            html += "<td>" + obj[i].CouponId + "</td>";
+                            html += "<td>" + obj[i].EmpId + "</td>";
+                            html += "<td>" + obj[i].EmpName + (obj[i].CouponType != 'Self' ? " <b>(" + obj[i].CouponType + ")</b>" : "") + "</td>";
+                            html += "<td>" + obj[i].EmpDepartment + "</td>";
+                            html += "<td>" + obj[i].CategoryIcon + " " + obj[i].ItemCategory + " <b>(₹" + obj[i].Price + ")</b></td>";
+                            html += "<td>" + obj[i].Category + "</td>";
+                            html += "</tr>";
+                        }
+                    }
+                    else {
+                        html += "<tr>";
+                        html += "<td colspan='7' class='text-center'>" + obj[0].vErrorMsg + "</td>";
+                        html += "</tr>";
+                    }
+                    $("#tbody").append(html);
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
+        }
+
+        function Fn_Clear_Control() {
+            $("#txtCouponId").val("");
+            $("#txtCouponId").focus();
+        }
+
+        let scanTimer;
+
+        function scanCompleted() {
+            clearTimeout(scanTimer);
+
+            scanTimer = setTimeout(() => {
+                Fn_ProcessCouponTransaction();
+            }, 100);
+        }
+
+        function Fn_Get_Count_ItemMenu() {
+
+            var today = new Date();
+
+            var day = String(today.getDate()).padStart(2, '0');
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = months[today.getMonth()];
+            var year = today.getFullYear();
+
+            var formattedDate = day + "-" + month + "-" + year;
+
+            var clsCountMenuItem = {};
+            clsCountMenuItem.OrderTakenDate = formattedDate;
+            clsCountMenuItem.CanteenId = sessionStorage.getItem("CanteenId");
+            //clsCountMenuItem.EmpLocation = sessionStorage.getItem("EmpLocation");
+            $("#ItemCountRow").html('');
+            var html = '';
+            $.ajax({
+                type: "POST",
+                url: '/Admin/Fn_Get_Count_ItemMenu',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(clsCountMenuItem),
+                success: function (data) {
+                    var obj = JSON.parse(data.message);
+                    if (obj[0].vErrorMsg == "Success") {
+                        var rCount = 1;
+                        for (var i = 0; i < obj.length; i++) {
+
+                            html += "<div class='col-sm-6'>";
+                            html += "<div class='card p-4 food-card" + rCount + "'>";
+                            html += "<div style='font-size: 26px; font-weight: 800'>" + obj[i].CategoryIcon + "  " + obj[i].ItemCategory + " - " + obj[i].CountItem + "</div>";
+                            html += "</div>";
+                            html += "</div>";
+                            rCount++;
+                        }
+                        $("#ItemCountRow").append(html);
+                    }
+                    else {
+
+                    }
+
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
+        }
+
+    </script>
+
+    <style>
+        .food-card1 {
+            background-color: #D7CCC8; /* Light Brown */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(121, 85, 72, 0.25);
+        }
+
+        .food-card2 {
+            background-color: #C8E6C9; /* Light Green */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(76, 175, 80, 0.25);
+        }
+
+        .food-card3 {
+            background-color: #FFCCBC; /* Light Orange */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(255, 87, 34, 0.25);
+        }
+
+        .food-card4 {
+            background-color: #E1BEE7; /* Light Purple */
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 8px 15px rgba(156, 39, 176, 0.25);
+        }
+    </style>
+}
+
+
+<div class="container mt-4">
+
+    <div class="row">
+        @*<h4>Point of Sale — <span id="spCanteen"></span></h4>*@
+        <p>Today's  <span id="spnTodays"></span> Transcation</p>
+        <div class="col-lg-6 col-md-6">
+            <div class="card">
+                <div class="form-group">
+                    <div style="font-size: 52px; text-align: center;">📲</div>
+                    <h5>Scan QR-Code or Enter Coupon ID</h5>
+                    <input class="form-control" id="txtCouponId" placeholder="Please Scan QR-code" onkeydown="if(event.key==='Enter'){clearTimeout(scanTimer);Fn_ScanCouponTransaction();}" oninput="scanCompleted()" />
+                    @*<input class="form-control" id="txtCouponId" placeholder="Please Scan QR-code" onkeydown="if (event.key === 'Enter') Fn_ProcessCouponTransaction();" />*@
+                    <button class="btn btn-primary mb-2 mt-2" style="width: 100%;" onclick="Fn_ScanCouponTransaction()">✓ Scan Coupon Transaction</button>
+                    <button class="btn btn-success mb-2" style="width: 100%;" onclick="Fn_Clear_Control()">Reset</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6">
+            <div class="row" id="ItemCountRow">
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-12 col-sm-12">
+            <div class="card">
+                <div class="table-responsive mt-3">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #ff8702, #ff8702); color: white; ">
+                                <th>Time</th>
+                                <th>Coupon ID</th>
+                                <th>Emp ID</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Item</th>
+                                <th>Item Category</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
