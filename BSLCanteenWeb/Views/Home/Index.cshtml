@@ -65,6 +65,9 @@
                         if (obj.EmpRole == "Supervisor") {
                             window.location.href = '/Staff/DailyReport';
                         }
+                        if (obj.EmpRole == "Reco") {
+                            window.location.href = '/Staff/CouponScan';
+                        }
                     }
                     else {
                         Swal.fire({ title: "Login", text: obj.vErrorMsg, icon: "error", });
