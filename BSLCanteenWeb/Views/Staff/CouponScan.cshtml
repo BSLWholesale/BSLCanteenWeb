@@ -15,7 +15,7 @@
             $("#spCanteen").html(spnCanteen);
             $("#txtCouponId").focus();
             Fn_Get_Coupon_Order();
-            Fn_Get_Count_ItemMenu();
+            //Fn_Get_Count_ItemMenu();
         });
 
 
@@ -52,7 +52,7 @@
                                 $("#txtCouponId").val("");
                                 $("#txtCouponId").focus();
                                 Fn_Get_Coupon_Order();
-                                Fn_Get_Count_ItemMenu();
+                                //Fn_Get_Count_ItemMenu();
                             });
                         }
                         else {
@@ -145,7 +145,7 @@
             clearTimeout(scanTimer);
 
             scanTimer = setTimeout(() => {
-                Fn_ProcessCouponTransaction();
+                Fn_ScanCouponTransaction();
             }, 100);
         }
 
@@ -243,7 +243,7 @@
                 <div class="form-group">
                     <div style="font-size: 52px; text-align: center;">📲</div>
                     <h5>Scan QR-Code or Enter Coupon ID</h5>
-                    <input class="form-control" id="txtCouponId" placeholder="Please Scan QR-code" onkeydown="if(event.key==='Enter'){clearTimeout(scanTimer);Fn_ScanCouponTransaction();}" oninput="scanCompleted()" />
+                    <input class="form-control" id="txtCouponId" placeholder="Please Scan QR-code" onchange="Fn_ScanCouponTransaction();" onkeydown="if(event.key==='Enter'){clearTimeout(scanTimer);Fn_ScanCouponTransaction();}" oninput="scanCompleted()" />
                     @*<input class="form-control" id="txtCouponId" placeholder="Please Scan QR-code" onkeydown="if (event.key === 'Enter') Fn_ProcessCouponTransaction();" />*@
                     <button class="btn btn-primary mb-2 mt-2" style="width: 100%;" onclick="Fn_ScanCouponTransaction()">✓ Scan Coupon Transaction</button>
                     <button class="btn btn-success mb-2" style="width: 100%;" onclick="Fn_Clear_Control()">Reset</button>
