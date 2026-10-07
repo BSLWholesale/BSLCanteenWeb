@@ -372,6 +372,7 @@
     <Content Include="Views\Staff\UPIMonthlyDataReport.cshtml" />
     <Content Include="Views\Staff\CanteenWiseReport.cshtml" />
     <Content Include="Views\Staff\CouponScan.cshtml" />
+    <Content Include="Views\Staff\RecoWiseCouponReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
