@@ -14,8 +14,10 @@
             var spnCanteen = sessionStorage.getItem("CanteenName");
             $("#spCanteen").html(spnCanteen);
             $("#txtCouponId").focus();
-            Fn_Get_Coupon_Order();
-            Fn_Get_Count_ItemMenu();
+            //Fn_Get_Coupon_Order();
+            Fn_Get_Reco_Coupon_Order();
+            //Fn_Get_Count_ItemMenu();
+
         });
 
 
@@ -24,10 +26,10 @@
             const input = document.getElementById("txtCouponId").value.trim();
 
             var clsCouponReport = {};
-            clsCouponReport.ModifiedBy = sessionStorage.getItem("LogInID");
+            clsCouponReport.RecoModifiedBy = sessionStorage.getItem("LogInID");
             clsCouponReport.CouponId = input;
-            clsCouponReport.CanteenId = sessionStorage.getItem("CanteenId");
-
+            //clsCouponReport.CanteenId = sessionStorage.getItem("CanteenId");
+            
             if (input == "") {
                 Swal.fire({ title: "", text: "Please Scan QR-Code", icon: "error" });
             }
@@ -51,8 +53,9 @@
                             }).then(() => {
                                 $("#txtCouponId").val("");
                                 $("#txtCouponId").focus();
-                                Fn_Get_Coupon_Order();
-                                Fn_Get_Count_ItemMenu();
+                                //Fn_Get_Coupon_Order();
+                                Fn_Get_Reco_Coupon_Order();
+                                //Fn_Get_Count_ItemMenu();
                             });
                         }
                         else {
@@ -77,7 +80,65 @@
         }
 
 
-        function Fn_Get_Coupon_Order() {
+        //function Fn_Get_Coupon_Order() {
+
+        //    var CurrentDate = new Date();
+
+        //    var day = String(CurrentDate.getDate()).padStart(2, '0');
+        //    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        //        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        //    var month = months[CurrentDate.getMonth()];
+        //    var year = CurrentDate.getFullYear();
+
+        //    var formattedDate = day + "-" + month + "-" + year;
+
+        //    $("#spnTodays").html(formattedDate);
+
+        //    var clsCouponReport = {};
+        //    clsCouponReport.RecoModifiedBy = sessionStorage.getItem("LogInID");
+        //    clsCouponReport.OrderStatus = "Scanned";
+        //    clsCouponReport.OrderTakenDate = formattedDate;
+        //    //clsCouponReport.RecoModifiedBy = sessionStorage.getItem("CanteenId");
+        //    $("#tbody").html('');
+        //    var html = '';
+
+        //    $.ajax({
+        //        type: "POST",
+        //        url: "/Staff/Fn_Get_Coupon_Order",
+        //        contentType: "application/json; charset=utf-8",
+        //        dataType: "json",
+        //        data: JSON.stringify(clsCouponReport),
+        //        success: function (data) {
+        //            var obj = JSON.parse(data.message);
+        //            if (obj[0].vErrorMsg == "Success") {
+        //                for (var i = 0; i < obj.length; i++) {
+        //                    html += "<tr>";
+        //                    html += "<td>" + obj[i].OrderTakenTime + "</td>";
+        //                    html += "<td>" + obj[i].CouponId + "</td>";
+        //                    html += "<td>" + obj[i].EmpId + "</td>";
+        //                    html += "<td>" + obj[i].EmpName + (obj[i].CouponType != 'Self' ? " <b>(" + obj[i].CouponType + ")</b>" : "") + "</td>";
+        //                    html += "<td>" + obj[i].EmpDepartment + "</td>";
+        //                    html += "<td>" + obj[i].CategoryIcon + " " + obj[i].ItemCategory + " <b>(₹" + obj[i].Price + ")</b></td>";
+        //                    html += "<td>" + obj[i].Category + "</td>";
+        //                    html += "</tr>";
+        //                }
+        //            }
+        //            else {
+        //                html += "<tr>";
+        //                html += "<td colspan='7' class='text-center'>" + obj[0].vErrorMsg + "</td>";
+        //                html += "</tr>";
+        //            }
+        //            $("#tbody").append(html);
+        //        },
+        //        error: function (err) {
+        //            alert(err);
+        //        }
+        //    });
+        //}
+
+
+
+        function Fn_Get_Reco_Coupon_Order() {
 
             var CurrentDate = new Date();
 
@@ -91,18 +152,17 @@
 
             $("#spnTodays").html(formattedDate);
 
-
             var clsCouponReport = {};
-            clsCouponReport.ModifiedBy = sessionStorage.getItem("LogInID");
-            clsCouponReport.OrderStatus = "Scanned";
-            clsCouponReport.OrderTakenDate = formattedDate;
-            clsCouponReport.CanteenId = sessionStorage.getItem("CanteenId");
+            clsCouponReport.RecoModifiedBy = sessionStorage.getItem("LogInID");
+            //clsCouponReport.OrderStatus = "Scanned";
+            clsCouponReport.RecoModifiedOn = formattedDate;
+            
             $("#tbody").html('');
             var html = '';
-
+            
             $.ajax({
                 type: "POST",
-                url: "/Staff/Fn_Get_Coupon_Order",
+                url: "/Staff/Fn_Get_Reco_Coupon_Order",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 data: JSON.stringify(clsCouponReport),
@@ -118,12 +178,13 @@
                             html += "<td>" + obj[i].EmpDepartment + "</td>";
                             html += "<td>" + obj[i].CategoryIcon + " " + obj[i].ItemCategory + " <b>(₹" + obj[i].Price + ")</b></td>";
                             html += "<td>" + obj[i].Category + "</td>";
+                            html += "<td>" + obj[i].RecoModifiedOn + "</td>";
                             html += "</tr>";
                         }
                     }
                     else {
                         html += "<tr>";
-                        html += "<td colspan='7' class='text-center'>" + obj[0].vErrorMsg + "</td>";
+                        html += "<td colspan='8' class='text-center'>" + obj[0].vErrorMsg + "</td>";
                         html += "</tr>";
                     }
                     $("#tbody").append(html);
@@ -133,6 +194,8 @@
                 }
             });
         }
+
+
 
         function Fn_Clear_Control() {
             $("#txtCouponId").val("");
@@ -149,55 +212,55 @@
             }, 100);
         }
 
-        function Fn_Get_Count_ItemMenu() {
+        //function Fn_Get_Count_ItemMenu() {
 
-            var today = new Date();
+        //    var today = new Date();
 
-            var day = String(today.getDate()).padStart(2, '0');
-            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            var month = months[today.getMonth()];
-            var year = today.getFullYear();
+        //    var day = String(today.getDate()).padStart(2, '0');
+        //    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        //        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        //    var month = months[today.getMonth()];
+        //    var year = today.getFullYear();
 
-            var formattedDate = day + "-" + month + "-" + year;
+        //    var formattedDate = day + "-" + month + "-" + year;
 
-            var clsCountMenuItem = {};
-            clsCountMenuItem.OrderTakenDate = formattedDate;
-            clsCountMenuItem.CanteenId = sessionStorage.getItem("CanteenId");
-            //clsCountMenuItem.EmpLocation = sessionStorage.getItem("EmpLocation");
-            $("#ItemCountRow").html('');
-            var html = '';
-            $.ajax({
-                type: "POST",
-                url: '/Admin/Fn_Get_Count_ItemMenu',
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify(clsCountMenuItem),
-                success: function (data) {
-                    var obj = JSON.parse(data.message);
-                    if (obj[0].vErrorMsg == "Success") {
-                        var rCount = 1;
-                        for (var i = 0; i < obj.length; i++) {
+        //    var clsCountMenuItem = {};
+        //    clsCountMenuItem.OrderTakenDate = formattedDate;
+        //    clsCountMenuItem.CanteenId = sessionStorage.getItem("CanteenId");
+        //    //clsCountMenuItem.EmpLocation = sessionStorage.getItem("EmpLocation");
+        //    $("#ItemCountRow").html('');
+        //    var html = '';
+        //    $.ajax({
+        //        type: "POST",
+        //        url: '/Admin/Fn_Get_Count_ItemMenu',
+        //        contentType: "application/json; charset=utf-8",
+        //        dataType: "json",
+        //        data: JSON.stringify(clsCountMenuItem),
+        //        success: function (data) {
+        //            var obj = JSON.parse(data.message);
+        //            if (obj[0].vErrorMsg == "Success") {
+        //                var rCount = 1;
+        //                for (var i = 0; i < obj.length; i++) {
 
-                            html += "<div class='col-sm-6'>";
-                            html += "<div class='card p-4 food-card" + rCount + "'>";
-                            html += "<div style='font-size: 26px; font-weight: 800'>" + obj[i].CategoryIcon + "  " + obj[i].ItemCategory + " - " + obj[i].CountItem + "</div>";
-                            html += "</div>";
-                            html += "</div>";
-                            rCount++;
-                        }
-                        $("#ItemCountRow").append(html);
-                    }
-                    else {
+        //                    html += "<div class='col-sm-6'>";
+        //                    html += "<div class='card p-4 food-card" + rCount + "'>";
+        //                    html += "<div style='font-size: 26px; font-weight: 800'>" + obj[i].CategoryIcon + "  " + obj[i].ItemCategory + " - " + obj[i].CountItem + "</div>";
+        //                    html += "</div>";
+        //                    html += "</div>";
+        //                    rCount++;
+        //                }
+        //                $("#ItemCountRow").append(html);
+        //            }
+        //            else {
 
-                    }
+        //            }
 
-                },
-                error: function (err) {
-                    alert(err);
-                }
-            });
-        }
+        //        },
+        //        error: function (err) {
+        //            alert(err);
+        //        }
+        //    });
+        //}
 
     </script>
 
@@ -274,6 +337,7 @@
                                 <th>Department</th>
                                 <th>Item</th>
                                 <th>Item Category</th>
+                                <th>Reco DateTime</th>
                             </tr>
                         </thead>
                         <tbody id="tbody">
