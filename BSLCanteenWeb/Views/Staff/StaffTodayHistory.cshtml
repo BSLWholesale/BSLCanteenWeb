@@ -63,6 +63,35 @@
                     var obj = JSON.parse(data.message);
                     if (obj[0].vErrorMsg == "Success") {
                         for (var i = 0; i < obj.length; i++) {
+
+                            var orderTime = obj[i].OrderTakenTime; // Example: 02:35:PM
+                            var shift = "";
+
+                            if (orderTime) {
+                                var timeParts = orderTime.split(":");
+                                var hour = parseInt(timeParts[0], 10);
+                                var minute = parseInt(timeParts[1], 10);
+                                var ampm = timeParts[2].toUpperCase();
+
+                                // Convert to 24-hour format
+                                if (ampm === "AM" && hour === 12) {
+                                    hour = 0;
+                                }
+                                else if (ampm === "PM" && hour !== 12) {
+                                    hour += 12;
+                                }
+
+                                if (hour >= 7 && hour < 15) {
+                                    shift = "Shift A";
+                                }
+                                else if (hour >= 15 && hour < 23) {
+                                    shift = "Shift B";
+                                }
+                                else {
+                                    shift = "Shift C";
+                                }
+                            }
+
                             html += "<tr>";
                             html += "<td>" + obj[i].OrderTakenTime + "</td>";
                             html += "<td>" + obj[i].CouponId + "</td>";
@@ -71,6 +100,7 @@
                             html += "<td>" + obj[i].EmpDepartment + "</td>";
                             html += "<td>" + obj[i].CategoryIcon + " " + obj[i].ItemCategory + " <b>(₹" + obj[i].Price + ")</b></td>";
                             html += "<td>" + obj[i].Category + "</td>";
+                            html += "<td>" + shift + "</td>";
                             html += "</tr>";
                         }
                     }
@@ -114,16 +144,32 @@
                 success: function (data) {
                     var obj = JSON.parse(data.message);
                     if (obj[0].vErrorMsg == "Success") {
-                        var rCount = 1;
+
+                        var cardStyles = [
+                            { bg: "#E3F2FD", border: "#2196F3", shadow: "rgba(33,150,243,0.25)" },
+                            { bg: "#E8F5E9", border: "#4CAF50", shadow: "rgba(76,175,80,0.25)" },
+                            { bg: "#FFF3E0", border: "#FF9800", shadow: "rgba(255,152,0,0.25)" },
+                            { bg: "#F3E5F5", border: "#9C27B0", shadow: "rgba(156,39,176,0.25)" },
+                            { bg: "#FCE4EC", border: "#E91E63", shadow: "rgba(233,30,99,0.25)" },
+                            { bg: "#E0F7FA", border: "#00BCD4", shadow: "rgba(0,188,212,0.25)" }
+                        ];
+
+                        html += "<div class='row food-card-container'>";
+
                         for (var i = 0; i < obj.length; i++) {
 
-                            html += "<div class='col-sm-3'>";
-                            html += "<div class='card p-4 food-card" + rCount + "'>";
-                            html += "<div style='font-size: 15px; font-weight: 800'>" + obj[i].CategoryIcon + "  " + obj[i].ItemCategory + " - " + obj[i].CountItem + "</div>";
+                            var style = cardStyles[i % cardStyles.length];
+
+                            html += "<div class='col-3 mb-3'>";
+                            html += "<div class='p-3' style='background:" + style.bg + ";" + "border:1px solid " + style.border + ";" + "border-radius:15px; box-shadow:0 5px 15px " + style.shadow + ";" + "height:100%;'>";
+                            html += "<div style='font-size:12px;font-weight:800;color:" + style.border + ";'>";
+                            html += obj[i].CategoryIcon + " " + obj[i].ItemCategory + " - " + obj[i].CountItem;
                             html += "</div>";
                             html += "</div>";
-                            rCount++;
+                            html += "</div>";
                         }
+
+                        html += "</div>";
                         $("#ItemCountRow").append(html);
                     }
                     else {
@@ -136,38 +182,10 @@
                 }
             });
         }
+       
 
     </script>
-
-    <style>
-        .food-card1 {
-            background-color: #D7CCC8; /* Light Brown */
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 8px 15px rgba(121, 85, 72, 0.25);
-        }
-
-        .food-card2 {
-            background-color: #C8E6C9; /* Light Green */
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 8px 15px rgba(76, 175, 80, 0.25);
-        }
-
-        .food-card3 {
-            background-color: #FFCCBC; /* Light Orange */
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 8px 15px rgba(255, 87, 34, 0.25);
-        }
-
-        .food-card4 {
-            background-color: #E1BEE7; /* Light Purple */
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 8px 15px rgba(156, 39, 176, 0.25);
-        }
-    </style>
+    
 }
 
 
@@ -185,13 +203,14 @@
                     <table class="table table-bordered table-hover">
                         <thead>
                             <tr style="background-color: #06BBCC; background-image: linear-gradient(to bottom, #10D4E6, #1BCEDE); color: white;">
-                                <th>Issue Date</th>
+                                <th>Time</th>
                                 <th>Coupon ID</th>
                                 <th>Emp ID</th>
                                 <th>Name</th>
                                 <th>Department</th>
                                 <th>Item</th>
                                 <th>Item Category</th>
+                                <th>Shift</th>
                             </tr>
                         </thead>
                         <tbody id="tbody">
