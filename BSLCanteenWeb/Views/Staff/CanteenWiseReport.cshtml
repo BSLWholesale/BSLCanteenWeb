@@ -175,6 +175,33 @@
                         var html = "";
                         for (var i = 0; i < obj.length; i++) {
 
+                            var orderTime = obj[i].OrderTakenDate;
+                            var shift = "";
+                            if (orderTime) {
+                                var timePart = orderTime.split(" ")[1];
+                                var ampm = orderTime.split(":")[3];
+                                var timeParts = timePart.split(":");
+                                var hour = parseInt(timeParts[0], 10);
+                                if (ampm.toUpperCase() === "AM" && hour === 12) {
+                                    hour = 0;
+                                }
+                                else if (ampm.toUpperCase() === "PM" && hour !== 12) {
+                                    hour += 12;
+                                }
+
+                                if (hour >= 7 && hour < 15) {
+                                    shift = "Shift A";
+                                }
+                                else if (hour >= 15 && hour < 23) {
+                                    shift = "Shift B";
+                                }
+                                else {
+                                    shift = "Shift C";
+                                }
+                            }
+
+                            
+
                             html += "<tr>";
                             html += "<td>" + (obj[i].OrderTakenDate || "") + "</td>";
                             html += "<td>" + (obj[i].CouponId || "") + "</td>";
@@ -185,6 +212,7 @@
                             html += "<td>" + (obj[i].Item || "") + "</td>";
                             html += "<td>" + (obj[i].Category || "") + "</td>";
                             html += "<td>" + (obj[i].Price || "") + "</td>";
+                            html += "<td>" + (shift || "") + "</td>";
                             html += "</tr>";
 
                             rCount++;
@@ -473,6 +501,7 @@
                                 <th>Item</th>
                                 <th>Item Category</th>
                                 <th>Amt</th>
+                                <th>Shift</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyCanteen">
