@@ -76,11 +76,15 @@
             if ($("#ddlItemCategory").val() != "0") {
                 clsCouponReport.ItemCategory = $("#ddlItemCategory").val();
             }
+            if ($("#ddlCouponType").val() != "0") {
+                clsCouponReport.CouponType = $("#ddlCouponType").val();
+            }
+
             if ($("#ddlOrderStatus").val() != "0") {
                 clsCouponReport.OrderStatus = $("#ddlOrderStatus").val();
             }
-            if ($("#ddlCouponType").val() != "0") {
-                clsCouponReport.CouponType = $("#ddlCouponType").val();
+            else {
+                clsCouponReport.OrderStatus = "Generated";
             }
 
             $("#dvA4Size").html('');

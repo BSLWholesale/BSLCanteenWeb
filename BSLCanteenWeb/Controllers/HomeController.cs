@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -36,7 +38,14 @@ namespace BSLCanteenWeb.Controllers
         public JsonResult Fn_Login_Employee(clsEmployee objReq)
         {
             using (var client = new HttpClient())
-            {
+            {                
+                var host = Dns.GetHostEntry(Dns.GetHostName());
+
+                // Find the first IPv4 network interface
+                var ipAddress = host.AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
+
+                objReq.IPAddress = Convert.ToString(ipAddress);
+
                 client.BaseAddress = new Uri(Convert.ToString(ConfigurationManager.AppSettings["BSLCanteenAPIURL"]));
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));

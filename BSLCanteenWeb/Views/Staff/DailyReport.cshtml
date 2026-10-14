@@ -162,6 +162,7 @@
                 var totalScanThaliCoupons = 0;
                 //var totalGenMiniThaliCoupons = 0;
                 var totalScanMiniThaliCoupons = 0;
+                var totalScanSabjiCoupons = 0;
 
                 if (obj[0].vErrorMsg == "Success") {
                     for (var i = 0; i < obj.length; i++) {
@@ -175,19 +176,22 @@
                         totalScanThaliCoupons += parseInt(obj[i].QRScannedThali) || 0;
                         //totalGenMiniThaliCoupons += parseInt(obj[i].GeneratedCouponMiniThali) || 0;
                         totalScanMiniThaliCoupons += parseInt(obj[i].QRScannedMiniThali) || 0;
+                        totalScanSabjiCoupons += parseInt(obj[i].QRScannedSabji) || 0;
 
                         // Horizontal Total (Excluding Workers)
                         var rowTotal =
                             (parseInt(obj[i].QRScannedTea) || 0) +
                             (parseInt(obj[i].QRScannedBreakfast) || 0) +
                             (parseInt(obj[i].QRScannedThali) || 0) +
-                            (parseInt(obj[i].QRScannedMiniThali) || 0);
+                            (parseInt(obj[i].QRScannedMiniThali) || 0) +
+                            (parseInt(obj[i].QRScannedSabji) || 0);
 
                         var GrandTotal =
                             (parseInt(totalScanTeaCoupons) || 0) +
                             (parseInt(totalScanBreakfastCoupons) || 0) +
                             (parseInt(totalScanThaliCoupons) || 0) +
-                            (parseInt(totalScanMiniThaliCoupons) || 0);
+                            (parseInt(totalScanMiniThaliCoupons) || 0) +
+                            (parseInt(totalScanSabjiCoupons) || 0);
 
                         html += "<tr>";
                         html += "<td>" + obj[i].CanteenName + "</td>";
@@ -200,6 +204,7 @@
                         html += "<td style='text-align:center; background-color:#ADD8E6;'>" + obj[i].QRScannedThali + "</td>";
                         //html += "<td style='text-align:center; background-color:#C8E6C9;'>" + obj[i].GeneratedCouponMiniThali + "</td>";
                         html += "<td style='text-align:center; background-color:#C8E6C9;'>" + obj[i].QRScannedMiniThali + "</td>";
+                        html += "<td style='text-align:center; background-color:#C8E6C9;'>" + obj[i].QRScannedSabji + "</td>";
                         html += "<td style='text-align:center; background-color:#F2F2F2; font-weight:bold;'>" + rowTotal + "</td>";
                         html += "</tr>";
                     }
@@ -216,10 +221,11 @@
                     html += "<td style='text-align:center;'>" + totalScanThaliCoupons + "</td>";
                     //html += "<td style='text-align:center;'>" + totalGenMiniThaliCoupons + "</td>";
                     html += "<td style='text-align:center;'>" + totalScanMiniThaliCoupons + "</td>";
+                    html += "<td style='text-align:center;'>" + totalScanSabjiCoupons + "</td>";
                     html += "<td style='text-align:center;'>" + GrandTotal + "</td>";
                 }
                 else {
-                    html += "<tr><td colspan='12' class='text-center'>Item category wise records are not found.</td></tr>";
+                    html += "<tr><td colspan='8' class='text-center'>Item category wise records are not found.</td></tr>";
                 }
                 $("#tbody_Category").append(html);
             },
@@ -660,6 +666,7 @@
                                 <th style="text-align:center;">Scanned QR Thali</th>
                                 @*<th style="text-align:center;">Mini Thali</th>*@
                                 <th style="text-align:center;">Scanned QR Mini Thali</th>
+                                <th style="text-align:center;">Scanned QR Sabji</th>
                                 <th style="text-align:center;">Total</th>
                             </tr>
                         </thead>
