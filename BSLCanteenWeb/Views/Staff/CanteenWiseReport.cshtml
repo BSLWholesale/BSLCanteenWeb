@@ -170,18 +170,19 @@
                     var obj = JSON.parse(data.message);
 
                     if (obj.length > 0 && obj[0].vErrorMsg == "Success") {
-
+                        
                         totalRows = parseInt(obj[0].TotalRows) || 0;
                         var html = "";
                         for (var i = 0; i < obj.length; i++) {
-
+                            
                             var orderTime = obj[i].OrderTakenDate;
                             var shift = "";
-                            if (orderTime) {
+                            if (orderTime) {                                
                                 var timePart = orderTime.split(" ")[1];
-                                var ampm = orderTime.split(":")[3];
+                                var ampm = orderTime.split(":")[2];
+                                ampm = orderTime.split(" ")[2];
                                 var timeParts = timePart.split(":");
-                                var hour = parseInt(timeParts[0], 10);
+                                var hour = parseInt(timeParts[0], 10);                                
                                 if (ampm.toUpperCase() === "AM" && hour === 12) {
                                     hour = 0;
                                 }
