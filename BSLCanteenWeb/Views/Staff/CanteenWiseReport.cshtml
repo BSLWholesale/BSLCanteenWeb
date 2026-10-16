@@ -391,11 +391,12 @@
             // Data
             for (var i = 0; i < data.length; i++) {
 
-                var orderTime = data[i].OrderTakenDate;
+                var orderTime = obj[i].OrderTakenDate;
                 var shift = "";
                 if (orderTime) {
                     var timePart = orderTime.split(" ")[1];
-                    var ampm = orderTime.split(":")[3];
+                    var ampm = orderTime.split(":")[2];
+                    ampm = orderTime.split(" ")[2];
                     var timeParts = timePart.split(":");
                     var hour = parseInt(timeParts[0], 10);
                     if (ampm.toUpperCase() === "AM" && hour === 12) {
@@ -415,6 +416,7 @@
                         shift = "Shift C";
                     }
                 }
+
 
                 tab_text += "<tr>";
                 tab_text += "<td>" + (data[i].OrderTakenDate || "") + "</td>";
