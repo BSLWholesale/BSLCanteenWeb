@@ -384,10 +384,37 @@
             tab_text += "<th>Item</th>";
             tab_text += "<th>Item Category</th>";
             tab_text += "<th>Amt</th>";
+            tab_text += "<th>Shift</th>";
             tab_text += "</tr>";
 
             // Data
             for (var i = 0; i < data.length; i++) {
+
+                var orderTime = data[i].OrderTakenDate;
+                var shift = "";
+                if (orderTime) {
+                    var timePart = orderTime.split(" ")[1];
+                    var ampm = orderTime.split(":")[3];
+                    var timeParts = timePart.split(":");
+                    var hour = parseInt(timeParts[0], 10);
+                    if (ampm.toUpperCase() === "AM" && hour === 12) {
+                        hour = 0;
+                    }
+                    else if (ampm.toUpperCase() === "PM" && hour !== 12) {
+                        hour += 12;
+                    }
+
+                    if (hour >= 7 && hour < 15) {
+                        shift = "Shift A";
+                    }
+                    else if (hour >= 15 && hour < 23) {
+                        shift = "Shift B";
+                    }
+                    else {
+                        shift = "Shift C";
+                    }
+                }
+
                 tab_text += "<tr>";
                 tab_text += "<td>" + (data[i].OrderTakenDate || "") + "</td>";
                 tab_text += "<td>" + (data[i].CouponId || "") + "</td>";
@@ -398,6 +425,7 @@
                 tab_text += "<td>" + (data[i].Item || "") + "</td>";
                 tab_text += "<td>" + (data[i].Category || "") + "</td>";
                 tab_text += "<td>" + (data[i].Price || "") + "</td>";
+                tab_text += "<td>" + (shift || "") + "</td>";
                 tab_text += "</tr>";
             }
 
