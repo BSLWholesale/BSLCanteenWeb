@@ -153,11 +153,13 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\StaffController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\clsEmployee.cs" />
+    <Compile Include="Models\clsReport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -373,6 +375,7 @@
     <Content Include="Views\Staff\CanteenWiseReport.cshtml" />
     <Content Include="Views\Staff\CouponScan.cshtml" />
     <Content Include="Views\Staff\RecoWiseCouponReport.cshtml" />
+    <Content Include="Views\Report\CouponStatusReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
