@@ -61,12 +61,12 @@
         }
 
         function Fn_Get_A4_Coupon_Order() {
-            
+
 
             var clsCouponReport = {};
             clsCouponReport.CreatedBy = sessionStorage.getItem("LogInID");
             clsCouponReport.EmpLocation = sessionStorage.getItem("EmpLocation");
-
+            clsCouponReport.QueryType = "PrintCoupon";
             if ($("#txtCouponIssueDate").val() != "") {
                 clsCouponReport.CouponIssueDate = $("#txtCouponIssueDate").val();
             }

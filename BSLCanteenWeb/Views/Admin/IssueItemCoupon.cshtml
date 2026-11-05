@@ -304,6 +304,7 @@
             clsCouponReport.EmpId = $("#ddlEmpName").val();
             clsCouponReport.CouponIssueDate = formattedDate;
             clsCouponReport.OrderStatus = "Generated";
+            clsCouponReport.QueryType = "PrintCoupon";
             clsCouponReport.RowIndex = $("#hdnRowIndex").val();
             $("#dvA4Size").html('');
             var html = '';
