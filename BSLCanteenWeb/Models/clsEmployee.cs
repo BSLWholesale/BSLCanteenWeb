@@ -233,6 +233,7 @@ namespace BSLCanteenWeb.Models
         public string QRScannedThali { get; set; }
         public string GeneratedCouponMiniThali { get; set; }
         public string QRScannedMiniThali { get; set; }
+        public string QRScannedSabji { get; set; }
         public string ItemCatgeory { get; set; }
         public string ReportType { get; set; }
         public int vErrorCode { get; set; }
