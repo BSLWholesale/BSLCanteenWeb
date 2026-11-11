@@ -10,8 +10,10 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const EmpID = urlParams.get('EID');
-        if (EmpID != null || EmpID != "") {
-            Fn_Fetch_EmployeeDetails(EmpID);
+        const EmpLocation = urlParams.get('ELocation');
+
+        if (EmpID != null || EmpID != "" || EmpLocation != null || EmpLocation != "") {
+            Fn_Fetch_EmployeeDetails(EmpID, EmpLocation);
         }
 
     });
@@ -113,10 +115,11 @@
     }
 
 
-    function Fn_Fetch_EmployeeDetails(EmpID) {
+    function Fn_Fetch_EmployeeDetails(EmpID, ELocation) {
 
         var clsEmployee = {};
         clsEmployee.EmpId = EmpID;
+        clsEmployee.EmpLocation = ELocation;
 
         $.ajax({
             type: "POST",
