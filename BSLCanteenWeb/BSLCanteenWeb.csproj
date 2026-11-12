@@ -376,6 +376,7 @@
     <Content Include="Views\Staff\CouponScan.cshtml" />
     <Content Include="Views\Staff\RecoWiseCouponReport.cshtml" />
     <Content Include="Views\Report\CouponStatusReport.cshtml" />
+    <Content Include="Views\Report\EmployeeReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

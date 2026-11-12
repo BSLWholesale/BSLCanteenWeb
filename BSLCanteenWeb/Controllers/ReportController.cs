@@ -18,6 +18,11 @@ namespace BSLCanteenWeb.Controllers
             return View();
         }
 
+        public ActionResult EmployeeReport()
+        {
+            return View();
+        }
+
         [HttpPost]
         public JsonResult Fn_Get_Coupon_Status_Report(clsOrderStatusReq objReq)
         {
