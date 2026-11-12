@@ -90,11 +90,17 @@
             return day + "-" + month + "-" + year;
         }
 
+        var currentPage = 1;
+        var pageSize = 3000;
+
         function Fn_CanteenWise_Report() {
 
             var clsMonthlyReportReq = {};
             clsMonthlyReportReq.OrderStatus = "Scanned";
             clsMonthlyReportReq.EmpLocation = sessionStorage.getItem("EmpLocation");
+            clsMonthlyReportReq.QueryType = "CanteenWise_Detail";
+            clsMonthlyReportReq.PageNumber = currentPage;
+            clsMonthlyReportReq.PageSize = pageSize;
 
             if ($("#ddlCanteen").val() != "0") {
                 clsMonthlyReportReq.CanteenName = $("#ddlCanteen").val();
@@ -229,6 +235,9 @@
             var clsMonthlyReportReq = {};
             clsMonthlyReportReq.OrderStatus = "Scanned";
             clsMonthlyReportReq.EmpLocation = sessionStorage.getItem("EmpLocation");
+            clsMonthlyReportReq.QueryType = "EmployeeWise_Detail";
+            clsMonthlyReportReq.PageNumber = currentPage;
+            clsMonthlyReportReq.PageSize = pageSize;
 
             if ($("#ddlCanteen").val() != "0") {
                 clsMonthlyReportReq.CanteenName = $("#ddlCanteen").val();
@@ -363,6 +372,9 @@
             var clsMonthlyReportReq = {};
             clsMonthlyReportReq.OrderStatus = "Scanned";
             clsMonthlyReportReq.EmpLocation = sessionStorage.getItem("EmpLocation");
+            clsMonthlyReportReq.QueryType = "CanteenWise_Summery";
+            clsMonthlyReportReq.PageNumber = currentPage;
+            clsMonthlyReportReq.PageSize = pageSize;
 
             if ($("#ddlCanteen").val() != "0") {
                 clsMonthlyReportReq.CanteenName = $("#ddlCanteen").val();
@@ -446,6 +458,9 @@
             var clsMonthlyReportReq = {};
             clsMonthlyReportReq.OrderStatus = "Scanned";
             clsMonthlyReportReq.EmpLocation = sessionStorage.getItem("EmpLocation");
+            clsMonthlyReportReq.PageNumber = currentPage;
+            clsMonthlyReportReq.PageSize = pageSize;
+            clsMonthlyReportReq.QueryType = "EmployeeWise_Summery";
 
             if ($("#ddlCanteen").val() != "0") {
                 clsMonthlyReportReq.CanteenName = $("#ddlCanteen").val();
