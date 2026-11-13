@@ -11,7 +11,8 @@
 
         $(document).ready(function () {
             var EmpLocation = sessionStorage.getItem("EmpLocation");
-            var empRol = sessionStorage.getItem("EmpRole");
+            var empRol = sessionStorage.getItem("EmpRole");            
+            Fn_Fill_DropdownList("ddlCanteen", "CanteenMaster", "CanteenName", "CanteenId", "");
 
             if (empRol === "Supervisor") {
                 $("#ddlCouponType option[value='Guest']").show();
@@ -32,6 +33,13 @@
             $("#ddlCouponType").change(function () {
                 Fn_EnableDisableMenuItems();
             });
+
+            var CanteenId = sessionStorage.getItem("CanteenId");
+            setTimeout(function () {
+
+                $("#ddlCanteen").val(CanteenId).trigger("change");
+
+            }, 500);
 
         });
 
@@ -80,17 +88,18 @@
             strCriteria = " AND EmployeeId=" + ddlEmpName + "";
             Fn_Fill_DropdownList("ddlEmpLocation", "vGetEmpDetail", "EmpLocation", "", strCriteria);
 
-            var strCriteria = "";
-            var ddlEmpName = $("#ddlEmpName").val();
-            Fn_Fill_DropdownList("ddlCanteen", "vGetEmpDetail", "CanteenName", "CanteenId", strCriteria);
+            //var strCriteria = "";
+            //var ddlEmpName = $("#ddlEmpName").val();
+            //Fn_Fill_DropdownList("ddlCanteen", "vGetEmpDetail", "CanteenName", "CanteenId", strCriteria);
+                        
         }
 
 
         function Fn_OnChange_ddlEmpLocation() {
-            var strCriteria = "";
-            var ddlEmpName = $("#ddlEmpName").val();
-            strCriteria = " AND EmployeeId=" + ddlEmpName + " AND EmpLocation='" + $("#ddlEmpLocation").val() + "'";
-            Fn_Fill_DropdownList("ddlCanteen", "vGetEmpDetail", "CanteenName", "CanteenId", strCriteria);
+            //var strCriteria = "";
+            //var ddlEmpName = $("#ddlEmpName").val();
+            //strCriteria = " AND EmployeeId=" + ddlEmpName + " AND EmpLocation='" + $("#ddlEmpLocation").val() + "'";
+            //Fn_Fill_DropdownList("ddlCanteen", "vGetEmpDetail", "CanteenName", "CanteenId", strCriteria);
         }
 
 
@@ -346,7 +355,7 @@
                                 html += "<div>CId: " + obj[i].CouponId + "</div>";
                                 html += "<div>Issued: " + obj[i].CouponIssueDate + "</div>";
                                 html += "<div>Canteen: " + obj[i].CanteenName + "</div>";
-                                html += "<div>Code: " + obj[i].EmpId + "</div>";
+                                html += "<div>Code: " + obj[i].EmpId + " - " + obj[i].EmpLocation + "</div>";
                                 html += "</div>";
                                 html += "<div id='gen-qr-wrap_" + i + "' style='width:90px; height:90px; display:flex; align-items:center; justify-content:center; margin-top:10px;'></div>";
                                 html += "</div>";
