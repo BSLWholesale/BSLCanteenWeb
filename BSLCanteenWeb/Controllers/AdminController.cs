@@ -314,7 +314,8 @@ namespace BSLCanteenWeb.Controllers
                         EmpRole = sheet.Cells[row, 5].Text,
                         CanteenId = CanteenNo,
                         EmpMobile = sheet.Cells[row, 7].Text,
-                        EmpStatus = EmpWorkerStatus
+                        EmpStatus = EmpWorkerStatus,
+                        CreatedBy = objReq.CreatedBy
                     };
 
                     empList.Add(emp);

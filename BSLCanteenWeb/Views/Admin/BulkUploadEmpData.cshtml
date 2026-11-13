@@ -10,6 +10,7 @@
     function Fn_Upload_BulkEmployeeData() {
 
         var clsEmployee = {};
+        clsEmployee.CreatedBy = sessionStorage.getItem("LogInID");
 
         let file = $("#fileBulkEmpDataUpload").get(0).files[0];
         if (!file) {
@@ -18,6 +19,7 @@
 
         let formData = new FormData();
         formData.append("file", file);
+        formData.append("CreatedBy", clsEmployee.CreatedBy);
 
         $.ajax({
             type: "POST",
