@@ -155,6 +155,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\StaffController.cs" />
+    <Compile Include="Controllers\VisitorController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -377,6 +378,7 @@
     <Content Include="Views\Staff\RecoWiseCouponReport.cshtml" />
     <Content Include="Views\Report\CouponStatusReport.cshtml" />
     <Content Include="Views\Report\EmployeeReport.cshtml" />
+    <Content Include="Views\Visitor\VisitorIssueCoupon.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
