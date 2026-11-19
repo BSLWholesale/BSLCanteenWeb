@@ -10,6 +10,7 @@ using System.Web;
 using System.Web.Mvc;
 using OfficeOpenXml;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace BSLCanteenWeb.Controllers
 {
@@ -247,78 +248,201 @@ namespace BSLCanteenWeb.Controllers
             {
                 ExcelWorksheet sheet = package.Workbook.Worksheets[0];
                 int rowCount = sheet.Dimension.End.Row;
+                int colCount = sheet.Dimension.End.Column;
 
-                for (int row = 2; row <= rowCount; row++)
+                Dictionary<string, int> columnMap = new Dictionary<string, int>();
+                // Read header row (Row 1 ONLY)
+                for (int col = 1; col <= colCount; col++)
                 {
-                    string CanteenName;
-                    int CanteenNo = 0;
-                    
-                    if (sheet.Cells[row, 6].Value is string)
-                    {
-                        CanteenName = sheet.Cells[row, 6].Value.ToString();
-                        switch (CanteenName)
-                        {
-                            case "BSL WORKER":
-                                CanteenNo = 1;
-                                break;
-                            case "TPP WORKER":
-                                CanteenNo = 2;
-                                break;
-                            case "BFL WORKER":
-                                CanteenNo = 3;
-                                break;
-                            case "WORSTED1 WORKER":
-                                CanteenNo = 4;
-                                break;
-                            case "WEAVING-4 WORKER":
-                                CanteenNo = 5;
-                                break;
-                            case "BTM WORKER":
-                                CanteenNo = 6;
-                                break;
-                            case "BJF WORKER":
-                                CanteenNo = 7;
-                                break;
-                            case "MILL7 WORKER":
-                                CanteenNo = 8;
-                                break;
-                        }
-                    }
+                    string header = sheet.Cells[1, col].Text.Trim();
 
-                    bool EmpWorkerStatus = true;
-                    string SheetStatus = sheet.Cells[row, 8].Text.Trim();
-
-                    if (SheetStatus.Equals("Active", StringComparison.OrdinalIgnoreCase))
+                    if (!string.IsNullOrEmpty(header) && !columnMap.ContainsKey(header))
                     {
-                        EmpWorkerStatus = true;
+                        columnMap.Add(header, col);
                     }
-                    else if (SheetStatus.Equals("Inactive", StringComparison.OrdinalIgnoreCase))
+                }
+
+                // Required columns list
+                string[] requiredColumns = {
+                 "EmployeeId", "EmpName", "EmpLocation", "Department",
+                 "EmpRole", "CanteenName", "EmpMobile", "EmpStatus"
+                  };
+
+                // Validate required columns
+                foreach (var colName in requiredColumns)
+                {
+                    if (!columnMap.ContainsKey(colName))
                     {
-                        EmpWorkerStatus = false;
+                        objReq.vErrorMsg = $"{colName} column not mapped in excel file.";
+                        objReq.vErrorCode = 400;
+
+                        var errorObj = new { vErrorMsg = objReq.vErrorMsg, vErrorCode = 400 };
+                        return Json(new { success = false, message = Newtonsoft.Json.JsonConvert.SerializeObject(errorObj) }, JsonRequestBehavior.AllowGet);
                     }
                     else
                     {
-                        // Invalid value found in Excel
-                        return Json(new
-                        {
-                            success = false, message = $"Invalid Employee Status '{SheetStatus}' at Row {row}. Allowed values are Active or Inactive"
-                        });
+                        objReq.vErrorMsg = "";
+                        objReq.vErrorCode = 200;
                     }
+                }
 
-                    clsEmployee emp = new clsEmployee
+                if (objReq.vErrorMsg == "")
+                {
+                    for (int row = 2; row <= rowCount; row++)
                     {
-                        EmpId = Convert.ToInt64(sheet.Cells[row, 1].Value),
-                        EmpName = sheet.Cells[row, 2].Text,
-                        EmpLocation = sheet.Cells[row, 3].Text,
-                        Department = sheet.Cells[row, 4].Text,
-                        EmpRole = sheet.Cells[row, 5].Text,
-                        CanteenId = CanteenNo,
-                        EmpMobile = sheet.Cells[row, 7].Text,
-                        EmpStatus = EmpWorkerStatus,
-                        CreatedBy = objReq.CreatedBy
-                    };
 
-                    empList.Add(emp);
+                        int exEmpId = 0;
+                        string empValue = sheet.Cells[row, 1].Text.Trim();
+                        if (!int.TryParse(empValue, out exEmpId))
+                        {                           
+                            objReq.vErrorMsg = $"Invalid Employee ID '{empValue}' at Row {row}. Please enter a valid numeric Employee ID.";
+                            var errorObj = new { vErrorMsg = objReq.vErrorMsg, vErrorCode = 400 };
+                            return Json(new { success = false, message = Newtonsoft.Json.JsonConvert.SerializeObject(errorObj) }, JsonRequestBehavior.AllowGet);
+                        }
+
+                        // Continue processing if valid
+
+                        string eName = sheet.Cells[row, 2].Text.Trim();
+                        if (string.IsNullOrWhiteSpace(eName))
+                        {
+                            objReq.vErrorMsg = $"Please Enter Employee Name at Row {row}. It's required";
+                            var errorObj = new { vErrorMsg = objReq.vErrorMsg, vErrorCode = 400 };
+                            return Json(new { success = false, message = Newtonsoft.Json.JsonConvert.SerializeObject(errorObj) }, JsonRequestBehavior.AllowGet);
+                        }
+
+                        string strLocation = sheet.Cells[row, 3].Text.Trim();
+                        List<string> arrLocation = new List<string>
+                        {
+                            "BSL", "TPP", "BFL", "WORSTED1",
+                            "WEAVING-4", "BTM", "BJF", "MILL7"
+                        };
+
+                        // Validate Location
+                        if (!arrLocation.Contains(strLocation, StringComparer.Ordinal))
+                        {
+                            objReq.vErrorMsg = $"Invalid Employee Location '{strLocation}' at Row {row}. Please enter the exact location name.";
+                            var errorObj = new { vErrorMsg = objReq.vErrorMsg, vErrorCode = 400 };
+                            return Json(new { success = false, message = Newtonsoft.Json.JsonConvert.SerializeObject(errorObj) }, JsonRequestBehavior.AllowGet);
+                        }
+
+                        string eDepartment = sheet.Cells[row, 4].Text.Trim();
+                        if (string.IsNullOrWhiteSpace(eDepartment))
+                        {
+                            objReq.vErrorMsg = $"Please Enter Department at Row {row}. It's required";
+                            var errorObj = new { vErrorMsg = objReq.vErrorMsg, vErrorCode = 400 };
+                            return Json(new { success = false, message = Newtonsoft.Json.JsonConvert.SerializeObject(errorObj) }, JsonRequestBehavior.AllowGet);
+                        }
+
+
+                        string eRole = sheet.Cells[row, 5].Text.Trim();
+                        if (string.IsNullOrWhiteSpace(eRole))
+                        {
+                            objReq.vErrorMsg = $"Please Enter Employee Role at Row {row}. It's required";
+                            var errorObj = new { vErrorMsg = objReq.vErrorMsg, vErrorCode = 400 };
+                            return Json(new { success = false, message = Newtonsoft.Json.JsonConvert.SerializeObject(errorObj) }, JsonRequestBehavior.AllowGet);
+                        }
+
+                        string CanteenName = "";
+                        int CanteenNo = 0;
+
+                        if (sheet.Cells[row, 6].Value != null)
+                        {
+                            CanteenName = sheet.Cells[row, 6].Value.ToString().Trim();
+
+                            switch (CanteenName)
+                            {
+                                case "BSL WORKER":
+                                    CanteenNo = 1;
+                                    break;
+                                case "TPP WORKER":
+                                    CanteenNo = 2;
+                                    break;
+                                case "BFL WORKER":
+                                    CanteenNo = 3;
+                                    break;
+                                case "WORSTED1 WORKER":
+                                    CanteenNo = 4;
+                                    break;
+                                case "WEAVING-4 WORKER":
+                                    CanteenNo = 5;
+                                    break;
+                                case "BTM WORKER":
+                                    CanteenNo = 6;
+                                    break;
+                                case "BJF WORKER":
+                                    CanteenNo = 7;
+                                    break;
+                                case "MILL7 WORKER":
+                                    CanteenNo = 8;
+                                    break;
+                                default:
+                                    objReq.vErrorMsg = $"Invalid Canteen Name '{CanteenName}' at Row {row}. Please enter a valid Canteen Name.";
+                                    var errorObj = new { vErrorMsg = objReq.vErrorMsg, vErrorCode = 400 };
+                                    return Json(new { success = false, message = Newtonsoft.Json.JsonConvert.SerializeObject(errorObj) }, JsonRequestBehavior.AllowGet);
+                            }
+                        }
+                        else
+                        {
+                            objReq.vErrorMsg = $"Canteen Name is empty at Row {row}. Please enter a valid Canteen Name.";
+                            var errorObj = new { vErrorMsg = objReq.vErrorMsg, vErrorCode = 400 };
+                            return Json(new { success = false, message = Newtonsoft.Json.JsonConvert.SerializeObject(errorObj) }, JsonRequestBehavior.AllowGet);
+                        }
+
+
+                        string mobile = sheet.Cells[row, 7].Text.Trim();
+                        string EmpMobile = "";
+                        if (string.IsNullOrEmpty(mobile))
+                        {
+                            EmpMobile = "";
+                        }
+                        else if (Regex.IsMatch(mobile, @"^[6-9]\d{9}$"))
+                        {
+                            EmpMobile = mobile;
+                        }
+                        else
+                        {
+                            objReq.vErrorMsg = $"Invalid Employee Mobile '{mobile}' at Row {row}. Please enter a valid 10-digit mobile number or leave it blank.";
+                            var errorObj = new { vErrorMsg = objReq.vErrorMsg, vErrorCode = 400 };
+                            return Json(new { success = false, message = Newtonsoft.Json.JsonConvert.SerializeObject(errorObj) }, JsonRequestBehavior.AllowGet);
+                        }
+
+                        bool EmpWorkerStatus = true;
+                        string SheetStatus = sheet.Cells[row, 8].Text.Trim();
+
+                        if (SheetStatus.Equals("Active", StringComparison.OrdinalIgnoreCase))
+                        {
+                            EmpWorkerStatus = true;
+                        }
+                        else if (SheetStatus.Equals("Inactive", StringComparison.OrdinalIgnoreCase))
+                        {
+                            EmpWorkerStatus = false;
+                        }
+                        else
+                        {
+                            // Invalid value found in Excel
+                            objReq.vErrorMsg = $"Invalid Employee Status '{SheetStatus}' at Row {row}. Allowed values are Active or Inactive";
+                            var errorObj = new { vErrorMsg = objReq.vErrorMsg, vErrorCode = 400 };
+                            return Json(new { success = false, message = Newtonsoft.Json.JsonConvert.SerializeObject(errorObj) }, JsonRequestBehavior.AllowGet);
+                        }
+                       
+
+                        clsEmployee emp = new clsEmployee
+                        {
+                            //EmpId = Convert.ToInt64(sheet.Cells[row, 1].Value),
+                            EmpId = Convert.ToInt64(exEmpId),
+                            EmpName = sheet.Cells[row, 2].Text,
+                            EmpLocation = sheet.Cells[row, 3].Text,
+                            Department = sheet.Cells[row, 4].Text,
+                            EmpRole = sheet.Cells[row, 5].Text,
+                            CanteenId = CanteenNo,
+                            //EmpMobile = sheet.Cells[row, 7].Text,
+                            EmpMobile = EmpMobile,
+                            EmpStatus = EmpWorkerStatus,
+                            CreatedBy = objReq.CreatedBy
+                        };
+
+                        empList.Add(emp);
+                    }
                 }
             }
 
@@ -331,14 +455,21 @@ namespace BSLCanteenWeb.Controllers
                 string DATA = Newtonsoft.Json.JsonConvert.SerializeObject(empList);
                 HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
 
-                HttpResponseMessage responsePost = client.PostAsync("api/Employee/Fn_Upload_BulkEmployeeData", content).Result;
+                HttpResponseMessage responsePost = client.PostAsync("api/Employee/Fn_Upload_BulkEmployeeExcel", content).Result;
                 if (responsePost.IsSuccessStatusCode)
                 {
                     return Json(new { success = true, message = responsePost.Content.ReadAsStringAsync().Result }, JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
-                    return Json(new { success = false, message = "Data Import Failed" }, JsonRequestBehavior.AllowGet);
+                    // return Json(new { success = false, message = "Data Import Failed" }, JsonRequestBehavior.AllowGet);
+                    var errorObj = new
+                    {
+                        vErrorMsg = "API Not Responding",
+                        vErrorCode = 500
+                    };
+
+                    return Json(new { success = false, message = Newtonsoft.Json.JsonConvert.SerializeObject(errorObj) }, JsonRequestBehavior.AllowGet);
                 }
             }
         }

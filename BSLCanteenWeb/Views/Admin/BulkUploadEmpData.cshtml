@@ -31,13 +31,14 @@
                 $("#loader").show();
                 $("#dvMain").hide();
             },
-            success: function (res) {
-                if (res.success) {
+            success: function (data) {
+                var obj = JSON.parse(data.message);
+                if (obj.vErrorMsg == "Success") {
                     Swal.fire({ title: "", text: "Employee Data imported successfully", icon: "success" });
                     Fn_ResetFields();
                 }
                 else {
-                    Swal.fire({ title: "", text: "Employee Data import failed", icon: "error" });
+                    Swal.fire({ title: "", text: obj.vErrorMsg, icon: "error" });
                 }
             },
             complete: function (data) {
